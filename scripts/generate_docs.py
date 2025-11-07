@@ -33,7 +33,7 @@ TEMP_DIR = tempfile.mkdtemp(prefix="icac_docs_")
 REPO_ROOT = Path(__file__).parent.parent
 
 
-def run_command(cmd: List[str], cwd: Optional[Path] = None, check: bool = True, input_text: Optional[str] = None) -> subprocess.CompletedProcess:
+def run_command(cmd: List[str], cwd: Optional[Path] = None, check: bool = True, input_text: Optional[str] = None, timeout: Optional[int] = None) -> subprocess.CompletedProcess:
     """Run a shell command and return the result."""
     print(f"Running: {' '.join(cmd)}")
     result = subprocess.run(
@@ -42,7 +42,8 @@ def run_command(cmd: List[str], cwd: Optional[Path] = None, check: bool = True, 
         capture_output=True,
         text=True,
         input=input_text,
-        check=check
+        check=check,
+        timeout=timeout
     )
     if result.returncode != 0 and check:
         print(f"Error: {result.stderr}")
@@ -242,24 +243,34 @@ def generate_documentation(merged_ontology: Path, output_dir: Path) -> None:
         "-o",
         str(output_dir)
     ]
-    
-    print(f"Running: {' '.join(cmd)}")
-    # Feed "2" to select "Html: multi page" non-interactively if prompted
-    result = run_command(cmd, check=False, input_text="2\n")
-    
+
+    # Try to answer common interactive prompts: 2 (Html: multi page), 0 (default theme)
+    seeded_input = "2\n0\n"
+    try:
+        print(f"Running: {' '.join(cmd)}")
+        result = run_command(cmd, check=False, input_text=seeded_input, timeout=300)
+    except subprocess.TimeoutExpired:
+        print("Warning: Ontospy gendocs timed out; retrying with python -m ontospy...")
+        alt_cmd = ["python", "-m", "ontospy", "gendocs", str(merged_ontology), "-o", str(output_dir)]
+        try:
+            result = run_command(alt_cmd, check=False, input_text=seeded_input, timeout=300)
+        except subprocess.TimeoutExpired:
+            print("Error: Ontospy gendocs repeatedly timed out. Aborting.")
+            sys.exit(1)
+
     if result.returncode != 0:
         print(f"Error output: {result.stderr}")
         print(f"Standard output: {result.stdout}")
-        
-        # Try alternative: python -m ontospy gendocs
+
+        # Try alternative: python -m ontospy gendocs (if not already tried)
         if ontospy_cmd == ["ontospy"]:
             print("Trying alternative: python -m ontospy gendocs...")
             alt_cmd = ["python", "-m", "ontospy", "gendocs", str(merged_ontology), "-o", str(output_dir)]
-            result = run_command(alt_cmd, check=False, input_text="2\n")
+            result = run_command(alt_cmd, check=False, input_text=seeded_input, timeout=300)
             if result.returncode == 0:
                 print(f"Documentation generated in {output_dir}")
                 return
-        
+
         print(f"Error: Ontospy command failed with return code {result.returncode}")
         print("Please ensure ontospy is properly installed: pip install -r requirements.txt")
         sys.exit(1)

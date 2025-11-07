@@ -41,7 +41,7 @@ jobs:
     
     - name: Generate documentation using the checked-out ontology repo
       env:
-        ONTOLOGY_REPO_PATH: ${{ github.workspace }}/ontology-repo
+        ONTOLOGY_REPO_PATH: ontology-repo
       run: |
         python scripts/generate_docs.py
     
