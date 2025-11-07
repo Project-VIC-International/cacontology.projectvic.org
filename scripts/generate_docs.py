@@ -53,27 +53,46 @@ def clone_ontology_repo() -> Path:
     """Clone the main ontology repository to fetch latest ontology files."""
     # Check if running in GitHub Actions (ontology repo already checked out)
     env_repo_path = os.environ.get("ONTOLOGY_REPO_PATH")
-    if env_repo_path and Path(env_repo_path).exists():
-        print(f"Using ontology repository from environment: {env_repo_path}")
-        return Path(env_repo_path)
+    if env_repo_path:
+        # Resolve relative paths relative to the current working directory
+        if not os.path.isabs(env_repo_path):
+            # Try resolving relative to REPO_ROOT first (most common case)
+            resolved_path = (REPO_ROOT / env_repo_path).resolve()
+            if resolved_path.exists() and resolved_path.is_dir():
+                print(f"Using ontology repository from environment: {resolved_path.absolute()}")
+                return resolved_path.absolute()
+            # Try resolving relative to current working directory
+            resolved_path = Path(env_repo_path).resolve()
+            if resolved_path.exists() and resolved_path.is_dir():
+                print(f"Using ontology repository from environment: {resolved_path.absolute()}")
+                return resolved_path.absolute()
+            print(f"Warning: Environment path {env_repo_path} does not exist or is not a directory")
+            print(f"  Tried: {(REPO_ROOT / env_repo_path).resolve()}")
+            print(f"  Tried: {Path(env_repo_path).resolve()}")
+        else:
+            resolved_path = Path(env_repo_path).resolve()
+            if resolved_path.exists() and resolved_path.is_dir():
+                print(f"Using ontology repository from environment: {resolved_path.absolute()}")
+                return resolved_path.absolute()
+            print(f"Warning: Environment path {env_repo_path} does not exist or is not a directory")
     
     # Check if ontology repo is in parent directory (GitHub Actions structure)
-    parent_repo = REPO_ROOT.parent / "ontology-repo"
-    if parent_repo.exists():
-        print(f"Using ontology repository from parent directory: {parent_repo}")
-        return parent_repo
+    parent_repo = (REPO_ROOT.parent / "ontology-repo").resolve()
+    if parent_repo.exists() and parent_repo.is_dir():
+        print(f"Using ontology repository from parent directory: {parent_repo.absolute()}")
+        return parent_repo.absolute()
     
     # Otherwise, clone the repository
-    repo_path = REPO_ROOT / ONTOLOGY_REPO_DIR
+    repo_path = (REPO_ROOT / ONTOLOGY_REPO_DIR).resolve()
     
     if repo_path.exists():
-        print(f"Repository already exists at {repo_path}, updating...")
+        print(f"Repository already exists at {repo_path.absolute()}, updating...")
         run_command(["git", "pull"], cwd=repo_path)
     else:
         print(f"Cloning ontology repository from {MAIN_REPO_URL}...")
         run_command(["git", "clone", MAIN_REPO_URL, str(repo_path)])
     
-    return repo_path
+    return repo_path.absolute()
 
 
 def find_ontology_files(repo_path: Path) -> List[Path]:
@@ -81,8 +100,30 @@ def find_ontology_files(repo_path: Path) -> List[Path]:
     ontology_files = []
     shapes_files = []
     
+    # Debug: Check if repo_path exists and list its contents
+    if not repo_path.exists():
+        print(f"Error: Repository path does not exist: {repo_path}")
+        print(f"Current working directory: {os.getcwd()}")
+        print(f"REPO_ROOT: {REPO_ROOT}")
+        return ontology_files, shapes_files
+    
+    print(f"Searching for ontology files in: {repo_path.absolute()}")
+    
+    # List directory contents for debugging
+    try:
+        dir_contents = list(repo_path.iterdir())
+        print(f"Directory contains {len(dir_contents)} items")
+        if len(dir_contents) <= 10:  # Only print if not too many
+            for item in dir_contents:
+                print(f"  - {item.name} ({'dir' if item.is_dir() else 'file'})")
+    except Exception as e:
+        print(f"Warning: Could not list directory contents: {e}")
+    
     # Find all .ttl files
-    for ttl_file in repo_path.rglob("*.ttl"):
+    ttl_files_found = list(repo_path.rglob("*.ttl"))
+    print(f"Found {len(ttl_files_found)} total .ttl files")
+    
+    for ttl_file in ttl_files_found:
         # Skip example files
         if "examples" in str(ttl_file):
             continue
@@ -98,6 +139,13 @@ def find_ontology_files(repo_path: Path) -> List[Path]:
             ontology_files.append(ttl_file)
     
     print(f"Found {len(ontology_files)} ontology files and {len(shapes_files)} shapes files")
+    if ontology_files:
+        print("Ontology files:")
+        for f in ontology_files[:10]:  # Show first 10
+            print(f"  - {f.relative_to(repo_path)}")
+        if len(ontology_files) > 10:
+            print(f"  ... and {len(ontology_files) - 10} more")
+    
     return ontology_files, shapes_files
 
 
