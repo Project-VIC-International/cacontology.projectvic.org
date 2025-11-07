@@ -438,6 +438,76 @@ def generate_documentation(merged_ontology: Path, output_dir: Path) -> None:
     print(f"Documentation generated in {output_dir}")
 
 
+def create_index_html(output_dir: Path) -> None:
+    """Create an index.html file that redirects to the main documentation entry point.
+    
+    GitHub Pages requires an index.html at the root to serve the homepage.
+    This function detects the primary entry point (preferring entities.html)
+    and creates a redirect page.
+    """
+    print("Creating index.html...")
+    
+    if not output_dir.exists():
+        print(f"Warning: Output directory {output_dir} does not exist")
+        return
+    
+    # Priority order for main entry points based on README structure
+    preferred_files = ["entities.html", "classes.html", "index.html"]
+    
+    # Find all HTML files in the output directory
+    html_files = [f for f in output_dir.iterdir() if f.is_file() and f.suffix == ".html"]
+    
+    if not html_files:
+        print("Warning: No HTML files found in output directory")
+        return
+    
+    # Determine the target file
+    target_file = None
+    
+    # First, try preferred files
+    for preferred in preferred_files:
+        candidate = output_dir / preferred
+        if candidate.exists() and candidate.is_file() and candidate.suffix == ".html":
+            target_file = preferred
+            break
+    
+    # If no preferred file found, use the first HTML file (excluding index.html if it exists)
+    if target_file is None:
+        for html_file in html_files:
+            if html_file.name != "index.html":
+                target_file = html_file.name
+                break
+    
+    if target_file is None:
+        print("Warning: Could not determine target file for index.html redirect")
+        return
+    
+    # Create index.html with meta refresh redirect
+    index_content = f"""<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="0; url={target_file}">
+    <title>CAC Ontology Documentation</title>
+    <script>
+        // Immediate redirect for better compatibility
+        window.location.replace("{target_file}");
+    </script>
+</head>
+<body>
+    <p>If you are not redirected automatically, <a href="{target_file}">click here</a>.</p>
+</body>
+</html>
+"""
+    
+    index_path = output_dir / "index.html"
+    try:
+        index_path.write_text(index_content, encoding="utf-8")
+        print(f"Created index.html redirecting to {target_file}")
+    except Exception as e:
+        print(f"Error creating index.html: {e}")
+
+
 def main():
     """Main documentation generation workflow."""
     print("=" * 60)
@@ -466,6 +536,9 @@ def main():
     # Generate documentation
     output_dir = REPO_ROOT / OUTPUT_DIR
     generate_documentation(temp_ontology, output_dir)
+    
+    # Create index.html for GitHub Pages
+    create_index_html(output_dir)
     
     # Cleanup
     print(f"Cleaning up temporary files...")
