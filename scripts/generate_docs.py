@@ -130,7 +130,7 @@ def find_ontology_files(repo_path: Path) -> List[Path]:
     print(f"Found {len(ttl_files_found)} total .ttl files")
     
     for ttl_file in ttl_files_found:
-        # Skip example files
+        # Skip example files (examples_knowledge_graphs directory and legacy examples/ directory)
         if "examples" in str(ttl_file):
             continue
         
@@ -174,7 +174,8 @@ def bind_common_prefixes(graph: Graph) -> None:
     # The actual prefixes used in files may differ - this list covers
     # common patterns that might be encountered.
     common_prefixes = {
-        # Legacy icac-* prefixes (kept as fallback for any remaining files)
+        # Legacy icac-* prefixes (kept as fallback for any remaining old files)
+        # These map to the new CACOntology namespace (cacontology-*)
         "icac-ai": f"{base_ns}cacontology-ai#",
         "icac-asset-forfeiture": f"{base_ns}cacontology-asset-forfeiture#",
         "icac-athletic": f"{base_ns}cacontology-athletic#",
@@ -212,6 +213,7 @@ def bind_common_prefixes(graph: Graph) -> None:
         "icac-training": f"{base_ns}cacontology-training#",
         "icac-undercover": f"{base_ns}cacontology-undercover#",
         # Add cacontology-* prefixes here if needed (files should declare them, but kept as safety net)
+        # All ontology files now use the CACOntology namespace (cacontology-* prefixes)
     }
     
     # Bind each prefix to the graph
