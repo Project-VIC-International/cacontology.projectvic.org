@@ -39,11 +39,25 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     
+    - name: Show Ontospy environment
+      run: |
+        pip show ontospy || true
+        python -c "import sys,ontospy; print('ontospy version:', getattr(ontospy, '__version__', 'unknown')); print('ontospy module:', ontospy.__file__)"
+        which ontospy || true
+    
     - name: Generate documentation using the checked-out ontology repo
       env:
         ONTOLOGY_REPO_PATH: ontology-repo
       run: |
         python scripts/generate_docs.py
+    
+    - name: Upload generated docs artifact (for debugging)
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: docs
+        path: docs
+        if-no-files-found: ignore
     
     - name: Verify generated docs
       run: |

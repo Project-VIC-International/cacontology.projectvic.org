@@ -208,6 +208,40 @@ def generate_documentation(merged_ontology: Path, output_dir: Path) -> None:
         print("Please install dependencies with: pip install -r requirements.txt")
         sys.exit(1)
     
+    # First try programmatic generation to avoid interactive CLI prompts
+    try:
+        from ontospy import Ontospy as OntospyModel
+        visualizer_cls = None
+        try:
+            # Newer multi-page visualizer
+            from ontodocs.viz.viz_html_multi import HTMLVisualizerMulti as Visualizer
+            visualizer_cls = Visualizer
+            print("Using ontodocs.viz.viz_html_multi.HTMLVisualizerMulti")
+        except Exception:
+            try:
+                # Fallback single/multi visualizer module
+                from ontodocs.viz.viz_html import HTMLVisualizer as Visualizer
+                visualizer_cls = Visualizer
+                print("Using ontodocs.viz.viz_html.HTMLVisualizer")
+            except Exception:
+                visualizer_cls = None
+
+        if visualizer_cls is not None:
+            model = OntospyModel(str(merged_ontology))
+            viz = visualizer_cls(model)
+            # Some visualizers use build(); others expose build() with output_path
+            try:
+                viz.build(output_path=str(output_dir))
+            except TypeError:
+                # Older signature: build(dirpath)
+                viz.build(str(output_dir))
+            print(f"Documentation generated in {output_dir} (programmatic API)")
+            return
+        else:
+            print("ontodocs visualizer modules not available; falling back to CLI")
+    except Exception as e:
+        print(f"Programmatic Ontospy generation failed or unavailable: {e}")
+
     # Check if ontospy command-line tool is available
     ontospy_cmd_available = False
     try:
