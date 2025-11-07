@@ -150,12 +150,13 @@ def find_ontology_files(repo_path: Path) -> List[Path]:
     return ontology_files, shapes_files
 
 
-def merge_ontologies(ontology_files: List[Path], output_file: Path) -> None:
-    """Merge all ontology files into a single file using rdflib."""
-    print(f"Merging {len(ontology_files)} ontology files...")
-    
+def merge_ontologies(ontology_files: List[Path], shapes_files: List[Path], output_file: Path) -> None:
+    """Merge ontology and shapes files into a single file using rdflib."""
+    print(f"Merging {len(ontology_files)} ontology files and {len(shapes_files)} shapes files...")
+
     merged_graph = Graph()
-    
+
+    # Merge ontology (non-shapes) files
     for ontology_file in sorted(ontology_files):
         print(f"  Loading: {ontology_file.name}")
         try:
@@ -165,12 +166,8 @@ def merge_ontologies(ontology_files: List[Path], output_file: Path) -> None:
         except Exception as e:
             print(f"  Warning: Failed to parse {ontology_file.name}: {e}")
             continue
-    
-    # Also merge shapes files for SHACL documentation
-    shapes_files = [f for f in ontology_files if "-shapes.ttl" in f.name]
-    ontology_files_only = [f for f in ontology_files if "-shapes.ttl" not in f.name]
-    
-    # Re-merge with shapes
+
+    # Merge shapes files
     for shapes_file in sorted(shapes_files):
         print(f"  Loading shapes: {shapes_file.name}")
         try:
@@ -180,7 +177,7 @@ def merge_ontologies(ontology_files: List[Path], output_file: Path) -> None:
         except Exception as e:
             print(f"  Warning: Failed to parse shapes file {shapes_file.name}: {e}")
             continue
-    
+
     print(f"Writing merged ontology to {output_file}...")
     merged_graph.serialize(str(output_file), format="turtle")
     print(f"Merged ontology contains {len(merged_graph)} triples")
@@ -189,8 +186,16 @@ def merge_ontologies(ontology_files: List[Path], output_file: Path) -> None:
 def generate_documentation(merged_ontology: Path, output_dir: Path) -> None:
     """Generate documentation using Ontospy."""
     print(f"Generating documentation with Ontospy...")
-    
-    # Ensure output directory exists
+
+    # Ensure output directory is empty to avoid interactive overwrite prompts
+    if output_dir.exists():
+        try:
+            # If not empty, clear it to prevent ontospy from prompting
+            if any(output_dir.iterdir()):
+                print(f"Output directory {output_dir} exists and is not empty; clearing...")
+                shutil.rmtree(output_dir)
+        except Exception as e:
+            print(f"Warning: Failed to inspect or clear output directory {output_dir}: {e}")
     output_dir.mkdir(parents=True, exist_ok=True)
     
     # Check if ontospy is available as a Python module first
@@ -285,7 +290,7 @@ def main():
     temp_ontology = Path(TEMP_DIR) / "merged_ontology.ttl"
     
     # Merge all ontologies
-    merge_ontologies(ontology_files + shapes_files, temp_ontology)
+    merge_ontologies(ontology_files, shapes_files, temp_ontology)
     
     # Generate documentation
     output_dir = REPO_ROOT / OUTPUT_DIR
