@@ -33,7 +33,7 @@ TEMP_DIR = tempfile.mkdtemp(prefix="icac_docs_")
 REPO_ROOT = Path(__file__).parent.parent
 
 
-def run_command(cmd: List[str], cwd: Optional[Path] = None, check: bool = True) -> subprocess.CompletedProcess:
+def run_command(cmd: List[str], cwd: Optional[Path] = None, check: bool = True, input_text: Optional[str] = None) -> subprocess.CompletedProcess:
     """Run a shell command and return the result."""
     print(f"Running: {' '.join(cmd)}")
     result = subprocess.run(
@@ -41,6 +41,7 @@ def run_command(cmd: List[str], cwd: Optional[Path] = None, check: bool = True) 
         cwd=cwd,
         capture_output=True,
         text=True,
+        input=input_text,
         check=check
     )
     if result.returncode != 0 and check:
@@ -238,7 +239,8 @@ def generate_documentation(merged_ontology: Path, output_dir: Path) -> None:
     ]
     
     print(f"Running: {' '.join(cmd)}")
-    result = run_command(cmd, check=False)
+    # Feed "2" to select "Html: multi page" non-interactively if prompted
+    result = run_command(cmd, check=False, input_text="2\n")
     
     if result.returncode != 0:
         print(f"Error output: {result.stderr}")
@@ -248,7 +250,7 @@ def generate_documentation(merged_ontology: Path, output_dir: Path) -> None:
         if ontospy_cmd == ["ontospy"]:
             print("Trying alternative: python -m ontospy gendocs...")
             alt_cmd = ["python", "-m", "ontospy", "gendocs", str(merged_ontology), "-o", str(output_dir)]
-            result = run_command(alt_cmd, check=False)
+            result = run_command(alt_cmd, check=False, input_text="2\n")
             if result.returncode == 0:
                 print(f"Documentation generated in {output_dir}")
                 return
