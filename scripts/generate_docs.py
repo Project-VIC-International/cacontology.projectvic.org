@@ -192,21 +192,45 @@ def generate_documentation(merged_ontology: Path, output_dir: Path) -> None:
     # Ensure output directory exists
     output_dir.mkdir(parents=True, exist_ok=True)
     
-    # Check if ontospy is available
+    # Check if ontospy is available as a Python module first
     try:
-        result = run_command(["ontospy", "--version"], check=False)
-        if result.returncode != 0:
-            print("Error: ontospy command not found. Install with: pip install ontospy")
-            sys.exit(1)
-    except FileNotFoundError:
-        print("Error: ontospy command not found. Install with: pip install ontospy")
+        import ontospy
+        print(f"Ontospy module found (version check skipped)")
+    except ImportError:
+        print("Error: ontospy Python module not found.")
+        print("Please install dependencies with: pip install -r requirements.txt")
         sys.exit(1)
+    
+    # Check if ontospy command-line tool is available
+    ontospy_cmd_available = False
+    try:
+        result = run_command(["ontospy", "--help"], check=False)
+        if result.returncode == 0 or "usage" in result.stdout.lower() or "usage" in result.stderr.lower():
+            ontospy_cmd_available = True
+    except FileNotFoundError:
+        pass
+    
+    # Try alternative command formats
+    if not ontospy_cmd_available:
+        try:
+            result = run_command(["python", "-m", "ontospy", "--help"], check=False)
+            if result.returncode == 0 or "usage" in result.stdout.lower() or "usage" in result.stderr.lower():
+                ontospy_cmd_available = True
+                ontospy_cmd = ["python", "-m", "ontospy"]
+            else:
+                ontospy_cmd = ["ontospy"]
+        except FileNotFoundError:
+            ontospy_cmd = ["ontospy"]
+    else:
+        ontospy_cmd = ["ontospy"]
+    
+    if not ontospy_cmd_available:
+        print("Warning: Could not verify ontospy command-line tool, but module is installed.")
+        print("Attempting to use ontospy command anyway...")
     
     # Generate documentation using Ontospy
     # Ontospy gendocs command: ontospy gendocs <ontology_file> -o <output_dir>
-    # Note: Ontospy may have different command syntax, adjust as needed
-    cmd = [
-        "ontospy",
+    cmd = ontospy_cmd + [
         "gendocs",
         str(merged_ontology),
         "-o",
@@ -219,11 +243,19 @@ def generate_documentation(merged_ontology: Path, output_dir: Path) -> None:
     if result.returncode != 0:
         print(f"Error output: {result.stderr}")
         print(f"Standard output: {result.stdout}")
-        print(f"Warning: Ontospy may have encountered issues. Return code: {result.returncode}")
-        # Continue anyway as some warnings are non-fatal
-        if result.returncode != 0 and "No such file" in result.stderr:
-            print("Error: Ontospy command failed. Please check installation.")
-            sys.exit(1)
+        
+        # Try alternative: python -m ontospy gendocs
+        if ontospy_cmd == ["ontospy"]:
+            print("Trying alternative: python -m ontospy gendocs...")
+            alt_cmd = ["python", "-m", "ontospy", "gendocs", str(merged_ontology), "-o", str(output_dir)]
+            result = run_command(alt_cmd, check=False)
+            if result.returncode == 0:
+                print(f"Documentation generated in {output_dir}")
+                return
+        
+        print(f"Error: Ontospy command failed with return code {result.returncode}")
+        print("Please ensure ontospy is properly installed: pip install -r requirements.txt")
+        sys.exit(1)
     
     print(f"Documentation generated in {output_dir}")
 
