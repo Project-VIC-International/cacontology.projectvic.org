@@ -155,29 +155,127 @@ def find_ontology_files(repo_path: Path) -> List[Path]:
     return ontology_files, shapes_files
 
 
+def bind_common_prefixes(graph: Graph) -> None:
+    """Bind common prefixes that may be used across ontology files.
+    
+    This function pre-binds prefixes to prevent "prefix not bound" errors
+    when parsing Turtle files that use prefixes without declaring them.
+    The namespace URIs are inferred from the prefix names and can be adjusted
+    if your actual namespace structure differs.
+    """
+    # Base namespace pattern - adjust if your actual namespace differs
+    # Common patterns: "https://ontology.projectvic.org/", "http://ontology.projectvic.org/", etc.
+    base_ns = "https://ontology.projectvic.org/"
+    
+    # Map of prefix names to namespace URIs based on common patterns
+    # These can be adjusted based on your actual namespace structure
+    # If you know the exact namespace URIs, update them here
+    common_prefixes = {
+        "icac-ai": f"{base_ns}cacontology-ai#",
+        "icac-asset-forfeiture": f"{base_ns}cacontology-asset-forfeiture#",
+        "icac-athletic": f"{base_ns}cacontology-athletic#",
+        "icac-case": f"{base_ns}cacontology-case-management#",
+        "icac-custodial": f"{base_ns}cacontology-custodial#",
+        "icac-detection": f"{base_ns}cacontology-detection#",
+        "icac-educational": f"{base_ns}cacontology-educational-exploitation#",
+        "icac-enterprises": f"{base_ns}cacontology-extremist-enterprises#",
+        "icac-forensics": f"{base_ns}cacontology-forensics#",
+        "icac-grooming": f"{base_ns}cacontology-grooming#",
+        "icac-strategy": f"{base_ns}cacontology-gufo-integration-strategy#",
+        "icac-institutional": f"{base_ns}cacontology-institutional-exploitation#",
+        "icac-international": f"{base_ns}cacontology-international#",
+        "icac-coord": f"{base_ns}cacontology-investigation-coordination#",
+        "icac-corruption": f"{base_ns}cacontology-law-enforcement-corruption#",
+        "icac-legal": f"{base_ns}cacontology-legal-harmonization#",
+        "icac-multi": f"{base_ns}cacontology-multi-jurisdiction#",
+        "icac-partnerships": f"{base_ns}cacontology-partnerships#",
+        "icac-physical": f"{base_ns}cacontology-physical-evidence#",
+        "icac-infrastructure": f"{base_ns}cacontology-platform-infrastructure#",
+        "icac-platforms": f"{base_ns}cacontology-platforms#",
+        "icac-prevention": f"{base_ns}cacontology-prevention#",
+        "icac-production": f"{base_ns}cacontology-production#",
+        "icac-recruitment": f"{base_ns}cacontology-recruitment-networks#",
+        "icac-sentencing": f"{base_ns}cacontology-sentencing#",
+        "icac-registry": f"{base_ns}cacontology-sex-offender-registry#",
+        "icac-trafficking": f"{base_ns}cacontology-sex-trafficking#",
+        "icac-sextortion": f"{base_ns}cacontology-sextortion#",
+        "icac-specialized": f"{base_ns}cacontology-specialized-units#",
+        "icac-abduction": f"{base_ns}cacontology-stranger-abduction#",
+        "icac-street": f"{base_ns}cacontology-street-recruitment#",
+        "icac-tactical": f"{base_ns}cacontology-tactical#",
+        "icac-taskforce": f"{base_ns}cacontology-taskforce#",
+        "icac-temporal": f"{base_ns}cacontology-temporal-gufo#",
+        "icac-training": f"{base_ns}cacontology-training#",
+        "icac-undercover": f"{base_ns}cacontology-undercover#",
+    }
+    
+    # Bind each prefix to the graph
+    for prefix, namespace in common_prefixes.items():
+        graph.bind(prefix, namespace)
+
+
 def merge_ontologies(ontology_files: List[Path], shapes_files: List[Path], output_file: Path) -> None:
     """Merge ontology and shapes files into a single file using rdflib."""
     print(f"Merging {len(ontology_files)} ontology files and {len(shapes_files)} shapes files...")
 
     merged_graph = Graph()
+    
+    # Pre-bind common prefixes to avoid "not bound" errors
+    bind_common_prefixes(merged_graph)
 
-    # Merge ontology (non-shapes) files
+    # First pass: Load files that parse successfully to collect their prefix bindings
+    successful_files = []
+    failed_files = []
+    
     for ontology_file in sorted(ontology_files):
         print(f"  Loading: {ontology_file.name}")
         try:
             g = Graph()
+            # Copy existing prefix bindings from merged_graph
+            for prefix, namespace in merged_graph.namespaces():
+                g.bind(prefix, namespace)
             g.parse(str(ontology_file), format="turtle")
+            # Copy any new prefix bindings back to merged_graph
+            for prefix, namespace in g.namespaces():
+                merged_graph.bind(prefix, namespace)
             merged_graph += g
+            successful_files.append(ontology_file)
         except Exception as e:
             print(f"  Warning: Failed to parse {ontology_file.name}: {e}")
-            continue
+            failed_files.append((ontology_file, e))
+
+    # Second pass: Try failed files again now that we have more prefix bindings
+    if failed_files:
+        print(f"  Retrying {len(failed_files)} files that failed initially...")
+        for ontology_file, original_error in failed_files:
+            print(f"  Retrying: {ontology_file.name}")
+            try:
+                g = Graph()
+                # Copy all prefix bindings from merged_graph
+                for prefix, namespace in merged_graph.namespaces():
+                    g.bind(prefix, namespace)
+                g.parse(str(ontology_file), format="turtle")
+                # Copy any new prefix bindings back to merged_graph
+                for prefix, namespace in g.namespaces():
+                    merged_graph.bind(prefix, namespace)
+                merged_graph += g
+                successful_files.append(ontology_file)
+                print(f"  Successfully loaded {ontology_file.name} on retry")
+            except Exception as e:
+                print(f"  Warning: Still failed to parse {ontology_file.name}: {e}")
 
     # Merge shapes files
     for shapes_file in sorted(shapes_files):
         print(f"  Loading shapes: {shapes_file.name}")
         try:
             g = Graph()
+            # Copy existing prefix bindings from merged_graph
+            for prefix, namespace in merged_graph.namespaces():
+                g.bind(prefix, namespace)
             g.parse(str(shapes_file), format="turtle")
+            # Copy any new prefix bindings back to merged_graph
+            for prefix, namespace in g.namespaces():
+                merged_graph.bind(prefix, namespace)
             merged_graph += g
         except Exception as e:
             print(f"  Warning: Failed to parse shapes file {shapes_file.name}: {e}")
@@ -186,6 +284,7 @@ def merge_ontologies(ontology_files: List[Path], shapes_files: List[Path], outpu
     print(f"Writing merged ontology to {output_file}...")
     merged_graph.serialize(str(output_file), format="turtle")
     print(f"Merged ontology contains {len(merged_graph)} triples")
+    print(f"Successfully loaded {len(successful_files)}/{len(ontology_files)} ontology files")
 
 
 def generate_documentation(merged_ontology: Path, output_dir: Path) -> None:
