@@ -156,21 +156,25 @@ def find_ontology_files(repo_path: Path) -> List[Path]:
 
 
 def bind_common_prefixes(graph: Graph) -> None:
-    """Bind common prefixes that may be used across ontology files.
+    """Bind common prefixes as a safety net when parsing ontology files.
     
     This function pre-binds prefixes to prevent "prefix not bound" errors
-    when parsing Turtle files that use prefixes without declaring them.
-    The namespace URIs are inferred from the prefix names and can be adjusted
-    if your actual namespace structure differs.
+    as a fallback. Since ontology files should now properly declare their
+    prefixes, this is primarily a safety mechanism. The namespace URIs
+    are inferred from common patterns and can be adjusted if needed.
     """
     # Base namespace pattern - adjust if your actual namespace differs
     # Common patterns: "https://ontology.projectvic.org/", "http://ontology.projectvic.org/", etc.
     base_ns = "https://ontology.projectvic.org/"
     
-    # Map of prefix names to namespace URIs based on common patterns
-    # These can be adjusted based on your actual namespace structure
-    # If you know the exact namespace URIs, update them here
+    # Map of prefix names to namespace URIs
+    # Note: Since ontology files now use cacontology-* prefixes and should
+    # properly declare them, this is mainly a safety net. Update these
+    # if you encounter any remaining "prefix not bound" errors.
+    # The actual prefixes used in files may differ - this list covers
+    # common patterns that might be encountered.
     common_prefixes = {
+        # Legacy icac-* prefixes (kept as fallback for any remaining files)
         "icac-ai": f"{base_ns}cacontology-ai#",
         "icac-asset-forfeiture": f"{base_ns}cacontology-asset-forfeiture#",
         "icac-athletic": f"{base_ns}cacontology-athletic#",
@@ -207,6 +211,7 @@ def bind_common_prefixes(graph: Graph) -> None:
         "icac-temporal": f"{base_ns}cacontology-temporal-gufo#",
         "icac-training": f"{base_ns}cacontology-training#",
         "icac-undercover": f"{base_ns}cacontology-undercover#",
+        # Add cacontology-* prefixes here if needed (files should declare them, but kept as safety net)
     }
     
     # Bind each prefix to the graph
