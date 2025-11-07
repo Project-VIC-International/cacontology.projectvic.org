@@ -1,5 +1,6 @@
 # Ontology Documentation Generation
-ontospy>=2.1.1
+ontospy[docs]>=2.1.1
+ontodocs>=1.0.0
 rdflib>=6.3.2
 
 # Ontology Processing
