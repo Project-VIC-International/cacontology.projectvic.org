@@ -1,6 +1,6 @@
 # CAC Ontology Documentation Site
 
-This repository contains the automation for generating and deploying the ICAC Ontology documentation site at [cacontology.projectvic.org](https://cacontology.projectvic.org).
+This repository contains the automation for generating and deploying the CAC Ontology documentation site at [cacontology.projectvic.org](https://cacontology.projectvic.org).
 
 ## Overview
 

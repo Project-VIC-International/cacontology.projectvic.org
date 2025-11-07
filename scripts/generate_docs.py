@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-ICAC Ontology Documentation Generation Script
+CAC Ontology Documentation Generation Script
 
-This script generates comprehensive documentation for the ICAC Ontology using Ontospy.
+This script generates comprehensive documentation for the CAC Ontology using Ontospy.
 It fetches ontology files from the main CAC-Ontology repository, merges all modules,
 and generates HTML documentation matching the CASE Ontology documentation style.
 """
@@ -27,7 +27,7 @@ except ImportError:
 MAIN_REPO_URL = "https://github.com/Project-VIC-International/CAC-Ontology.git"
 ONTOLOGY_REPO_DIR = "ontology_repo"
 OUTPUT_DIR = "docs"
-TEMP_DIR = tempfile.mkdtemp(prefix="icac_docs_")
+TEMP_DIR = tempfile.mkdtemp(prefix="cac_docs_")
 ONTOSPY_TIMEOUT_SECONDS = int(os.environ.get("ONTOSPY_TIMEOUT_SECONDS", "1800"))
 
 # Get the repository root directory
@@ -110,11 +110,14 @@ def find_ontology_files(repo_path: Path) -> List[Path]:
         print(f"REPO_ROOT: {REPO_ROOT}")
         return ontology_files, shapes_files
     
-    print(f"Searching for ontology files in: {repo_path.absolute()}")
+    # Prefer the dedicated ontology subdirectory if present
+    ontology_dir = (repo_path / "ontology")
+    search_base = ontology_dir if ontology_dir.exists() and ontology_dir.is_dir() else repo_path
+    print(f"Searching for ontology files in: {search_base.absolute()}")
     
     # List directory contents for debugging
     try:
-        dir_contents = list(repo_path.iterdir())
+        dir_contents = list(search_base.iterdir())
         print(f"Directory contains {len(dir_contents)} items")
         if len(dir_contents) <= 10:  # Only print if not too many
             for item in dir_contents:
@@ -122,8 +125,8 @@ def find_ontology_files(repo_path: Path) -> List[Path]:
     except Exception as e:
         print(f"Warning: Could not list directory contents: {e}")
     
-    # Find all .ttl files
-    ttl_files_found = list(repo_path.rglob("*.ttl"))
+    # Find all .ttl files under the search base
+    ttl_files_found = list(search_base.rglob("*.ttl"))
     print(f"Found {len(ttl_files_found)} total .ttl files")
     
     for ttl_file in ttl_files_found:
@@ -145,7 +148,7 @@ def find_ontology_files(repo_path: Path) -> List[Path]:
     if ontology_files:
         print("Ontology files:")
         for f in ontology_files[:10]:  # Show first 10
-            print(f"  - {f.relative_to(repo_path)}")
+            print(f"  - {f.relative_to(search_base)}")
         if len(ontology_files) > 10:
             print(f"  ... and {len(ontology_files) - 10} more")
     
@@ -332,7 +335,7 @@ def generate_documentation(merged_ontology: Path, output_dir: Path) -> None:
 def main():
     """Main documentation generation workflow."""
     print("=" * 60)
-    print("ICAC Ontology Documentation Generator")
+    print("CAC Ontology Documentation Generator")
     print("=" * 60)
     
     # Change to repository root
