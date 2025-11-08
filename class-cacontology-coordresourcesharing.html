@@ -9027,15 +9027,15 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
             </div>
             <div class="panel-body">
               
-                <li><a href="shape-cacontology-coorddataqualityshape.html" title="https://cacontology.projectvic.org/investigation-coordination#DataQualityShape">cacontology-coord:DataQualityShape</a></li>
-              
-                <li><a href="shape-cacontology-coordresourcesharingparticipationshape.html" title="https://cacontology.projectvic.org/investigation-coordination#ResourceSharingParticipationShape">cacontology-coord:ResourceSharingParticipationShape</a></li>
+                <li><a href="shape-cacontology-coordresourcesharingtemporalshape.html" title="https://cacontology.projectvic.org/investigation-coordination#ResourceSharingTemporalShape">cacontology-coord:ResourceSharingTemporalShape</a></li>
               
                 <li><a href="shape-cacontology-coordresourcesharingdurationshape.html" title="https://cacontology.projectvic.org/investigation-coordination#ResourceSharingDurationShape">cacontology-coord:ResourceSharingDurationShape</a></li>
               
-                <li><a href="shape-cacontology-coordresourcesharingtemporalshape.html" title="https://cacontology.projectvic.org/investigation-coordination#ResourceSharingTemporalShape">cacontology-coord:ResourceSharingTemporalShape</a></li>
-              
                 <li><a href="shape-cacontology-coordresourcesharingshape.html" title="https://cacontology.projectvic.org/investigation-coordination#ResourceSharingShape">cacontology-coord:ResourceSharingShape</a></li>
+              
+                <li><a href="shape-cacontology-coordresourcesharingparticipationshape.html" title="https://cacontology.projectvic.org/investigation-coordination#ResourceSharingParticipationShape">cacontology-coord:ResourceSharingParticipationShape</a></li>
+              
+                <li><a href="shape-cacontology-coorddataqualityshape.html" title="https://cacontology.projectvic.org/investigation-coordination#DataQualityShape">cacontology-coord:DataQualityShape</a></li>
               
             </div>
           </div>
@@ -10285,11 +10285,11 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     </td>
 
                     <td>    
-                      
+                      owl:DatatypeProperty
                     </td>
 
                     <td>     
-                      
+                      Availability level of shared resources (immediate, short_notice, scheduled, on_request, limited, emergency_only).
                       <br>
                       
                     </td>
@@ -10315,7 +10315,12 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     <td>    
                       
                         
-                          <i>owl:Thing</i>
+                          
+                            
+                              <i>xsd:string</i>
+                             
+                            <br>
+                                                               
                         
                       
                     </td>
@@ -10332,11 +10337,11 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     </td>
 
                     <td>    
-                      
+                      owl:DatatypeProperty
                     </td>
 
                     <td>     
-                      
+                      Whether cost sharing is involved in resource sharing.
                       <br>
                       
                     </td>
@@ -10362,7 +10367,12 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     <td>    
                       
                         
-                          <i>owl:Thing</i>
+                          
+                            
+                              <i>xsd:boolean</i>
+                             
+                            <br>
+                                                               
                         
                       
                     </td>
@@ -10567,11 +10577,11 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     </td>
 
                     <td>    
-                      
+                      owl:DatatypeProperty
                     </td>
 
                     <td>     
-                      
+                      Whether reimbursement is required for resource sharing.
                       <br>
                       
                     </td>
@@ -10597,7 +10607,12 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     <td>    
                       
                         
-                          <i>owl:Thing</i>
+                          
+                            
+                              <i>xsd:boolean</i>
+                             
+                            <br>
+                                                               
                         
                       
                     </td>
@@ -10614,11 +10629,11 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     </td>
 
                     <td>    
-                      
+                      owl:DatatypeProperty
                     </td>
 
                     <td>     
-                      
+                      Type of resource being shared (personnel, equipment, facilities, technology, expertise, funding, vehicles, specialized_units).
                       <br>
                       
                     </td>
@@ -10644,7 +10659,12 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     <td>    
                       
                         
-                          <i>owl:Thing</i>
+                          
+                            
+                              <i>xsd:string</i>
+                             
+                            <br>
+                                                               
                         
                       
                     </td>
@@ -10661,11 +10681,11 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     </td>
 
                     <td>    
-                      
+                      owl:DatatypeProperty
                     </td>
 
                     <td>     
-                      
+                      Duration of resource sharing in hours.
                       <br>
                       
                     </td>
@@ -10691,7 +10711,12 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     <td>    
                       
                         
-                          <i>owl:Thing</i>
+                          
+                            
+                              <i>xsd:decimal</i>
+                             
+                            <br>
+                                                               
                         
                       
                     </td>
@@ -11037,7 +11062,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
   <footer class="footer">
     <div class="container">
     
-      <p class="text-muted">Documentation automatically generated on Fri, 07 Nov 2025 13:39:55 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
+      <p class="text-muted">Documentation automatically generated on Sat, 08 Nov 2025 03:08:53 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
 
     
     </div>
