@@ -8,6 +8,7 @@ and generates HTML documentation matching the CASE Ontology documentation style.
 """
 
 import os
+import re
 import sys
 import subprocess
 import shutil
@@ -438,12 +439,174 @@ def generate_documentation(merged_ontology: Path, output_dir: Path) -> None:
     print(f"Documentation generated in {output_dir}")
 
 
+def analyze_file_sizes(output_dir: Path) -> None:
+    """Analyze file sizes and report potential issues."""
+    print("Analyzing file sizes...")
+    
+    if not output_dir.exists():
+        print(f"Warning: Output directory {output_dir} does not exist")
+        return
+    
+    # Find all files and their sizes
+    file_sizes = []
+    total_size = 0
+    
+    for file_path in output_dir.rglob("*"):
+        if file_path.is_file():
+            size = file_path.stat().st_size
+            file_sizes.append((file_path, size))
+            total_size += size
+    
+    # Sort by size (largest first)
+    file_sizes.sort(key=lambda x: x[1], reverse=True)
+    
+    # Report statistics
+    total_mb = total_size / (1024 * 1024)
+    print(f"Total documentation size: {total_mb:.2f} MB ({total_size:,} bytes)")
+    print(f"Total files: {len(file_sizes)}")
+    
+    # Report largest files
+    print("\nTop 10 largest files:")
+    for i, (file_path, size) in enumerate(file_sizes[:10], 1):
+        size_mb = size / (1024 * 1024)
+        rel_path = file_path.relative_to(output_dir)
+        print(f"  {i:2d}. {size_mb:8.2f} MB  {rel_path}")
+    
+    # Check for problematic large files
+    large_files = [(fp, s) for fp, s in file_sizes if s > 5 * 1024 * 1024]  # > 5MB
+    if large_files:
+        print(f"\n⚠ WARNING: Found {len(large_files)} file(s) larger than 5MB:")
+        for file_path, size in large_files:
+            size_mb = size / (1024 * 1024)
+            rel_path = file_path.relative_to(output_dir)
+            print(f"  - {size_mb:.2f} MB: {rel_path}")
+        print("  These files may cause browser timeout or memory issues.")
+    
+    # Check for files exceeding 1MB (GitHub Pages recommendation)
+    medium_files = [(fp, s) for fp, s in file_sizes if s > 1 * 1024 * 1024 and s <= 5 * 1024 * 1024]
+    if medium_files:
+        print(f"\n⚠ Note: Found {len(medium_files)} file(s) between 1MB and 5MB:")
+        print("  These files exceed GitHub Pages recommended limit of 1MB per file.")
+
+
+def optimize_html_files(output_dir: Path) -> None:
+    """Minify HTML files to reduce size and improve load times."""
+    print("Optimizing HTML files...")
+    
+    if not output_dir.exists():
+        print(f"Warning: Output directory {output_dir} does not exist")
+        return
+    
+    html_files = list(output_dir.rglob("*.html"))
+    if not html_files:
+        print("No HTML files found to optimize")
+        return
+    
+    print(f"Found {len(html_files)} HTML file(s) to optimize")
+    
+    total_saved = 0
+    optimized_count = 0
+    
+    for html_file in html_files:
+        try:
+            # Read original file
+            original_content = html_file.read_text(encoding="utf-8")
+            original_size = len(original_content.encode("utf-8"))
+            
+            # Basic minification (remove unnecessary whitespace, but preserve structure)
+            # This is a conservative approach that won't break HTML
+            optimized_content = original_content
+            
+            # Remove HTML comments (but preserve conditional comments for IE)
+            # Remove standard HTML comments, but be careful with script/style content
+            def remove_comments(match):
+                content = match.group(0)
+                # Don't remove comments inside script or style tags
+                if '<script' in content.lower() or '<style' in content.lower():
+                    return content
+                # Don't remove conditional comments
+                if content.strip().startswith('<!--[if') or content.strip().startswith('<![endif]'):
+                    return content
+                return ''
+            
+            # Remove comments (simple approach - remove <!-- ... --> but preserve structure)
+            # We'll be conservative and only remove standalone comment lines
+            lines = optimized_content.split('\n')
+            optimized_lines = []
+            in_script = False
+            in_style = False
+            
+            for line in lines:
+                # Track script/style tags
+                if '<script' in line.lower() and '</script>' not in line.lower():
+                    in_script = True
+                if '</script>' in line.lower():
+                    in_script = False
+                if '<style' in line.lower() and '</style>' not in line.lower():
+                    in_style = True
+                if '</style>' in line.lower():
+                    in_style = False
+                
+                # Skip empty lines and lines with only whitespace (but preserve structure)
+                stripped = line.strip()
+                if not stripped:
+                    # Keep minimal whitespace for readability, but reduce multiple blank lines
+                    if optimized_lines and optimized_lines[-1].strip():
+                        continue  # Skip this blank line if previous wasn't blank
+                    else:
+                        optimized_lines.append('')
+                    continue
+                
+                # Skip HTML comments (but not in script/style)
+                if stripped.startswith('<!--') and stripped.endswith('-->'):
+                    # Skip conditional comments
+                    if not (stripped.startswith('<!--[if') or stripped.startswith('<![endif]')):
+                        if not in_script and not in_style:
+                            continue
+                
+                optimized_lines.append(line)
+            
+            optimized_content = '\n'.join(optimized_lines)
+            
+            # Remove trailing whitespace from lines
+            optimized_content = '\n'.join(line.rstrip() for line in optimized_content.split('\n'))
+            
+            # Remove multiple consecutive blank lines (keep max 2)
+            import re
+            optimized_content = re.sub(r'\n{3,}', '\n\n', optimized_content)
+            
+            optimized_size = len(optimized_content.encode("utf-8"))
+            saved = original_size - optimized_size
+            
+            if saved > 0:
+                html_file.write_text(optimized_content, encoding="utf-8")
+                total_saved += saved
+                optimized_count += 1
+                rel_path = html_file.relative_to(output_dir)
+                saved_kb = saved / 1024
+                if saved_kb > 10:  # Only report if significant savings
+                    print(f"  Optimized {rel_path}: saved {saved_kb:.1f} KB")
+        
+        except Exception as e:
+            print(f"  Warning: Failed to optimize {html_file.relative_to(output_dir)}: {e}")
+            continue
+    
+    if optimized_count > 0:
+        total_saved_mb = total_saved / (1024 * 1024)
+        total_saved_kb = total_saved / 1024
+        print(f"\nOptimization complete:")
+        print(f"  - Files optimized: {optimized_count}/{len(html_files)}")
+        print(f"  - Total space saved: {total_saved_kb:.1f} KB ({total_saved_mb:.2f} MB)")
+    else:
+        print("No significant optimization opportunities found")
+
+
 def create_index_html(output_dir: Path) -> None:
     """Create an index.html file that redirects to the main documentation entry point.
     
     GitHub Pages requires an index.html at the root to serve the homepage.
     This function detects the primary entry point (preferring entities.html)
-    and creates a redirect page.
+    and creates a redirect page with improved error handling and loading indicators.
     """
     print("Creating index.html...")
     
@@ -463,12 +626,14 @@ def create_index_html(output_dir: Path) -> None:
     
     # Determine the target file
     target_file = None
+    target_file_size = 0
     
     # First, try preferred files
     for preferred in preferred_files:
         candidate = output_dir / preferred
         if candidate.exists() and candidate.is_file() and candidate.suffix == ".html":
             target_file = preferred
+            target_file_size = candidate.stat().st_size
             break
     
     # If no preferred file found, use the first HTML file (excluding index.html if it exists)
@@ -476,26 +641,149 @@ def create_index_html(output_dir: Path) -> None:
         for html_file in html_files:
             if html_file.name != "index.html":
                 target_file = html_file.name
+                target_file_size = html_file.stat().st_size
                 break
     
     if target_file is None:
         print("Warning: Could not determine target file for index.html redirect")
         return
     
-    # Create index.html with meta refresh redirect
+    # Verify target file is accessible and check its size
+    target_path = output_dir / target_file
+    if not target_path.exists():
+        print(f"Warning: Target file {target_file} does not exist")
+        return
+    
+    target_file_size_mb = target_file_size / (1024 * 1024)
+    if target_file_size_mb > 5:
+        print(f"Warning: Target file {target_file} is {target_file_size_mb:.2f} MB - may cause loading issues")
+    
+    # Create index.html with improved redirect, loading indicator, and error handling
     index_content = f"""<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="refresh" content="0; url={target_file}">
-    <title>CAC Ontology Documentation</title>
+    <title>CAC Ontology Documentation - Loading...</title>
+    <style>
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }}
+        .container {{
+            text-align: center;
+            max-width: 600px;
+        }}
+        .spinner {{
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }}
+        @keyframes spin {{
+            0% {{ transform: rotate(0deg); }}
+            100% {{ transform: rotate(360deg); }}
+        }}
+        .message {{
+            margin: 20px 0;
+            font-size: 16px;
+            line-height: 1.6;
+        }}
+        .link {{
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+        }}
+        .link:hover {{
+            background: #2980b9;
+        }}
+        .error {{
+            color: #e74c3c;
+            margin-top: 20px;
+            padding: 15px;
+            background: #ffeaea;
+            border-radius: 4px;
+            display: none;
+        }}
+    </style>
     <script>
-        // Immediate redirect for better compatibility
-        window.location.replace("{target_file}");
+        (function() {{
+            var targetUrl = "{target_file}";
+            var redirectAttempted = false;
+            var maxWaitTime = 30000; // 30 seconds
+            var startTime = Date.now();
+            
+            function attemptRedirect() {{
+                if (redirectAttempted) return;
+                redirectAttempted = true;
+                
+                try {{
+                    // Try immediate redirect
+                    window.location.replace(targetUrl);
+                }} catch (e) {{
+                    console.error("Redirect error:", e);
+                    showError("Redirect failed. Please use the link below.");
+                }}
+            }}
+            
+            function showError(message) {{
+                var errorDiv = document.getElementById("error");
+                if (errorDiv) {{
+                    errorDiv.textContent = message;
+                    errorDiv.style.display = "block";
+                }}
+            }}
+            
+            function checkTimeout() {{
+                var elapsed = Date.now() - startTime;
+                if (elapsed > maxWaitTime) {{
+                    showError("Page is taking longer than expected to load. The documentation file may be very large. Please use the link below or wait a bit longer.");
+                }}
+            }}
+            
+            // Attempt redirect immediately
+            attemptRedirect();
+            
+            // Check for timeout
+            setTimeout(checkTimeout, maxWaitTime);
+            
+            // Fallback: try again after a short delay
+            setTimeout(function() {{
+                if (window.location.href.indexOf(targetUrl) === -1) {{
+                    attemptRedirect();
+                }}
+            }}, 1000);
+        }})();
     </script>
 </head>
 <body>
-    <p>If you are not redirected automatically, <a href="{target_file}">click here</a>.</p>
+    <div class="container">
+        <div class="spinner"></div>
+        <div class="message">
+            <h1>Loading CAC Ontology Documentation</h1>
+            <p>Redirecting to the documentation...</p>
+            <p style="font-size: 14px; color: #666;">If this page does not redirect automatically, please use the link below.</p>
+        </div>
+        <a href="{target_file}" class="link">Go to Documentation</a>
+        <div id="error" class="error"></div>
+    </div>
 </body>
 </html>
 """
@@ -504,6 +792,8 @@ def create_index_html(output_dir: Path) -> None:
     try:
         index_path.write_text(index_content, encoding="utf-8")
         print(f"Created index.html redirecting to {target_file}")
+        if target_file_size_mb > 1:
+            print(f"  Note: Target file size is {target_file_size_mb:.2f} MB")
     except Exception as e:
         print(f"Error creating index.html: {e}")
 
@@ -536,6 +826,12 @@ def main():
     # Generate documentation
     output_dir = REPO_ROOT / OUTPUT_DIR
     generate_documentation(temp_ontology, output_dir)
+    
+    # Optimize HTML files to reduce size
+    optimize_html_files(output_dir)
+    
+    # Analyze file sizes and report potential issues
+    analyze_file_sizes(output_dir)
     
     # Create index.html for GitHub Pages
     create_index_html(output_dir)
