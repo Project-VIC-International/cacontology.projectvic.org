@@ -61,7 +61,62 @@ jobs:
     
     - name: Verify generated docs
       run: |
-        test -d docs && ls -lah docs || (echo "docs/ not generated"; exit 1)
+        echo "Verifying generated documentation..."
+        
+        # Check if docs directory exists
+        if [ ! -d "docs" ]; then
+          echo "ERROR: docs/ directory does not exist!"
+          echo "The documentation generation step may have failed."
+          echo "Please check the 'Generate documentation' step output for errors."
+          exit 1
+        fi
+        
+        # Check if docs directory is empty
+        if [ -z "$(ls -A docs)" ]; then
+          echo "ERROR: docs/ directory exists but is empty!"
+          echo "The documentation generation step did not produce any files."
+          echo "Please check the 'Generate documentation' step output for errors."
+          exit 1
+        fi
+        
+        # Count files and show statistics
+        total_files=$(find docs -type f | wc -l)
+        html_files=$(find docs -type f -name "*.html" | wc -l)
+        echo "Documentation directory contains:"
+        echo "  - Total files: $total_files"
+        echo "  - HTML files: $html_files"
+        
+        # Verify at least one HTML file exists (required for GitHub Pages)
+        if [ "$html_files" -eq 0 ]; then
+          echo "ERROR: No HTML files found in docs/ directory!"
+          echo "GitHub Pages requires at least one HTML file to serve the site."
+          echo "The documentation generation may have failed or produced an unexpected format."
+          echo ""
+          echo "Files found in docs/:"
+          find docs -type f | head -20
+          exit 1
+        fi
+        
+        # Show directory size
+        dir_size=$(du -sh docs | cut -f1)
+        echo "  - Directory size: $dir_size"
+        
+        # List first few files for debugging
+        echo ""
+        echo "Sample files in docs/ (first 10):"
+        find docs -type f | head -10 | sed 's/^/  - /'
+        
+        # Check for index.html (preferred but not required)
+        if [ -f "docs/index.html" ]; then
+          echo ""
+          echo "✓ index.html found (good for GitHub Pages)"
+        else
+          echo ""
+          echo "⚠ index.html not found (may need redirect or alternative entry point)"
+        fi
+        
+        echo ""
+        echo "✓ Documentation verification passed!"
     
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
