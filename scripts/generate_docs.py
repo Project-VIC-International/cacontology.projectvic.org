@@ -489,8 +489,90 @@ def analyze_file_sizes(output_dir: Path) -> None:
         print("  These files exceed GitHub Pages recommended limit of 1MB per file.")
 
 
-def optimize_html_files(output_dir: Path) -> None:
-    """Minify HTML files to reduce size and improve load times."""
+def extract_common_resources(output_dir: Path) -> tuple[Optional[Path], Optional[Path], Optional[Path]]:
+    """Extract common CSS and JavaScript from HTML files into shared files.
+    
+    Returns paths to the extracted common CSS and JS files.
+    """
+    print("Extracting common resources...")
+    
+    if not output_dir.exists():
+        print(f"Warning: Output directory {output_dir} does not exist")
+        return None, None, None
+    
+    # Find a sample HTML file to extract common resources from
+    html_files = list(output_dir.rglob("*.html"))
+    if not html_files:
+        print("No HTML files found to extract resources from")
+        return None, None, None
+    
+    sample_file = html_files[0]
+    print(f"Using {sample_file.name} as template for common resources")
+    
+    try:
+        content = sample_file.read_text(encoding="utf-8")
+        
+        # Extract inline CSS (between <style type="text/css"> and </style>)
+        css_match = re.search(r'<style[^>]*type=["\']text/css["\'][^>]*>(.*?)</style>', content, re.DOTALL)
+        common_css = ""
+        if css_match:
+            common_css = css_match.group(1).strip()
+            print(f"  Extracted {len(common_css)} characters of inline CSS")
+        
+        # Extract common JavaScript (scripts before closing body tag, excluding page-specific ones)
+        # We'll extract the menu toggle and search scripts
+        js_parts = []
+        
+        # Menu toggle script
+        menu_script_match = re.search(
+            r'<script[^>]*>\s*\$\(["\']#menu-toggle["\']\)\.click\(function\(e\)[^<]*</script>',
+            content,
+            re.DOTALL
+        )
+        if menu_script_match:
+            js_parts.append(menu_script_match.group(0))
+        
+        # Search input script
+        search_script_match = re.search(
+            r'<script[^>]*>\s*\$\(["\']#search-input-sidebar["\']\)\.keyup\(function[^<]*</script>',
+            content,
+            re.DOTALL
+        )
+        if search_script_match:
+            js_parts.append(search_script_match.group(0))
+        
+        # Create shared resources directory
+        shared_dir = output_dir / "static" / "shared"
+        shared_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Write common CSS file
+        common_css_file = shared_dir / "common.css"
+        if common_css:
+            common_css_file.write_text(common_css, encoding="utf-8")
+            print(f"  Created {common_css_file.relative_to(output_dir)}")
+        
+        # Write common JS file
+        common_js_file = shared_dir / "common.js"
+        if js_parts:
+            common_js = "\n\n".join(js_parts)
+            common_js_file.write_text(common_js, encoding="utf-8")
+            print(f"  Created {common_js_file.relative_to(output_dir)}")
+        
+        return common_css_file, common_js_file, shared_dir
+        
+    except Exception as e:
+        print(f"Warning: Failed to extract common resources: {e}")
+        return None, None, None
+
+
+def optimize_html_files(output_dir: Path, common_css_file: Optional[Path] = None, common_js_file: Optional[Path] = None) -> None:
+    """Minify HTML files and replace inline CSS/JS with shared files to reduce size.
+    
+    Args:
+        output_dir: Directory containing HTML files
+        common_css_file: Path to shared CSS file (relative to output_dir)
+        common_js_file: Path to shared JS file (relative to output_dir)
+    """
     print("Optimizing HTML files...")
     
     if not output_dir.exists():
@@ -504,8 +586,21 @@ def optimize_html_files(output_dir: Path) -> None:
     
     print(f"Found {len(html_files)} HTML file(s) to optimize")
     
+    # Calculate relative paths for shared resources
+    css_link = None
+    js_link = None
+    if common_css_file and common_css_file.exists():
+        css_link = common_css_file.relative_to(output_dir).as_posix()
+        print(f"  Will replace inline CSS with: {css_link}")
+    if common_js_file and common_js_file.exists():
+        js_link = common_js_file.relative_to(output_dir).as_posix()
+        print(f"  Will replace inline JS with: {js_link}")
+    
     total_saved = 0
     optimized_count = 0
+    css_replaced_count = 0
+    js_replaced_count = 0
+    lazy_loading_added = 0
     
     for html_file in html_files:
         try:
@@ -513,9 +608,127 @@ def optimize_html_files(output_dir: Path) -> None:
             original_content = html_file.read_text(encoding="utf-8")
             original_size = len(original_content.encode("utf-8"))
             
+            optimized_content = original_content
+            
+            # Calculate relative path from this HTML file to shared resources
+            html_file_rel = html_file.relative_to(output_dir)
+            html_file_depth = len(html_file_rel.parent.parts) if html_file_rel.parent != Path('.') else 0
+            
+            # Calculate correct relative path to shared resources
+            css_link_relative = None
+            js_link_relative = None
+            if css_link and common_css_file:
+                # Calculate relative path from html_file to css_file
+                css_file_rel = common_css_file.relative_to(output_dir)
+                # Go up from html_file's directory to output_dir, then to css_file
+                if html_file_depth > 0:
+                    up_path = '../' * html_file_depth
+                    css_link_relative = up_path + str(css_file_rel).replace('\\', '/')
+                else:
+                    css_link_relative = str(css_file_rel).replace('\\', '/')
+            
+            if js_link and common_js_file:
+                # Calculate relative path from html_file to js_file
+                js_file_rel = common_js_file.relative_to(output_dir)
+                # Go up from html_file's directory to output_dir, then to js_file
+                if html_file_depth > 0:
+                    up_path = '../' * html_file_depth
+                    js_link_relative = up_path + str(js_file_rel).replace('\\', '/')
+                else:
+                    js_link_relative = str(js_file_rel).replace('\\', '/')
+            
+            # Replace inline CSS with link to shared CSS file
+            if css_link_relative:
+                # Find and replace inline style block
+                css_pattern = r'<style[^>]*type=["\']text/css["\'][^>]*>.*?</style>'
+                css_replacement = f'<link rel="stylesheet" href="{css_link_relative}">'
+                if re.search(css_pattern, optimized_content, re.DOTALL):
+                    optimized_content = re.sub(css_pattern, css_replacement, optimized_content, flags=re.DOTALL)
+                    css_replaced_count += 1
+            
+            # Replace common JavaScript with link to shared JS file
+            if js_link_relative:
+                # Replace menu toggle script
+                menu_script_pattern = r'<script[^>]*>\s*\$\(["\']#menu-toggle["\']\)\.click\(function\(e\)[^<]*</script>'
+                if re.search(menu_script_pattern, optimized_content, re.DOTALL):
+                    optimized_content = re.sub(menu_script_pattern, '', optimized_content, flags=re.DOTALL)
+                    js_replaced_count += 1
+                
+                # Replace search input script
+                search_script_pattern = r'<script[^>]*>\s*\$\(["\']#search-input-sidebar["\']\)\.keyup\(function[^<]*</script>'
+                if re.search(search_script_pattern, optimized_content, re.DOTALL):
+                    optimized_content = re.sub(search_script_pattern, '', optimized_content, flags=re.DOTALL)
+                
+                # Add shared JS file before closing body tag (only once per file)
+                if js_link_relative and f'src="{js_link_relative}"' not in optimized_content:
+                    # Find the last </script> before </body>
+                    body_end_match = re.search(r'(</script>)(\s*</body>)', optimized_content, re.DOTALL)
+                    if body_end_match:
+                        optimized_content = optimized_content.replace(
+                            body_end_match.group(0),
+                            f'{body_end_match.group(1)}<script src="{js_link_relative}" defer></script>{body_end_match.group(2)}'
+                        )
+                    elif '</body>' in optimized_content:
+                        # Fallback: insert before </body>
+                        optimized_content = optimized_content.replace(
+                            '</body>',
+                            f'<script src="{js_link_relative}" defer></script>\n</body>'
+                        )
+            
+            # Add lazy loading to images
+            # Replace <img> tags without loading attribute to add loading="lazy"
+            def add_lazy_loading(match):
+                attrs = match.group(1)
+                # Don't add if already has loading attribute
+                if 'loading=' not in attrs and 'loading' not in attrs:
+                    # Add loading="lazy" before the closing >
+                    return f'<img{attrs} loading="lazy">'
+                return match.group(0)
+            
+            # Count images before adding lazy loading
+            img_tags_before = re.findall(r'<img[^>]*>', optimized_content)
+            
+            optimized_content = re.sub(r'<img([^>]*?)>', add_lazy_loading, optimized_content)
+            
+            # Count how many got lazy loading added (compare before/after)
+            img_tags_after = re.findall(r'<img[^>]*loading=["\']lazy["\'][^>]*>', optimized_content)
+            lazy_loading_added += len(img_tags_after)
+            
+            # Add defer to non-critical scripts (only if not already present)
+            # Defer jQuery and Bootstrap (non-critical for initial render)
+            def add_defer_if_missing(match):
+                attrs = match.group(1)
+                if 'defer' not in attrs and 'async' not in attrs:
+                    return f'<script{attrs} defer>'
+                return match.group(0)
+            
+            # Apply defer to jQuery
+            optimized_content = re.sub(
+                r'<script([^>]*src=["\']static/libs/jquery[^"\']*["\'][^>]*)>',
+                add_defer_if_missing,
+                optimized_content
+            )
+            # Apply defer to Bootstrap
+            optimized_content = re.sub(
+                r'<script([^>]*src=["\']static/libs/bootstrap[^"\']*["\'][^>]*)>',
+                add_defer_if_missing,
+                optimized_content
+            )
+            # Apply defer to Chart.js
+            optimized_content = re.sub(
+                r'<script([^>]*src=["\']static/libs/chartjs[^"\']*["\'][^>]*)>',
+                add_defer_if_missing,
+                optimized_content
+            )
+            # Apply defer to IE viewport bug workaround (non-critical)
+            optimized_content = re.sub(
+                r'<script([^>]*src=["\']static/libs/bootstrap-3_3_7-dist/js/ie10-viewport-bug-workaround\.js["\'][^>]*)>',
+                add_defer_if_missing,
+                optimized_content
+            )
+            
             # Basic minification (remove unnecessary whitespace, but preserve structure)
             # This is a conservative approach that won't break HTML
-            optimized_content = original_content
             
             # Remove HTML comments (but preserve conditional comments for IE)
             # Remove standard HTML comments, but be careful with script/style content
@@ -591,12 +804,34 @@ def optimize_html_files(output_dir: Path) -> None:
             print(f"  Warning: Failed to optimize {html_file.relative_to(output_dir)}: {e}")
             continue
     
-    if optimized_count > 0:
+    if optimized_count > 0 or css_replaced_count > 0 or js_replaced_count > 0 or lazy_loading_added > 0:
         total_saved_mb = total_saved / (1024 * 1024)
         total_saved_kb = total_saved / 1024
         print(f"\nOptimization complete:")
         print(f"  - Files optimized: {optimized_count}/{len(html_files)}")
+        if css_replaced_count > 0:
+            print(f"  - Inline CSS replaced with shared file: {css_replaced_count} files")
+        if js_replaced_count > 0:
+            print(f"  - Inline JS replaced with shared file: {js_replaced_count} files")
+        if lazy_loading_added > 0:
+            print(f"  - Lazy loading added to images: {lazy_loading_added} images")
+            print(f"  - Scripts deferred: jQuery, Bootstrap, Chart.js (non-critical scripts)")
         print(f"  - Total space saved: {total_saved_kb:.1f} KB ({total_saved_mb:.2f} MB)")
+        
+        # Estimate additional savings from shared resources
+        if css_link and css_replaced_count > 0:
+            # Each file had ~164 lines of CSS, estimate ~8KB per file saved
+            estimated_css_savings = css_replaced_count * 8 * 1024  # 8KB per file
+            print(f"  - Estimated CSS deduplication savings: {estimated_css_savings / (1024*1024):.1f} MB")
+        if js_link and js_replaced_count > 0:
+            # Each file had ~200 bytes of JS, estimate savings
+            estimated_js_savings = js_replaced_count * 200
+            print(f"  - Estimated JS deduplication savings: {estimated_js_savings / (1024*1024):.1f} MB")
+        
+        print(f"\n  Performance improvements:")
+        print(f"  - Images load only when visible (lazy loading)")
+        print(f"  - Non-critical scripts deferred (faster initial page load)")
+        print(f"  - Shared CSS/JS cached by browser (reduced bandwidth)")
     else:
         print("No significant optimization opportunities found")
 
@@ -615,33 +850,38 @@ def create_index_html(output_dir: Path) -> None:
         return
     
     # Priority order for main entry points based on README structure
-    preferred_files = ["entities.html", "classes.html", "index.html"]
+    # NOTE: Do NOT include "index.html" here as it would create a redirect loop
+    preferred_files = ["entities-az.html", "entities.html", "classes.html", "statistics.html"]
     
-    # Find all HTML files in the output directory
-    html_files = [f for f in output_dir.iterdir() if f.is_file() and f.suffix == ".html"]
+    # Find all HTML files in the output directory, excluding index.html
+    html_files = [f for f in output_dir.iterdir() if f.is_file() and f.suffix == ".html" and f.name != "index.html"]
     
     if not html_files:
-        print("Warning: No HTML files found in output directory")
+        print("Warning: No HTML files found in output directory (excluding index.html)")
         return
     
     # Determine the target file
     target_file = None
     target_file_size = 0
     
-    # First, try preferred files
+    # First, try preferred files (excluding index.html)
     for preferred in preferred_files:
         candidate = output_dir / preferred
-        if candidate.exists() and candidate.is_file() and candidate.suffix == ".html":
+        if candidate.exists() and candidate.is_file() and candidate.suffix == ".html" and candidate.name != "index.html":
             target_file = preferred
             target_file_size = candidate.stat().st_size
+            print(f"Found preferred entry point: {target_file}")
             break
     
-    # If no preferred file found, use the first HTML file (excluding index.html if it exists)
+    # If no preferred file found, use the first HTML file (excluding index.html)
     if target_file is None:
-        for html_file in html_files:
+        # Sort by name for consistency
+        html_files_sorted = sorted(html_files, key=lambda x: x.name)
+        for html_file in html_files_sorted:
             if html_file.name != "index.html":
                 target_file = html_file.name
                 target_file_size = html_file.stat().st_size
+                print(f"Using first available HTML file as entry point: {target_file}")
                 break
     
     if target_file is None:
@@ -827,11 +1067,35 @@ def main():
     output_dir = REPO_ROOT / OUTPUT_DIR
     generate_documentation(temp_ontology, output_dir)
     
-    # Optimize HTML files to reduce size
-    optimize_html_files(output_dir)
+    # Extract common CSS and JavaScript into shared files
+    common_css_file, common_js_file, shared_dir = extract_common_resources(output_dir)
+    
+    # Optimize HTML files to reduce size (and replace inline resources with shared files)
+    optimize_html_files(output_dir, common_css_file, common_js_file)
     
     # Analyze file sizes and report potential issues
     analyze_file_sizes(output_dir)
+    
+    # Check total size and warn if too large for GitHub Pages
+    total_size = sum(f.stat().st_size for f in output_dir.rglob("*") if f.is_file())
+    total_size_gb = total_size / (1024 * 1024 * 1024)
+    
+    if total_size_gb > 1.0:
+        print("")
+        print("=" * 60)
+        print("⚠ CRITICAL WARNING: Documentation size exceeds GitHub Pages limits!")
+        print("=" * 60)
+        print(f"Total size: {total_size_gb:.2f} GB")
+        print("GitHub Pages has a soft limit of 1GB per repository.")
+        print("")
+        print("The site may not deploy correctly or may experience severe loading issues.")
+        print("Consider:")
+        print("  - Splitting documentation into multiple repositories")
+        print("  - Using a different hosting solution for large documentation")
+        print("  - Reducing the scope of generated documentation")
+        print("=" * 60)
+        print("")
+        # Don't fail the build, but make it very clear this is a problem
     
     # Create index.html for GitHub Pages
     create_index_html(output_dir)
