@@ -849,9 +849,19 @@ def create_index_html(output_dir: Path) -> None:
         print(f"Warning: Output directory {output_dir} does not exist")
         return
     
-    # Priority order for main entry points based on README structure
+    # Priority order for main entry points based on actual Ontospy output
     # NOTE: Do NOT include "index.html" here as it would create a redirect loop
-    preferred_files = ["entities-az.html", "entities.html", "classes.html", "statistics.html"]
+    # Based on actual files: entities-az.html, entities-tree-classes.html, etc.
+    preferred_files = [
+        "entities-az.html",           # Main A-Z listing (most comprehensive)
+        "entities-tree-classes.html", # Class hierarchy
+        "entities-tree-properties.html", # Properties hierarchy
+        "entities-tree-concepts.html", # Concepts hierarchy
+        "entities-tree-shapes.html",  # Shapes hierarchy
+        "statistics.html",            # Statistics page
+        "classes.html",               # Fallback: simple classes list
+        "entities.html"               # Fallback: simple entities list
+    ]
     
     # Find all HTML files in the output directory, excluding index.html
     html_files = [f for f in output_dir.iterdir() if f.is_file() and f.suffix == ".html" and f.name != "index.html"]
@@ -885,13 +895,18 @@ def create_index_html(output_dir: Path) -> None:
                 break
     
     if target_file is None:
-        print("Warning: Could not determine target file for index.html redirect")
+        print("ERROR: Could not determine target file for index.html redirect")
+        print(f"Available HTML files in output directory:")
+        for html_file in sorted(html_files, key=lambda x: x.name)[:20]:  # Show first 20
+            print(f"  - {html_file.name}")
+        if len(html_files) > 20:
+            print(f"  ... and {len(html_files) - 20} more files")
         return
     
     # Verify target file is accessible and check its size
     target_path = output_dir / target_file
     if not target_path.exists():
-        print(f"Warning: Target file {target_file} does not exist")
+        print(f"ERROR: Target file {target_file} does not exist at {target_path}")
         return
     
     target_file_size_mb = target_file_size / (1024 * 1024)
@@ -1030,12 +1045,27 @@ def create_index_html(output_dir: Path) -> None:
     
     index_path = output_dir / "index.html"
     try:
+        # Remove existing index.html if it exists (to avoid conflicts)
+        if index_path.exists():
+            print(f"  Removing existing index.html before creating new one")
+            index_path.unlink()
+        
         index_path.write_text(index_content, encoding="utf-8")
-        print(f"Created index.html redirecting to {target_file}")
-        if target_file_size_mb > 1:
-            print(f"  Note: Target file size is {target_file_size_mb:.2f} MB")
+        print(f"✓ Created index.html redirecting to {target_file}")
+        print(f"  Target file size: {target_file_size_mb:.2f} MB")
+        print(f"  Redirect URL: {target_file}")
+        
+        # Verify the created file
+        if index_path.exists():
+            created_size = index_path.stat().st_size
+            print(f"  Created index.html size: {created_size:,} bytes")
+        else:
+            print(f"  WARNING: index.html was not created successfully!")
+            
     except Exception as e:
-        print(f"Error creating index.html: {e}")
+        print(f"ERROR creating index.html: {e}")
+        import traceback
+        traceback.print_exc()
 
 
 def main():
