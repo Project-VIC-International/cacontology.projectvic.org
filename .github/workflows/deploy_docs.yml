@@ -53,6 +53,115 @@ jobs:
       run: |
         python scripts/generate_docs.py
     
+    - name: Analyze documentation size
+      run: |
+        echo "=========================================="
+        echo "Documentation Size Analysis"
+        echo "=========================================="
+        
+        if [ ! -d "docs" ]; then
+          echo "ERROR: docs/ directory does not exist!"
+          exit 1
+        fi
+        
+        # Calculate total size
+        total_size_bytes=$(du -sb docs | cut -f1)
+        total_size_mb=$(echo "scale=2; $total_size_bytes / 1024 / 1024" | bc)
+        total_size_gb=$(echo "scale=2; $total_size_bytes / 1024 / 1024 / 1024" | bc)
+        
+        echo ""
+        echo "Total Documentation Size:"
+        echo "  - Bytes: $total_size_bytes"
+        echo "  - MB: ${total_size_mb} MB"
+        echo "  - GB: ${total_size_gb} GB"
+        
+        # Check GitHub Pages limits (1GB soft limit)
+        if (( $(echo "$total_size_gb > 1.0" | bc -l) )); then
+          echo ""
+          echo "⚠ WARNING: Total size exceeds GitHub Pages recommended limit of 1GB!"
+          echo "  This may cause deployment or loading issues."
+        fi
+        
+        # Count files by type
+        total_files=$(find docs -type f | wc -l)
+        html_files=$(find docs -type f -name "*.html" | wc -l)
+        css_files=$(find docs -type f -name "*.css" | wc -l)
+        js_files=$(find docs -type f -name "*.js" | wc -l)
+        image_files=$(find docs -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.gif" -o -name "*.svg" \) | wc -l)
+        
+        echo ""
+        echo "File Count by Type:"
+        echo "  - Total files: $total_files"
+        echo "  - HTML files: $html_files"
+        echo "  - CSS files: $css_files"
+        echo "  - JavaScript files: $js_files"
+        echo "  - Image files: $image_files"
+        
+        # Find largest files (top 10)
+        echo ""
+        echo "Top 10 Largest Files:"
+        echo "----------------------------------------"
+        find docs -type f -exec ls -lh {} \; | sort -k5 -hr | head -10 | awk '{printf "  %8s  %s\n", $5, $9}'
+        
+        # Check for files exceeding 1MB (GitHub Pages recommendation)
+        echo ""
+        echo "Files Exceeding 1MB (GitHub Pages recommendation):"
+        large_files=$(find docs -type f -size +1M -exec ls -lh {} \; | sort -k5 -hr)
+        if [ -z "$large_files" ]; then
+          echo "  ✓ No files exceed 1MB"
+        else
+          echo "$large_files" | awk '{printf "  %8s  %s\n", $5, $9}'
+        fi
+        
+        # Check for files exceeding 5MB (browser timeout risk)
+        echo ""
+        echo "Files Exceeding 5MB (Browser Timeout Risk):"
+        very_large_files=$(find docs -type f -size +5M -exec ls -lh {} \; | sort -k5 -hr)
+        if [ -z "$very_large_files" ]; then
+          echo "  ✓ No files exceed 5MB"
+        else
+          echo "$very_large_files" | awk '{printf "  %8s  %s\n", $5, $9}'
+          echo ""
+          echo "⚠ WARNING: Files larger than 5MB may cause browser timeout or memory issues!"
+          echo "  Consider optimizing or splitting these files."
+        fi
+        
+        # Analyze largest HTML files specifically
+        echo ""
+        echo "Largest HTML Files (top 5):"
+        find docs -type f -name "*.html" -exec ls -lh {} \; | sort -k5 -hr | head -5 | awk '{printf "  %8s  %s\n", $5, $9}'
+        
+        # Analyze largest JS and CSS files
+        if [ "$js_files" -gt 0 ]; then
+          echo ""
+          echo "Largest JavaScript Files (top 5):"
+          find docs -type f -name "*.js" -exec ls -lh {} \; | sort -k5 -hr | head -5 | awk '{printf "  %8s  %s\n", $5, $9}'
+        fi
+        
+        if [ "$css_files" -gt 0 ]; then
+          echo ""
+          echo "Largest CSS Files (top 5):"
+          find docs -type f -name "*.css" -exec ls -lh {} \; | sort -k5 -hr | head -5 | awk '{printf "  %8s  %s\n", $5, $9}'
+        fi
+        
+        # Estimate load time (rough calculation: assume 1MB/s average connection)
+        estimated_load_seconds=$(echo "scale=1; $total_size_mb / 1.0" | bc)
+        estimated_load_minutes=$(echo "scale=1; $estimated_load_seconds / 60" | bc)
+        
+        echo ""
+        echo "Estimated Load Time (assuming 1MB/s connection):"
+        echo "  - Seconds: ${estimated_load_seconds}s"
+        echo "  - Minutes: ${estimated_load_minutes} minutes"
+        
+        if (( $(echo "$estimated_load_seconds > 30" | bc -l) )); then
+          echo ""
+          echo "⚠ WARNING: Estimated load time exceeds 30 seconds!"
+          echo "  Users may experience timeout issues. Consider optimizing file sizes."
+        fi
+        
+        echo ""
+        echo "=========================================="
+    
     - name: Upload generated docs artifact (for debugging)
       if: always()
       uses: actions/upload-artifact@v4
@@ -119,6 +228,106 @@ jobs:
         
         echo ""
         echo "✓ Documentation verification passed!"
+    
+    - name: Validate documentation resources
+      run: |
+        echo "=========================================="
+        echo "Resource Validation"
+        echo "=========================================="
+        
+        if [ ! -d "docs" ]; then
+          echo "ERROR: docs/ directory does not exist!"
+          exit 1
+        fi
+        
+        # Check if index.html exists and verify redirect target
+        if [ -f "docs/index.html" ]; then
+          echo ""
+          echo "Checking index.html redirect target..."
+          # Extract redirect URL from index.html
+          redirect_target=$(grep -oP '(?<=url=)[^"]*' docs/index.html | head -1 || grep -oP '(?<=location\.replace\(")[^"]*' docs/index.html | head -1 || echo "")
+          if [ -n "$redirect_target" ]; then
+            if [ -f "docs/$redirect_target" ]; then
+              echo "  ✓ Redirect target '$redirect_target' exists"
+            else
+              echo "  ⚠ WARNING: Redirect target '$redirect_target' not found!"
+            fi
+          fi
+        fi
+        
+        # Check for common resource files referenced in HTML
+        echo ""
+        echo "Checking for referenced resources in HTML files..."
+        
+        # Find all CSS files referenced
+        css_refs=$(find docs -name "*.html" -exec grep -ohP '(?<=href=["'\''])[^"'\'']*\.css' {} \; | sort -u)
+        css_missing=0
+        if [ -n "$css_refs" ]; then
+          echo "  CSS files referenced:"
+          for css_ref in $css_refs; do
+            # Handle relative paths
+            css_file=$(echo "$css_ref" | sed 's|^\./||' | sed 's|^/||')
+            if [ -f "docs/$css_file" ]; then
+              echo "    ✓ $css_ref"
+            else
+              echo "    ✗ MISSING: $css_ref"
+              css_missing=$((css_missing + 1))
+            fi
+          done
+        fi
+        
+        # Find all JS files referenced
+        js_refs=$(find docs -name "*.html" -exec grep -ohP '(?<=src=["'\''])[^"'\'']*\.js' {} \; | sort -u)
+        js_missing=0
+        if [ -n "$js_refs" ]; then
+          echo ""
+          echo "  JavaScript files referenced:"
+          for js_ref in $js_refs; do
+            # Handle relative paths
+            js_file=$(echo "$js_ref" | sed 's|^\./||' | sed 's|^/||')
+            if [ -f "docs/$js_file" ]; then
+              echo "    ✓ $js_ref"
+            else
+              echo "    ✗ MISSING: $js_ref"
+              js_missing=$((js_missing + 1))
+            fi
+          done
+        fi
+        
+        # Check for image references
+        img_refs=$(find docs -name "*.html" -exec grep -ohP '(?<=src=["'\''])[^"'\'']*\.(png|jpg|jpeg|gif|svg)' {} \; | sort -u | head -20)
+        img_missing=0
+        if [ -n "$img_refs" ]; then
+          echo ""
+          echo "  Image files referenced (first 20):"
+          for img_ref in $img_refs; do
+            # Handle relative paths
+            img_file=$(echo "$img_ref" | sed 's|^\./||' | sed 's|^/||')
+            if [ -f "docs/$img_file" ]; then
+              echo "    ✓ $img_ref"
+            else
+              echo "    ✗ MISSING: $img_ref"
+              img_missing=$((img_missing + 1))
+            fi
+          done
+        fi
+        
+        # Summary
+        echo ""
+        echo "Resource Validation Summary:"
+        if [ "$css_missing" -eq 0 ] && [ "$js_missing" -eq 0 ] && [ "$img_missing" -eq 0 ]; then
+          echo "  ✓ All referenced resources found"
+        else
+          echo "  ⚠ Missing resources detected:"
+          [ "$css_missing" -gt 0 ] && echo "    - CSS files: $css_missing"
+          [ "$js_missing" -gt 0 ] && echo "    - JavaScript files: $js_missing"
+          [ "$img_missing" -gt 0 ] && echo "    - Image files: $img_missing"
+          echo ""
+          echo "  NOTE: Some missing resources may be external URLs or dynamically generated."
+        fi
+        
+        echo ""
+        echo "=========================================="
     
     - name: Prepare docs for GitHub Pages
       run: |
