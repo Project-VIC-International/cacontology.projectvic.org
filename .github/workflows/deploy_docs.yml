@@ -11,6 +11,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
   generate-and-deploy:
@@ -118,10 +120,37 @@ jobs:
         echo ""
         echo "✓ Documentation verification passed!"
     
+    - name: Prepare docs for GitHub Pages
+      run: |
+        # Create .nojekyll file to prevent Jekyll processing
+        # This ensures all files (including those starting with _) are served
+        # Having at least one hidden file also prevents the cp docs/.* error
+        touch docs/.nojekyll
+        echo "Created .nojekyll file in docs/ directory"
+        
+        # Verify .nojekyll was created
+        if [ -f "docs/.nojekyll" ]; then
+          echo "✓ .nojekyll file verified"
+        else
+          echo "ERROR: Failed to create .nojekyll file"
+          exit 1
+        fi
+        
+        # Show final file count before deployment
+        echo ""
+        echo "Final docs/ directory contents before deployment:"
+        echo "  - Total files: $(find docs -type f | wc -l)"
+        echo "  - HTML files: $(find docs -type f -name '*.html' | wc -l)"
+        echo "  - Hidden files: $(find docs -type f -name '.*' | wc -l)"
+        echo "  - Directory size: $(du -sh docs | cut -f1)"
+    
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
       if: github.ref == 'refs/heads/main'
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./docs
+        publish_branch: gh-pages
         cname: cacontology.projectvic.org
+        keep_files: false
+        force_orphan: false
