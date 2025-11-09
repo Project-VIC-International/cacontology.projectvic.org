@@ -78,8 +78,26 @@ jobs:
         # Check GitHub Pages limits (1GB soft limit)
         if (( $(echo "$total_size_gb > 1.0" | bc -l) )); then
           echo ""
-          echo "⚠ WARNING: Total size exceeds GitHub Pages recommended limit of 1GB!"
-          echo "  This may cause deployment or loading issues."
+          echo "⚠⚠⚠ CRITICAL WARNING: Total size exceeds GitHub Pages limit! ⚠⚠⚠"
+          echo ""
+          echo "GitHub Pages has a soft limit of 1GB per repository."
+          echo "Current size: ${total_size_gb} GB (${total_size_mb} MB)"
+          echo ""
+          echo "This will likely cause:"
+          echo "  - Deployment failures or timeouts"
+          echo "  - Site not loading completely"
+          echo "  - Browser timeout issues"
+          echo "  - GitHub Pages service disruptions"
+          echo ""
+          echo "RECOMMENDED ACTIONS:"
+          echo "  1. Consider splitting documentation into multiple repositories"
+          echo "  2. Use a different hosting solution (e.g., Netlify, Vercel, AWS S3)"
+          echo "  3. Reduce documentation scope or optimize further"
+          echo "  4. Use lazy loading or pagination for large pages"
+          echo ""
+          echo "⚠⚠⚠ DEPLOYMENT MAY FAIL OR SITE MAY NOT LOAD ⚠⚠⚠"
+          echo ""
+          # Don't fail the build, but make it very clear this is a critical issue
         fi
         
         # Count files by type
