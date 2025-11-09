@@ -2,14 +2,126 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="refresh" content="0; url=index.html">
-    <title>CAC Ontology Documentation</title>
+    <title>CAC Ontology Documentation - Loading...</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            text-align: center;
+            max-width: 600px;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .message {
+            margin: 20px 0;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .link:hover {
+            background: #2980b9;
+        }
+        .error {
+            color: #e74c3c;
+            margin-top: 20px;
+            padding: 15px;
+            background: #ffeaea;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
     <script>
-        // Immediate redirect for better compatibility
-        window.location.replace("index.html");
+        (function() {
+            var targetUrl = "index.html";
+            var redirectAttempted = false;
+            var maxWaitTime = 30000; // 30 seconds
+            var startTime = Date.now();
+            
+            function attemptRedirect() {
+                if (redirectAttempted) return;
+                redirectAttempted = true;
+                
+                try {
+                    // Try immediate redirect
+                    window.location.replace(targetUrl);
+                } catch (e) {
+                    console.error("Redirect error:", e);
+                    showError("Redirect failed. Please use the link below.");
+                }
+            }
+            
+            function showError(message) {
+                var errorDiv = document.getElementById("error");
+                if (errorDiv) {
+                    errorDiv.textContent = message;
+                    errorDiv.style.display = "block";
+                }
+            }
+            
+            function checkTimeout() {
+                var elapsed = Date.now() - startTime;
+                if (elapsed > maxWaitTime) {
+                    showError("Page is taking longer than expected to load. The documentation file may be very large. Please use the link below or wait a bit longer.");
+                }
+            }
+            
+            // Attempt redirect immediately
+            attemptRedirect();
+            
+            // Check for timeout
+            setTimeout(checkTimeout, maxWaitTime);
+            
+            // Fallback: try again after a short delay
+            setTimeout(function() {
+                if (window.location.href.indexOf(targetUrl) === -1) {
+                    attemptRedirect();
+                }
+            }, 1000);
+        })();
     </script>
 </head>
 <body>
-    <p>If you are not redirected automatically, <a href="index.html">click here</a>.</p>
+    <div class="container">
+        <div class="spinner"></div>
+        <div class="message">
+            <h1>Loading CAC Ontology Documentation</h1>
+            <p>Redirecting to the documentation...</p>
+            <p style="font-size: 14px; color: #666;">If this page does not redirect automatically, please use the link below.</p>
+        </div>
+        <a href="index.html" class="link">Go to Documentation</a>
+        <div id="error" class="error"></div>
+    </div>
 </body>
 </html>
