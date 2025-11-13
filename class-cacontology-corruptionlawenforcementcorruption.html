@@ -9013,15 +9013,15 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
               
                 <li><a href="shape-cacontology-corruption-shapescorruptiontemporalshape.html" title="https://cacontology.projectvic.org/law-enforcement-corruption/shapes#CorruptionTemporalShape">cacontology-corruption-shapes:CorruptionTemporalShape</a></li>
               
-                <li><a href="shape-cacontology-corruption-shapescorruptiondataqualityshape.html" title="https://cacontology.projectvic.org/law-enforcement-corruption/shapes#CorruptionDataQualityShape">cacontology-corruption-shapes:CorruptionDataQualityShape</a></li>
-              
-                <li><a href="shape-cacontology-corruption-shapeshighseveritycorruptionrule.html" title="https://cacontology.projectvic.org/law-enforcement-corruption/shapes#HighSeverityCorruptionRule">cacontology-corruption-shapes:HighSeverityCorruptionRule</a></li>
-              
-                <li><a href="shape-cacontology-corruption-shapescorruptionparticipationshape.html" title="https://cacontology.projectvic.org/law-enforcement-corruption/shapes#CorruptionParticipationShape">cacontology-corruption-shapes:CorruptionParticipationShape</a></li>
-              
                 <li><a href="shape-cacontology-corruption-shapeslawenforcementcorruptionshape.html" title="https://cacontology.projectvic.org/law-enforcement-corruption/shapes#LawEnforcementCorruptionShape">cacontology-corruption-shapes:LawEnforcementCorruptionShape</a></li>
               
                 <li><a href="shape-cacontology-corruption-shapescorruptioneventtypevalidationshape.html" title="https://cacontology.projectvic.org/law-enforcement-corruption/shapes#CorruptionEventTypeValidationShape">cacontology-corruption-shapes:CorruptionEventTypeValidationShape</a></li>
+              
+                <li><a href="shape-cacontology-corruption-shapeshighseveritycorruptionrule.html" title="https://cacontology.projectvic.org/law-enforcement-corruption/shapes#HighSeverityCorruptionRule">cacontology-corruption-shapes:HighSeverityCorruptionRule</a></li>
+              
+                <li><a href="shape-cacontology-corruption-shapescorruptiondataqualityshape.html" title="https://cacontology.projectvic.org/law-enforcement-corruption/shapes#CorruptionDataQualityShape">cacontology-corruption-shapes:CorruptionDataQualityShape</a></li>
+              
+                <li><a href="shape-cacontology-corruption-shapescorruptionparticipationshape.html" title="https://cacontology.projectvic.org/law-enforcement-corruption/shapes#CorruptionParticipationShape">cacontology-corruption-shapes:CorruptionParticipationShape</a></li>
               
             </div>
           </div>
@@ -10313,11 +10313,11 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     </td>
 
                     <td>    
-                      
+                      owl:DatatypeProperty
                     </td>
 
                     <td>     
-                      
+                      Duration of corrupt activities in months before detection.
                       <br>
                       
                     </td>
@@ -10343,7 +10343,12 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     <td>    
                       
                         
-                          <i>owl:Thing</i>
+                          
+                            
+                              <i>xsd:nonNegativeInteger</i>
+                             
+                            <br>
+                                                               
                         
                       
                     </td>
@@ -10360,58 +10365,11 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     </td>
 
                     <td>    
-                      
-                    </td>
-
-                    <td>     
-                      
-                      <br>
-                      
-                    </td>
-
-                    <td>     
-                      
-                    </td>
-
-                    <td>     
-                      1
-                    </td>
-
-                    <td>     
-                      
-                        
-                          <i>xsd:string</i>
-                         
-                          <br>
-                      
-                      
-                    </td>
-
-                    <td>    
-                      
-                        
-                          <i>owl:Thing</i>
-                        
-                      
-                    </td>
-                  
-                </tr>
-              
-                <tr>
-                  
-                  
-                    <td>    
-                      
-                        <a class="propcolor" title="cacontology-corruption:hasCorruptionSeverity" href="prop-cacontology-corruptionhascorruptionseverity.html">cacontology-corruption:hasCorruptionSeverity</a>
-                      
-                    </td>
-
-                    <td>    
                       owl:DatatypeProperty
                     </td>
 
                     <td>     
-                      Corruption severity level assessment (minor, moderate, serious, severe, extreme) - gUFO quality aspect.
+                      Impact level of corruption on victims and system (low, moderate, high, severe, devastating) - gUFO quality aspect.
                       <br>
                       
                     </td>
@@ -10443,6 +10401,53 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                              
                             <br>
                                                                
+                        
+                      
+                    </td>
+                  
+                </tr>
+              
+                <tr>
+                  
+                  
+                    <td>    
+                      
+                        <a class="propcolor" title="cacontology-corruption:hasCorruptionSeverity" href="prop-cacontology-corruptionhascorruptionseverity.html">cacontology-corruption:hasCorruptionSeverity</a>
+                      
+                    </td>
+
+                    <td>    
+                      
+                    </td>
+
+                    <td>     
+                      
+                      <br>
+                      
+                    </td>
+
+                    <td>     
+                      
+                    </td>
+
+                    <td>     
+                      1
+                    </td>
+
+                    <td>     
+                      
+                        
+                          <i>xsd:string</i>
+                         
+                          <br>
+                      
+                      
+                    </td>
+
+                    <td>    
+                      
+                        
+                          <i>owl:Thing</i>
                         
                       
                     </td>
@@ -10563,11 +10568,11 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     </td>
 
                     <td>    
-                      owl:DatatypeProperty
+                      
                     </td>
 
                     <td>     
-                      Validation thoroughness (none, basic, standard, comprehensive, full_verification) - gUFO quality aspect.
+                      
                       <br>
                       
                     </td>
@@ -10593,12 +10598,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     <td>    
                       
                         
-                          
-                            
-                              <i>xsd:string</i>
-                             
-                            <br>
-                                                               
+                          <i>owl:Thing</i>
                         
                       
                     </td>
@@ -10615,11 +10615,11 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     </td>
 
                     <td>    
-                      
+                      owl:DatatypeProperty
                     </td>
 
                     <td>     
-                      
+                      Victim vulnerability exploitation level (0.0 to 1.0) - gUFO quality aspect.
                       <br>
                       
                     </td>
@@ -10645,7 +10645,12 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     <td>    
                       
                         
-                          <i>owl:Thing</i>
+                          
+                            
+                              <i>xsd:double</i>
+                             
+                            <br>
+                                                               
                         
                       
                     </td>
@@ -10662,11 +10667,11 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     </td>
 
                     <td>    
-                      owl:ObjectProperty
+                      
                     </td>
 
                     <td>     
-                      Links corruption to detection activities - gUFO participation relation.
+                      
                       <br>
                       
                     </td>
@@ -10692,12 +10697,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     <td>    
                       
                         
-                          
-                            
-                              <a title="cacontology-corruption:InsiderThreatDetection" href="class-cacontology-corruptioninsiderthreatdetection.html" class="rdfclass">cacontology-corruption:InsiderThreatDetection</a>
-                             
-                            <br>
-                                                               
+                          <i>owl:Thing</i>
                         
                       
                     </td>
@@ -10714,11 +10714,11 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     </td>
 
                     <td>    
-                      
+                      owl:DatatypeProperty
                     </td>
 
                     <td>     
-                      
+                      Number of victims in corruption case.
                       <br>
                       
                     </td>
@@ -10744,7 +10744,12 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     <td>    
                       
                         
-                          <i>owl:Thing</i>
+                          
+                            
+                              <i>xsd:nonNegativeInteger</i>
+                             
+                            <br>
+                                                               
                         
                       
                     </td>
@@ -10850,7 +10855,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
   <footer class="footer">
     <div class="container">
     
-      <p class="text-muted">Documentation automatically generated on Wed, 12 Nov 2025 03:19:44 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
+      <p class="text-muted">Documentation automatically generated on Thu, 13 Nov 2025 03:22:19 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
 
     
     </div>
