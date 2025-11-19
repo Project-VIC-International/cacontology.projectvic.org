@@ -48,7 +48,7 @@ temp/
 *.log
 
 # Ontology files (fetched from main repo)
-ontology/
+ontology_repo/
 *.ttl
 !examples/*.ttl
 

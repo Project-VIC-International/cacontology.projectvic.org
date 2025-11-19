@@ -1,6 +1,8 @@
 # Ontology Documentation Generation
 ontospy[docs]>=2.1.1
 ontodocs>=1.0.0
+# Django 4.0 removed {% ifequal %}, so we need an older version for ontodocs
+Django<4.0
 rdflib>=6.3.2
 
 # Ontology Processing

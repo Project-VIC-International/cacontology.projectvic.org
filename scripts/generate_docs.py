@@ -13,8 +13,34 @@ import sys
 import subprocess
 import shutil
 import tempfile
+import site
 from pathlib import Path
 from typing import List, Optional
+
+# Add Scripts directory to PATH to ensure external tools (like pygmentize) are found
+try:
+    import ontospy
+    ontospy_path = Path(ontospy.__file__).resolve()
+    # Typical structure: site-packages/ontospy/__init__.py
+    # We want: .../site-packages/../../Scripts  (relative to site-packages)
+    site_packages = ontospy_path.parent.parent
+    scripts_dir = site_packages.parent / "Scripts"
+    
+    # Also add the directory containing the python executable to PATH
+    python_dir = Path(sys.executable).parent
+    
+    paths_to_add = []
+    if scripts_dir.exists() and str(scripts_dir) not in os.environ["PATH"]:
+        paths_to_add.append(str(scripts_dir))
+    
+    if python_dir.exists() and str(python_dir) not in os.environ["PATH"]:
+        paths_to_add.append(str(python_dir))
+        
+    if paths_to_add:
+        print(f"Adding directories to PATH: {paths_to_add}")
+        os.environ["PATH"] = os.pathsep.join(paths_to_add) + os.pathsep + os.environ["PATH"]
+except Exception as e:
+    print(f"Warning: Could not automatically add Scripts/Python to PATH: {e}")
 
 try:
     import rdflib
@@ -166,7 +192,7 @@ def bind_common_prefixes(graph: Graph) -> None:
     """
     # Base namespace pattern - adjust if your actual namespace differs
     # Common patterns: "https://ontology.projectvic.org/", "http://ontology.projectvic.org/", etc.
-    base_ns = "https://ontology.projectvic.org/"
+    base_ns = "https://cacontology.projectvic.org/"
     
     # Map of prefix names to namespace URIs
     # Note: Since ontology files now use cacontology-* prefixes and should
@@ -213,6 +239,13 @@ def bind_common_prefixes(graph: Graph) -> None:
         "icac-temporal": f"{base_ns}cacontology-temporal-gufo#",
         "icac-training": f"{base_ns}cacontology-training#",
         "icac-undercover": f"{base_ns}cacontology-undercover#",
+        # Common external prefixes
+        "dcterms": "http://purl.org/dc/terms/",
+        "owl": "http://www.w3.org/2002/07/owl#",
+        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "skos": "http://www.w3.org/2004/02/skos/core#",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
         # Add cacontology-* prefixes here if needed (files should declare them, but kept as safety net)
         # All ontology files now use the CACOntology namespace (cacontology-* prefixes)
     }
@@ -324,10 +357,15 @@ def generate_documentation(merged_ontology: Path, output_dir: Path) -> None:
         from ontospy import Ontospy as OntospyModel
         visualizer_cls = None
         try:
-            # Newer multi-page visualizer
-            from ontodocs.viz.viz_html_multi import HTMLVisualizerMulti as Visualizer
-            visualizer_cls = Visualizer
-            print("Using ontodocs.viz.viz_html_multi.HTMLVisualizerMulti")
+            # Newer multi-page visualizer (try KompleteViz first, then HTMLVisualizerMulti)
+            try:
+                from ontodocs.viz.viz_html_multi import KompleteViz as Visualizer
+                visualizer_cls = Visualizer
+                print("Using ontodocs.viz.viz_html_multi.KompleteViz")
+            except ImportError:
+                from ontodocs.viz.viz_html_multi import HTMLVisualizerMulti as Visualizer
+                visualizer_cls = Visualizer
+                print("Using ontodocs.viz.viz_html_multi.HTMLVisualizerMulti")
         except Exception:
             try:
                 # Fallback single/multi visualizer module
@@ -342,10 +380,10 @@ def generate_documentation(merged_ontology: Path, output_dir: Path) -> None:
             viz = visualizer_cls(model)
             # Some visualizers use build(); others expose build() with output_path
             try:
-                viz.build(output_path=str(output_dir))
-            except TypeError:
-                # Older signature: build(dirpath)
                 viz.build(str(output_dir))
+            except TypeError:
+                # Check if output_path argument is named differently or required
+                viz.build(output_path=str(output_dir))
             print(f"Documentation generated in {output_dir} (programmatic API)")
             return
         else:
@@ -365,14 +403,14 @@ def generate_documentation(merged_ontology: Path, output_dir: Path) -> None:
     # Try alternative command formats
     if not ontospy_cmd_available:
         try:
-            result = run_command(["python", "-m", "ontospy", "--help"], check=False)
+            result = run_command([sys.executable, "-m", "ontospy", "--help"], check=False)
             if result.returncode == 0 or "usage" in result.stdout.lower() or "usage" in result.stderr.lower():
                 ontospy_cmd_available = True
-                ontospy_cmd = ["python", "-m", "ontospy"]
+                ontospy_cmd = [sys.executable, "-m", "ontospy"]
             else:
-                ontospy_cmd = ["ontospy"]
+                ontospy_cmd = [sys.executable, "-m", "ontospy"]  # Default to sys.executable
         except FileNotFoundError:
-            ontospy_cmd = ["ontospy"]
+            ontospy_cmd = [sys.executable, "-m", "ontospy"]
     else:
         ontospy_cmd = ["ontospy"]
     
@@ -401,7 +439,7 @@ def generate_documentation(merged_ontology: Path, output_dir: Path) -> None:
             print(f"Documentation appears to be generated in {output_dir} despite timeout.")
             return
         print("Retrying with python -m ontospy...")
-        alt_cmd = ["python", "-m", "ontospy", "gendocs", str(merged_ontology), "-o", str(output_dir)]
+        alt_cmd = [sys.executable, "-m", "ontospy", "gendocs", str(merged_ontology), "-o", str(output_dir)]
         try:
             result = run_command(alt_cmd, check=False, input_text=seeded_input, timeout=ONTOSPY_TIMEOUT_SECONDS)
         except subprocess.TimeoutExpired:
@@ -418,7 +456,7 @@ def generate_documentation(merged_ontology: Path, output_dir: Path) -> None:
         # Try alternative: python -m ontospy gendocs (if not already tried)
         if ontospy_cmd == ["ontospy"]:
             print("Trying alternative: python -m ontospy gendocs...")
-            alt_cmd = ["python", "-m", "ontospy", "gendocs", str(merged_ontology), "-o", str(output_dir)]
+            alt_cmd = [sys.executable, "-m", "ontospy", "gendocs", str(merged_ontology), "-o", str(output_dir)]
             result = run_command(alt_cmd, check=False, input_text=seeded_input, timeout=ONTOSPY_TIMEOUT_SECONDS)
             if result.returncode == 0:
                 print(f"Documentation generated in {output_dir}")
@@ -475,7 +513,7 @@ def analyze_file_sizes(output_dir: Path) -> None:
     # Check for problematic large files
     large_files = [(fp, s) for fp, s in file_sizes if s > 5 * 1024 * 1024]  # > 5MB
     if large_files:
-        print(f"\n⚠ WARNING: Found {len(large_files)} file(s) larger than 5MB:")
+        print(f"\nWARNING: Found {len(large_files)} file(s) larger than 5MB:")
         for file_path, size in large_files:
             size_mb = size / (1024 * 1024)
             rel_path = file_path.relative_to(output_dir)
@@ -485,7 +523,7 @@ def analyze_file_sizes(output_dir: Path) -> None:
     # Check for files exceeding 1MB (GitHub Pages recommendation)
     medium_files = [(fp, s) for fp, s in file_sizes if s > 1 * 1024 * 1024 and s <= 5 * 1024 * 1024]
     if medium_files:
-        print(f"\n⚠ Note: Found {len(medium_files)} file(s) between 1MB and 5MB:")
+        print(f"\nNote: Found {len(medium_files)} file(s) between 1MB and 5MB:")
         print("  These files exceed GitHub Pages recommended limit of 1MB per file.")
 
 
@@ -785,7 +823,6 @@ def optimize_html_files(output_dir: Path, common_css_file: Optional[Path] = None
             optimized_content = '\n'.join(line.rstrip() for line in optimized_content.split('\n'))
             
             # Remove multiple consecutive blank lines (keep max 2)
-            import re
             optimized_content = re.sub(r'\n{3,}', '\n\n', optimized_content)
             
             optimized_size = len(optimized_content.encode("utf-8"))
@@ -1051,7 +1088,7 @@ def create_index_html(output_dir: Path) -> None:
             index_path.unlink()
         
         index_path.write_text(index_content, encoding="utf-8")
-        print(f"✓ Created index.html redirecting to {target_file}")
+        print(f"Created index.html redirecting to {target_file}")
         print(f"  Target file size: {target_file_size_mb:.2f} MB")
         print(f"  Redirect URL: {target_file}")
         
@@ -1113,7 +1150,7 @@ def main():
     if total_size_gb > 1.0:
         print("")
         print("=" * 60)
-        print("⚠ CRITICAL WARNING: Documentation size exceeds GitHub Pages limits!")
+        print("CRITICAL WARNING: Documentation size exceeds GitHub Pages limits!")
         print("=" * 60)
         print(f"Total size: {total_size_gb:.2f} GB")
         print("GitHub Pages has a soft limit of 1GB per repository.")
