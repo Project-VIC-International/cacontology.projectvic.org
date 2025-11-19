@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAC Ontology - Hotlines/Core Module</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.5; max-width: 800px; margin: 0 auto; padding: 20px; background: #f9f9f9; color: #333; }
+        h1 { border-bottom: 1px solid #eee; padding-bottom: 10px; color: #2c3e50; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .entity-list { list-style: none; padding: 0; columns: 2; }
+        .entity-list li { margin: 5px 0; break-inside: avoid; }
+        .type-badge { 
+            display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.75em; font-weight: bold; margin-right: 8px; width: 60px; text-align: center; text-transform: uppercase;
+        }
+        .class-badge { background: #e3f2fd; color: #0d47a1; }
+        .prop-badge { background: #f3e5f5; color: #7b1fa2; }
+        a { text-decoration: none; color: #0277bd; }
+        a:hover { text-decoration: underline; color: #01579b; }
+        .loading { display: none; font-size: 1.2em; color: #666; text-align: center; margin: 40px 0; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #666; font-size: 0.9em; }
+        @media (max-width: 600px) { .entity-list { columns: 1; } }
+    </style>
+    <script>
+        // Redirect logic
+        var entityMap = {"ActionPhase": "../class-hotlineactionphase.html", "AutomatedReporterAgent": "../class-hotlineautomatedreporteragent.html", "ClosurePhase": "../class-hotlineclosurephase.html", "ESPReport": "../class-hotlineespreport.html", "EvidenceItem": "../class-hotlineevidenceitem.html", "ForensicsSpecialistRole": "../class-hotlineforensicsspecialistrole.html", "ForwardToLEAction": "../class-hotlineforwardtoleaction.html", "HashFeedbackAction": "../class-hotlinehashfeedbackaction.html", "HashSubmissionAction": "../class-hotlinehashsubmissionaction.html", "HotlineAction": "../class-hotlinehotlineaction.html", "HotlineAnalystRole": "../class-hotlinehotlineanalystrole.html", "HotlineOrganization": "../class-hotlinehotlineorganization.html", "HotlineReport": "../class-hotlinehotlinereport.html", "ImageEvidence": "../class-hotlineimageevidence.html", "IntakeChannel": "../class-hotlineintakechannel.html", "IntakePhase": "../class-hotlineintakephase.html", "InternationalCoordination": "../class-hotlineinternationalcoordination.html", "LiaisonRole": "../class-hotlineliaisonrole.html", "MultiAgencyCoordination": "../class-hotlinemultiagencycoordination.html", "PublicReport": "../class-hotlinepublicreport.html", "ReportReviewAction": "../class-hotlinereportreviewaction.html", "ReporterRole": "../class-hotlinereporterrole.html", "ReviewPhase": "../class-hotlinereviewphase.html", "TakedownRequestAction": "../class-hotlinetakedownrequestaction.html", "URLReference": "../class-hotlineurlreference.html", "VideoEvidence": "../class-hotlinevideoevidence.html", "assignedRole": "../prop-hotlineassignedrole.html", "classification": "../prop-hotlineclassification.html", "coordinationBeginTime": "../prop-hotlinecoordinationbegintime.html", "currentPhase": "../prop-hotlinecurrentphase.html", "feedbackType": "../prop-hotlinefeedbacktype.html", "firstSeen": "../prop-hotlinefirstseen.html", "forwardsTo": "../prop-hotlineforwardsto.html", "foundAtURL": "../prop-hotlinefoundaturl.html", "hasEvidence": "../prop-hotlinehasevidence.html", "hasPhaseTransition": "../prop-hotlinehasphasetransition.html", "intakeChannel": "../prop-hotlineintakechannel.html", "involvesCoordination": "../prop-hotlineinvolvescoordination.html", "isAnonymous": "../prop-hotlineisanonymous.html", "linkedInvestigation": "../prop-hotlinelinkedinvestigation.html", "phaseBeginTime": "../prop-hotlinephasebegintime.html", "phaseDuration": "../prop-hotlinephaseduration.html", "phaseEndTime": "../prop-hotlinephaseendtime.html", "playsRole": "../prop-hotlineplaysrole.html", "producesHash": "../prop-hotlineproduceshash.html", "receivedBy": "../prop-hotlinereceivedby.html", "referencesHash": "../prop-hotlinereferenceshash.html", "reportedBy": "../prop-hotlinereportedby.html", "roleAssignmentTime": "../prop-hotlineroleassignmenttime.html", "status": "../prop-hotlinestatus.html", "triggersAction": "../prop-hotlinetriggersaction.html"};
+        
+        function checkRedirect() {
+            var hash = window.location.hash;
+            if (hash) {
+                var id = hash.substring(1); // Remove #
+                if (entityMap[id]) {
+                    document.getElementById('loading').style.display = 'block';
+                    document.getElementById('content').style.display = 'none';
+                    // Use replace to avoid adding to history
+                    window.location.replace(entityMap[id]);
+                } else {
+                     console.log("No redirect found for " + id);
+                }
+            }
+        }
+        
+        window.addEventListener('load', checkRedirect);
+        window.addEventListener('hashchange', checkRedirect);
+    </script>
+</head>
+<body>
+    <div id="loading" class="loading">
+        <p>Redirecting to documentation...</p>
+    </div>
+    <div id="content" class="container">
+        <a href="../index.html" class="back-link">← Back to Main Documentation</a>
+        <h1>Hotlines/Core Module</h1>
+        <p>This is the namespace index for the <code>hotlines/core</code> module.</p>
+        <p>Select a class or property to view its documentation:</p>
+        
+        <ul class="entity-list">
+            <li><span class="type-badge clas-badge">Class</span><a href="../class-hotlineactionphase.html">ActionPhase</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlineautomatedreporteragent.html">AutomatedReporterAgent</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlineclosurephase.html">ClosurePhase</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlineespreport.html">ESPReport</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlineevidenceitem.html">EvidenceItem</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlineforensicsspecialistrole.html">ForensicsSpecialistRole</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlineforwardtoleaction.html">ForwardToLEAction</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlinehashfeedbackaction.html">HashFeedbackAction</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlinehashsubmissionaction.html">HashSubmissionAction</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlinehotlineaction.html">HotlineAction</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlinehotlineanalystrole.html">HotlineAnalystRole</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlinehotlineorganization.html">HotlineOrganization</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlinehotlinereport.html">HotlineReport</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlineimageevidence.html">ImageEvidence</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlineintakechannel.html">IntakeChannel</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlineintakephase.html">IntakePhase</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlineinternationalcoordination.html">InternationalCoordination</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlineliaisonrole.html">LiaisonRole</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlinemultiagencycoordination.html">MultiAgencyCoordination</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlinepublicreport.html">PublicReport</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlinereportreviewaction.html">ReportReviewAction</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlinereporterrole.html">ReporterRole</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlinereviewphase.html">ReviewPhase</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlinetakedownrequestaction.html">TakedownRequestAction</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlineurlreference.html">URLReference</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-hotlinevideoevidence.html">VideoEvidence</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlineassignedrole.html">assignedRole</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlineclassification.html">classification</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlinecoordinationbegintime.html">coordinationBeginTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlinecurrentphase.html">currentPhase</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlinefeedbacktype.html">feedbackType</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlinefirstseen.html">firstSeen</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlineforwardsto.html">forwardsTo</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlinefoundaturl.html">foundAtURL</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlinehasevidence.html">hasEvidence</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlinehasphasetransition.html">hasPhaseTransition</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlineintakechannel.html">intakeChannel</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlineinvolvescoordination.html">involvesCoordination</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlineisanonymous.html">isAnonymous</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlinelinkedinvestigation.html">linkedInvestigation</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlinephasebegintime.html">phaseBeginTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlinephaseduration.html">phaseDuration</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlinephaseendtime.html">phaseEndTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlineplaysrole.html">playsRole</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlineproduceshash.html">producesHash</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlinereceivedby.html">receivedBy</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlinereferenceshash.html">referencesHash</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlinereportedby.html">reportedBy</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlineroleassignmenttime.html">roleAssignmentTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlinestatus.html">status</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-hotlinetriggersaction.html">triggersAction</a></li>
+        </ul>
+    </div>
+</body>
+</html>
