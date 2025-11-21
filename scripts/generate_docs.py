@@ -115,6 +115,22 @@ def merge_ontologies(ontology_files: List[Path], shapes_files: List[Path], outpu
     print(f"Successfully loaded {len(successful_files)}/{len(ontology_files)} ontology files")
     return merged_graph
 
+def get_ontology_version(graph: Graph) -> str:
+    """Extract version information from the ontology graph."""
+    # Try owl:versionInfo first
+    for s, p, o in graph.triples((None, OWL.versionInfo, None)):
+        return str(o)
+        
+    # Try owl:versionIRI
+    for s, p, o in graph.triples((None, OWL.versionIRI, None)):
+        # Extract version from IRI (e.g. .../2.1.0)
+        iri = str(o)
+        if "/" in iri:
+            return iri.split("/")[-1]
+        return iri
+        
+    return ""
+
 def generate_documentation(ontology_file: Path, output_dir: Path):
     """Generate HTML documentation using Ontospy."""
     print(f"Generating documentation for {ontology_file}...")
@@ -256,13 +272,14 @@ def extract_common_resources(output_dir: Path) -> tuple[Optional[Path], Optional
         return None, None, None
 
 
-def optimize_html_files(output_dir: Path, common_css_file: Optional[Path] = None, common_js_file: Optional[Path] = None) -> None:
+def optimize_html_files(output_dir: Path, common_css_file: Optional[Path] = None, common_js_file: Optional[Path] = None, version_info: str = "") -> None:
     """Minify HTML files and replace inline CSS/JS with shared files to reduce size.
     
     Args:
         output_dir: Directory containing HTML files
         common_css_file: Path to shared CSS file (relative to output_dir)
         common_js_file: Path to shared JS file (relative to output_dir)
+        version_info: Ontology version string to inject
     """
     print("Optimizing HTML files...")
     
@@ -391,13 +408,26 @@ def optimize_html_files(output_dir: Path, common_css_file: Optional[Path] = None
                     return f'<script{attrs} defer>'
                 return match.group(0)
             
+            # Inject version information
+            if version_info:
+                # Create a version banner
+                version_html = f'''
+                <div style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; padding: 8px 20px; font-size: 14px; color: #6c757d; text-align: right;">
+                    Ontology Version: <strong>{version_info}</strong>
+                </div>
+                '''
+                # Insert after body tag
+                if '<body' in optimized_content:
+                    optimized_content = re.sub(r'(<body[^>]*>)', f'\\1{version_html}', optimized_content, count=1)
+
             # Apply defer to jQuery ONLY if we successfully extracted common JS
-            if js_link_relative:
-                optimized_content = re.sub(
-                    r'<script([^>]*src=["\']static/libs/jquery[^"\']*["\'][^>]*)>',
-                    add_defer_if_missing,
-                    optimized_content
-                )
+            # DISABLED: Deferring jQuery breaks search functionality and other inline scripts
+            # if js_link_relative:
+            #     optimized_content = re.sub(
+            #         r'<script([^>]*src=["\']static/libs/jquery[^"\']*["\'][^>]*)>',
+            #         add_defer_if_missing,
+            #         optimized_content
+            #     )
             
             # Apply defer to Bootstrap
             optimized_content = re.sub(
@@ -728,6 +758,10 @@ def main():
     # Merge all ontologies
     merged_graph = merge_ontologies(ontology_files, shapes_files, temp_ontology)
     
+    # Get ontology version
+    version_info = get_ontology_version(merged_graph)
+    print(f"Detected ontology version: {version_info}")
+
     # Generate documentation
     output_dir = REPO_ROOT / OUTPUT_DIR
     generate_documentation(temp_ontology, output_dir)
@@ -736,7 +770,7 @@ def main():
     common_css_file, common_js_file, shared_dir = extract_common_resources(output_dir)
     
     # Optimize HTML files to reduce size (and replace inline resources with shared files)
-    optimize_html_files(output_dir, common_css_file, common_js_file)
+    optimize_html_files(output_dir, common_css_file, common_js_file, version_info)
     
     # Analyze file sizes and report potential issues
     analyze_file_sizes(output_dir)
