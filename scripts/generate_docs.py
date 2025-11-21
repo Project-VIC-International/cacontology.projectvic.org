@@ -1,533 +1,139 @@
 #!/usr/bin/env python3
-"""
-CAC Ontology Documentation Generation Script
-
-This script generates comprehensive documentation for the CAC Ontology using Ontospy.
-It fetches ontology files from the main CAC-Ontology repository, merges all modules,
-and generates HTML documentation matching the CASE Ontology documentation style.
-"""
-
 import os
 import re
 import json
 import sys
-import subprocess
 import shutil
-import tempfile
-import site
 from pathlib import Path
-from typing import List, Optional
+from datetime import datetime
+from typing import List, Dict, Any, Optional, Set, Tuple
 
-# Add Scripts directory to PATH to ensure external tools (like pygmentize) are found
-try:
-    import ontospy
-    ontospy_path = Path(ontospy.__file__).resolve()
-    # Typical structure: site-packages/ontospy/__init__.py
-    # We want: .../site-packages/../../Scripts  (relative to site-packages)
-    site_packages = ontospy_path.parent.parent
-    scripts_dir = site_packages.parent / "Scripts"
-    
-    # Also add the directory containing the python executable to PATH
-    python_dir = Path(sys.executable).parent
-    
-    paths_to_add = []
-    if scripts_dir.exists() and str(scripts_dir) not in os.environ["PATH"]:
-        paths_to_add.append(str(scripts_dir))
-    
-    if python_dir.exists() and str(python_dir) not in os.environ["PATH"]:
-        paths_to_add.append(str(python_dir))
-        
-    if paths_to_add:
-        print(f"Adding directories to PATH: {paths_to_add}")
-        os.environ["PATH"] = os.pathsep.join(paths_to_add) + os.pathsep + os.environ["PATH"]
-except Exception as e:
-    print(f"Warning: Could not automatically add Scripts/Python to PATH: {e}")
-
+# Check if rdflib is installed
 try:
     import rdflib
     from rdflib import Graph, Namespace
     from rdflib.namespace import RDF, RDFS, OWL
 except ImportError:
-    print("Error: rdflib is required. Install with: pip install rdflib")
+    print("Error: rdflib is not installed. Please run 'pip install rdflib'")
     sys.exit(1)
 
-# Repository configuration
-MAIN_REPO_URL = "https://github.com/Project-VIC-International/CAC-Ontology.git"
-ONTOLOGY_REPO_DIR = "ontology_repo"
-OUTPUT_DIR = "docs"
-TEMP_DIR = tempfile.mkdtemp(prefix="cac_docs_")
-ONTOSPY_TIMEOUT_SECONDS = int(os.environ.get("ONTOSPY_TIMEOUT_SECONDS", "1800"))
+# Check if ontospy is installed
+try:
+    import ontospy
+    from ontospy.gendocs.viz.viz_html_multi import KompleteViz as HTMLVisualizer
+except ImportError:
+    print("Error: ontospy is not installed. Please run 'pip install ontospy'")
+    sys.exit(1)
 
-# Get the repository root directory
+# Configuration
 REPO_ROOT = Path(__file__).parent.parent
+ONTOLOGY_DIR = "ontology_repo/ontology"
+SHAPES_DIR = "ontology_repo/shapes"
+OUTPUT_DIR = "docs"
+TEMP_DIR = "temp_build"
 
+# Namespaces
+CACON = Namespace("https://cacontology.projectvic.org#")
 
-def run_command(cmd: List[str], cwd: Optional[Path] = None, check: bool = True, input_text: Optional[str] = None, timeout: Optional[int] = None) -> subprocess.CompletedProcess:
-    """Run a shell command and return the result."""
-    print(f"Running: {' '.join(cmd)}")
-    result = subprocess.run(
-        cmd,
-        cwd=cwd,
-        capture_output=True,
-        text=True,
-        input=input_text,
-        check=check,
-        timeout=timeout
-    )
-    if result.returncode != 0 and check:
-        print(f"Error: {result.stderr}")
-        sys.exit(1)
-    return result
+def clone_ontology_repo():
+    """Clone or update the ontology repository."""
+    # For this script, we assume the ontology is already present in the expected directory
+    # relative to the script execution
+    pass  # Logic handled by CI/CD or manual setup
 
-
-def clone_ontology_repo() -> Path:
-    """Clone the main ontology repository to fetch latest ontology files."""
-    # Check if running in GitHub Actions (ontology repo already checked out)
-    env_repo_path = os.environ.get("ONTOLOGY_REPO_PATH")
-    if env_repo_path:
-        # Resolve relative paths relative to the current working directory
-        if not os.path.isabs(env_repo_path):
-            # Try resolving relative to REPO_ROOT first (most common case)
-            resolved_path = (REPO_ROOT / env_repo_path).resolve()
-            if resolved_path.exists() and resolved_path.is_dir():
-                print(f"Using ontology repository from environment: {resolved_path.absolute()}")
-                return resolved_path.absolute()
-            # Try resolving relative to current working directory
-            resolved_path = Path(env_repo_path).resolve()
-            if resolved_path.exists() and resolved_path.is_dir():
-                print(f"Using ontology repository from environment: {resolved_path.absolute()}")
-                return resolved_path.absolute()
-            print(f"Warning: Environment path {env_repo_path} does not exist or is not a directory")
-            print(f"  Tried: {(REPO_ROOT / env_repo_path).resolve()}")
-            print(f"  Tried: {Path(env_repo_path).resolve()}")
-        else:
-            resolved_path = Path(env_repo_path).resolve()
-            if resolved_path.exists() and resolved_path.is_dir():
-                print(f"Using ontology repository from environment: {resolved_path.absolute()}")
-                return resolved_path.absolute()
-            print(f"Warning: Environment path {env_repo_path} does not exist or is not a directory")
-    
-    # Check if ontology repo is in parent directory (GitHub Actions structure)
-    parent_repo = (REPO_ROOT.parent / "ontology-repo").resolve()
-    if parent_repo.exists() and parent_repo.is_dir():
-        print(f"Using ontology repository from parent directory: {parent_repo.absolute()}")
-        return parent_repo.absolute()
-    
-    # Otherwise, clone the repository
-    repo_path = (REPO_ROOT / ONTOLOGY_REPO_DIR).resolve()
-    
-    if repo_path.exists():
-        print(f"Repository already exists at {repo_path.absolute()}, updating...")
-        run_command(["git", "pull"], cwd=repo_path)
-    else:
-        print(f"Cloning ontology repository from {MAIN_REPO_URL}...")
-        run_command(["git", "clone", MAIN_REPO_URL, str(repo_path)])
-    
-    return repo_path.absolute()
-
-
-def find_ontology_files(repo_path: Path) -> List[Path]:
-    """Find all ontology .ttl files, excluding shapes files but including them separately."""
+def find_ontology_files(base_dir: Path) -> Tuple[List[Path], List[Path]]:
+    """Recursively find all .ttl files in the ontology and shapes directories."""
     ontology_files = []
     shapes_files = []
     
-    # Debug: Check if repo_path exists and list its contents
-    if not repo_path.exists():
-        print(f"Error: Repository path does not exist: {repo_path}")
-        print(f"Current working directory: {os.getcwd()}")
-        print(f"REPO_ROOT: {REPO_ROOT}")
-        return ontology_files, shapes_files
+    base_ontology = REPO_ROOT / ONTOLOGY_DIR
+    base_shapes = REPO_ROOT / SHAPES_DIR
     
-    # Prefer the dedicated ontology subdirectory if present
-    ontology_dir = (repo_path / "ontology")
-    search_base = ontology_dir if ontology_dir.exists() and ontology_dir.is_dir() else repo_path
-    print(f"Searching for ontology files in: {search_base.absolute()}")
-    
-    # List directory contents for debugging
-    try:
-        dir_contents = list(search_base.iterdir())
-        print(f"Directory contains {len(dir_contents)} items")
-        if len(dir_contents) <= 10:  # Only print if not too many
-            for item in dir_contents:
-                print(f"  - {item.name} ({'dir' if item.is_dir() else 'file'})")
-    except Exception as e:
-        print(f"Warning: Could not list directory contents: {e}")
-    
-    # Find all .ttl files under the search base
-    ttl_files_found = list(search_base.rglob("*.ttl"))
-    print(f"Found {len(ttl_files_found)} total .ttl files")
-    
-    for ttl_file in ttl_files_found:
-        # Skip example files (examples_knowledge_graphs directory and legacy examples/ directory)
-        if "examples" in str(ttl_file):
-            continue
+    if base_ontology.exists():
+        ontology_files = list(base_ontology.rglob("*.ttl"))
+    else:
+        print(f"Warning: Ontology directory {base_ontology} not found")
         
-        # Skip files in hidden directories
-        if any(part.startswith('.') for part in ttl_file.parts):
-            continue
+    if base_shapes.exists():
+        shapes_files = list(base_shapes.rglob("*.ttl"))
+    else:
+        print(f"Warning: Shapes directory {base_shapes} not found")
         
-        # Separate ontology files from shapes files
-        if "-shapes.ttl" in ttl_file.name:
-            shapes_files.append(ttl_file)
-        else:
-            ontology_files.append(ttl_file)
-    
     print(f"Found {len(ontology_files)} ontology files and {len(shapes_files)} shapes files")
-    if ontology_files:
-        print("Ontology files:")
-        for f in ontology_files[:10]:  # Show first 10
-            print(f"  - {f.relative_to(search_base)}")
-        if len(ontology_files) > 10:
-            print(f"  ... and {len(ontology_files) - 10} more")
-    
     return ontology_files, shapes_files
-
-
-def bind_common_prefixes(graph: Graph) -> None:
-    """Bind common prefixes as a safety net when parsing ontology files.
-    
-    This function pre-binds prefixes to prevent "prefix not bound" errors
-    as a fallback. Since ontology files should now properly declare their
-    prefixes, this is primarily a safety mechanism. The namespace URIs
-    are inferred from common patterns and can be adjusted if needed.
-    """
-    # Base namespace pattern - adjust if your actual namespace differs
-    # Common patterns: "https://ontology.projectvic.org/", "http://ontology.projectvic.org/", etc.
-    base_ns = "https://cacontology.projectvic.org/"
-    
-    # Map of prefix names to namespace URIs
-    # Note: Since ontology files now use cacontology-* prefixes and should
-    # properly declare them, this is mainly a safety net. Update these
-    # if you encounter any remaining "prefix not bound" errors.
-    # The actual prefixes used in files may differ - this list covers
-    # common patterns that might be encountered.
-    common_prefixes = {
-        # Legacy icac-* prefixes (kept as fallback for any remaining old files)
-        # These map to the new CACOntology namespace (cacontology-*)
-        "icac-ai": f"{base_ns}cacontology-ai#",
-        "icac-asset-forfeiture": f"{base_ns}cacontology-asset-forfeiture#",
-        "icac-athletic": f"{base_ns}cacontology-athletic#",
-        "icac-case": f"{base_ns}cacontology-case-management#",
-        "icac-custodial": f"{base_ns}cacontology-custodial#",
-        "icac-detection": f"{base_ns}cacontology-detection#",
-        "icac-educational": f"{base_ns}cacontology-educational-exploitation#",
-        "icac-enterprises": f"{base_ns}cacontology-extremist-enterprises#",
-        "icac-forensics": f"{base_ns}cacontology-forensics#",
-        "icac-grooming": f"{base_ns}cacontology-grooming#",
-        "icac-strategy": f"{base_ns}cacontology-gufo-integration-strategy#",
-        "icac-institutional": f"{base_ns}cacontology-institutional-exploitation#",
-        "icac-international": f"{base_ns}cacontology-international#",
-        "icac-coord": f"{base_ns}cacontology-investigation-coordination#",
-        "icac-corruption": f"{base_ns}cacontology-law-enforcement-corruption#",
-        "icac-legal": f"{base_ns}cacontology-legal-harmonization#",
-        "icac-multi": f"{base_ns}cacontology-multi-jurisdiction#",
-        "icac-partnerships": f"{base_ns}cacontology-partnerships#",
-        "icac-physical": f"{base_ns}cacontology-physical-evidence#",
-        "icac-infrastructure": f"{base_ns}cacontology-platform-infrastructure#",
-        "icac-platforms": f"{base_ns}cacontology-platforms#",
-        "icac-prevention": f"{base_ns}cacontology-prevention#",
-        "icac-production": f"{base_ns}cacontology-production#",
-        "icac-recruitment": f"{base_ns}cacontology-recruitment-networks#",
-        "icac-sentencing": f"{base_ns}cacontology-sentencing#",
-        "icac-registry": f"{base_ns}cacontology-sex-offender-registry#",
-        "icac-trafficking": f"{base_ns}cacontology-sex-trafficking#",
-        "icac-sextortion": f"{base_ns}cacontology-sextortion#",
-        "icac-specialized": f"{base_ns}cacontology-specialized-units#",
-        "icac-abduction": f"{base_ns}cacontology-stranger-abduction#",
-        "icac-street": f"{base_ns}cacontology-street-recruitment#",
-        "icac-tactical": f"{base_ns}cacontology-tactical#",
-        "icac-taskforce": f"{base_ns}cacontology-taskforce#",
-        "icac-temporal": f"{base_ns}cacontology-temporal-gufo#",
-        "icac-training": f"{base_ns}cacontology-training#",
-        "icac-undercover": f"{base_ns}cacontology-undercover#",
-        # Common external prefixes
-        "dcterms": "http://purl.org/dc/terms/",
-        "owl": "http://www.w3.org/2002/07/owl#",
-        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-        "skos": "http://www.w3.org/2004/02/skos/core#",
-        "xsd": "http://www.w3.org/2001/XMLSchema#",
-        # Add cacontology-* prefixes here if needed (files should declare them, but kept as safety net)
-        # All ontology files now use the CACOntology namespace (cacontology-* prefixes)
-    }
-    
-    # Bind each prefix to the graph
-    for prefix, namespace in common_prefixes.items():
-        graph.bind(prefix, namespace)
-
 
 def merge_ontologies(ontology_files: List[Path], shapes_files: List[Path], output_file: Path) -> Graph:
     """Merge ontology and shapes files into a single file using rdflib."""
-    print(f"Merging {len(ontology_files)} ontology files and {len(shapes_files)} shapes files...")
-
+    print("Merging ontology files...")
+    
+    # Create output directory if it doesn't exist
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    
     merged_graph = Graph()
     
-    # Pre-bind common prefixes to avoid "not bound" errors
-    bind_common_prefixes(merged_graph)
-
-    # First pass: Load files that parse successfully to collect their prefix bindings
+    # Track successful loads
     successful_files = []
     failed_files = []
     
-    for ontology_file in sorted(ontology_files):
-        print(f"  Loading: {ontology_file.name}")
+    all_files = ontology_files + shapes_files
+    
+    for file_path in all_files:
         try:
-            g = Graph()
-            # Copy existing prefix bindings from merged_graph
-            for prefix, namespace in merged_graph.namespaces():
-                g.bind(prefix, namespace)
-            g.parse(str(ontology_file), format="turtle")
-            # Copy any new prefix bindings back to merged_graph
-            for prefix, namespace in g.namespaces():
-                merged_graph.bind(prefix, namespace)
-            merged_graph += g
-            successful_files.append(ontology_file)
+            # Use rdflib to parse and add to the graph
+            merged_graph.parse(str(file_path), format="turtle")
+            successful_files.append(file_path)
         except Exception as e:
-            print(f"  Warning: Failed to parse {ontology_file.name}: {e}")
-            failed_files.append((ontology_file, e))
-
-    # Second pass: Try failed files again now that we have more prefix bindings
-    if failed_files:
-        print(f"  Retrying {len(failed_files)} files that failed initially...")
-        for ontology_file, original_error in failed_files:
-            print(f"  Retrying: {ontology_file.name}")
-            try:
-                g = Graph()
-                # Copy all prefix bindings from merged_graph
-                for prefix, namespace in merged_graph.namespaces():
-                    g.bind(prefix, namespace)
-                g.parse(str(ontology_file), format="turtle")
-                # Copy any new prefix bindings back to merged_graph
-                for prefix, namespace in g.namespaces():
-                    merged_graph.bind(prefix, namespace)
-                merged_graph += g
-                successful_files.append(ontology_file)
-                print(f"  Successfully loaded {ontology_file.name} on retry")
-            except Exception as e:
-                print(f"  Warning: Still failed to parse {ontology_file.name}: {e}")
-
-    # Merge shapes files
-    for shapes_file in sorted(shapes_files):
-        print(f"  Loading shapes: {shapes_file.name}")
-        try:
-            g = Graph()
-            # Copy existing prefix bindings from merged_graph
-            for prefix, namespace in merged_graph.namespaces():
-                g.bind(prefix, namespace)
-            g.parse(str(shapes_file), format="turtle")
-            # Copy any new prefix bindings back to merged_graph
-            for prefix, namespace in g.namespaces():
-                merged_graph.bind(prefix, namespace)
-            merged_graph += g
-        except Exception as e:
-            print(f"  Warning: Failed to parse shapes file {shapes_file.name}: {e}")
-            continue
-
+            print(f"Error parsing {file_path}: {e}")
+            failed_files.append(file_path)
+            
+    # Serialize the merged graph to the output file
     print(f"Writing merged ontology to {output_file}...")
     merged_graph.serialize(str(output_file), format="turtle")
     print(f"Merged ontology contains {len(merged_graph)} triples")
     print(f"Successfully loaded {len(successful_files)}/{len(ontology_files)} ontology files")
     return merged_graph
 
-
-def generate_documentation(merged_ontology: Path, output_dir: Path) -> None:
-    """Generate documentation using Ontospy."""
-    print(f"Generating documentation with Ontospy...")
-
-    # Ensure output directory is empty to avoid interactive overwrite prompts
+def generate_documentation(ontology_file: Path, output_dir: Path):
+    """Generate HTML documentation using Ontospy."""
+    print(f"Generating documentation for {ontology_file}...")
+    
+    # Load the ontology with Ontospy
+    print("Loading ontology into Ontospy...")
+    onto = ontospy.Ontospy(str(ontology_file), verbose=True)
+    
+    # Generate documentation
+    print(f"Building HTML documentation in {output_dir}...")
+    v = HTMLVisualizer(onto)
+    
+    # Ontospy generates into a subdirectory, we want it in output_dir
+    # So we generate to a temp dir then move
+    temp_docs = Path(TEMP_DIR) / "docs"
+    if temp_docs.exists():
+        shutil.rmtree(temp_docs)
+    
+    v.build(str(temp_docs))
+    
+    # Move files to final destination
     if output_dir.exists():
-        try:
-            # If not empty, clear it to prevent ontospy from prompting
-            if any(output_dir.iterdir()):
-                print(f"Output directory {output_dir} exists and is not empty; clearing...")
-                shutil.rmtree(output_dir)
-        except Exception as e:
-            print(f"Warning: Failed to inspect or clear output directory {output_dir}: {e}")
-    output_dir.mkdir(parents=True, exist_ok=True)
-    
-    # Check if ontospy is available as a Python module first
-    try:
-        import ontospy
-        print(f"Ontospy module found (version check skipped)")
-    except ImportError:
-        print("Error: ontospy Python module not found.")
-        print("Please install dependencies with: pip install -r requirements.txt")
-        sys.exit(1)
-    
-    # First try programmatic generation to avoid interactive CLI prompts
-    try:
-        from ontospy import Ontospy as OntospyModel
-        visualizer_cls = None
-        try:
-            # Newer multi-page visualizer (try KompleteViz first, then HTMLVisualizerMulti)
-            try:
-                from ontodocs.viz.viz_html_multi import KompleteViz as Visualizer
-                visualizer_cls = Visualizer
-                print("Using ontodocs.viz.viz_html_multi.KompleteViz")
-            except ImportError:
-                from ontodocs.viz.viz_html_multi import HTMLVisualizerMulti as Visualizer
-                visualizer_cls = Visualizer
-                print("Using ontodocs.viz.viz_html_multi.HTMLVisualizerMulti")
-        except Exception:
-            try:
-                # Fallback single/multi visualizer module
-                from ontodocs.viz.viz_html import HTMLVisualizer as Visualizer
-                visualizer_cls = Visualizer
-                print("Using ontodocs.viz.viz_html.HTMLVisualizer")
-            except Exception:
-                visualizer_cls = None
-
-        if visualizer_cls is not None:
-            model = OntospyModel(str(merged_ontology))
-            viz = visualizer_cls(model)
-            # Some visualizers use build(); others expose build() with output_path
-            try:
-                viz.build(str(output_dir))
-            except TypeError:
-                # Check if output_path argument is named differently or required
-                viz.build(output_path=str(output_dir))
-            print(f"Documentation generated in {output_dir} (programmatic API)")
-            return
-        else:
-            print("ontodocs visualizer modules not available; falling back to CLI")
-    except Exception as e:
-        print(f"Programmatic Ontospy generation failed or unavailable: {e}")
-
-    # Check if ontospy command-line tool is available
-    ontospy_cmd_available = False
-    try:
-        result = run_command(["ontospy", "--help"], check=False)
-        if result.returncode == 0 or "usage" in result.stdout.lower() or "usage" in result.stderr.lower():
-            ontospy_cmd_available = True
-    except FileNotFoundError:
-        pass
-    
-    # Try alternative command formats
-    if not ontospy_cmd_available:
-        try:
-            result = run_command([sys.executable, "-m", "ontospy", "--help"], check=False)
-            if result.returncode == 0 or "usage" in result.stdout.lower() or "usage" in result.stderr.lower():
-                ontospy_cmd_available = True
-                ontospy_cmd = [sys.executable, "-m", "ontospy"]
-            else:
-                ontospy_cmd = [sys.executable, "-m", "ontospy"]  # Default to sys.executable
-        except FileNotFoundError:
-            ontospy_cmd = [sys.executable, "-m", "ontospy"]
+        # Clean existing docs but keep CNAME and .git if they exist
+        for item in output_dir.glob("*"):
+            if item.name not in [".git", "CNAME", ".nojekyll"]:
+                if item.is_dir():
+                    shutil.rmtree(item)
+                else:
+                    item.unlink()
     else:
-        ontospy_cmd = ["ontospy"]
-    
-    if not ontospy_cmd_available:
-        print("Warning: Could not verify ontospy command-line tool, but module is installed.")
-        print("Attempting to use ontospy command anyway...")
-    
-    # Generate documentation using Ontospy
-    # Ontospy gendocs command: ontospy gendocs <ontology_file> -o <output_dir>
-    cmd = ontospy_cmd + [
-        "gendocs",
-        str(merged_ontology),
-        "-o",
-        str(output_dir)
-    ]
-
-    # Try to answer common interactive prompts: 2 (Html: multi page), 0 (default theme)
-    seeded_input = "2\n0\n"
-    try:
-        print(f"Running: {' '.join(cmd)}")
-        result = run_command(cmd, check=False, input_text=seeded_input, timeout=ONTOSPY_TIMEOUT_SECONDS)
-    except subprocess.TimeoutExpired:
-        print("Warning: Ontospy gendocs timed out. Checking if docs were generated...")
-        # If docs exist despite timeout, accept success
-        if output_dir.exists() and any(output_dir.iterdir()):
-            print(f"Documentation appears to be generated in {output_dir} despite timeout.")
-            return
-        print("Retrying with python -m ontospy...")
-        alt_cmd = [sys.executable, "-m", "ontospy", "gendocs", str(merged_ontology), "-o", str(output_dir)]
-        try:
-            result = run_command(alt_cmd, check=False, input_text=seeded_input, timeout=ONTOSPY_TIMEOUT_SECONDS)
-        except subprocess.TimeoutExpired:
-            print("Error: Ontospy gendocs repeatedly timed out. Checking docs directory one last time...")
-            if output_dir.exists() and any(output_dir.iterdir()):
-                print(f"Documentation appears to be generated in {output_dir} despite repeated timeouts.")
-                return
-            sys.exit(1)
-
-    if result.returncode != 0:
-        print(f"Error output: {result.stderr}")
-        print(f"Standard output: {result.stdout}")
-
-        # Try alternative: python -m ontospy gendocs (if not already tried)
-        if ontospy_cmd == ["ontospy"]:
-            print("Trying alternative: python -m ontospy gendocs...")
-            alt_cmd = [sys.executable, "-m", "ontospy", "gendocs", str(merged_ontology), "-o", str(output_dir)]
-            result = run_command(alt_cmd, check=False, input_text=seeded_input, timeout=ONTOSPY_TIMEOUT_SECONDS)
-            if result.returncode == 0:
-                print(f"Documentation generated in {output_dir}")
-                return
-            # If non-zero but docs exist, accept success
-            if output_dir.exists() and any(output_dir.iterdir()):
-                print(f"Ontospy returned non-zero but documentation exists in {output_dir}; proceeding.")
-                return
-
-        print(f"Error: Ontospy command failed with return code {result.returncode}")
-        print("Please ensure ontospy is properly installed: pip install -r requirements.txt")
-        # As a last resort, if docs exist, consider it success
-        if output_dir.exists() and any(output_dir.iterdir()):
-            print(f"Proceeding as docs exist in {output_dir}.")
-            return
-        sys.exit(1)
-    
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
+    # Copy generated files
+    # The structure is usually temp_docs/index.html etc.
+    for item in temp_docs.glob("*"):
+        if item.is_dir():
+            shutil.copytree(item, output_dir / item.name)
+        else:
+            shutil.copy2(item, output_dir / item.name)
+            
     print(f"Documentation generated in {output_dir}")
-
-
-def analyze_file_sizes(output_dir: Path) -> None:
-    """Analyze file sizes and report potential issues."""
-    print("Analyzing file sizes...")
-    
-    if not output_dir.exists():
-        print(f"Warning: Output directory {output_dir} does not exist")
-        return
-    
-    # Find all files and their sizes
-    file_sizes = []
-    total_size = 0
-    
-    for file_path in output_dir.rglob("*"):
-        if file_path.is_file():
-            size = file_path.stat().st_size
-            file_sizes.append((file_path, size))
-            total_size += size
-    
-    # Sort by size (largest first)
-    file_sizes.sort(key=lambda x: x[1], reverse=True)
-    
-    # Report statistics
-    total_mb = total_size / (1024 * 1024)
-    print(f"Total documentation size: {total_mb:.2f} MB ({total_size:,} bytes)")
-    print(f"Total files: {len(file_sizes)}")
-    
-    # Report largest files
-    print("\nTop 10 largest files:")
-    for i, (file_path, size) in enumerate(file_sizes[:10], 1):
-        size_mb = size / (1024 * 1024)
-        rel_path = file_path.relative_to(output_dir)
-        print(f"  {i:2d}. {size_mb:8.2f} MB  {rel_path}")
-    
-    # Check for problematic large files
-    large_files = [(fp, s) for fp, s in file_sizes if s > 5 * 1024 * 1024]  # > 5MB
-    if large_files:
-        print(f"\nWARNING: Found {len(large_files)} file(s) larger than 5MB:")
-        for file_path, size in large_files:
-            size_mb = size / (1024 * 1024)
-            rel_path = file_path.relative_to(output_dir)
-            print(f"  - {size_mb:.2f} MB: {rel_path}")
-        print("  These files may cause browser timeout or memory issues.")
-    
-    # Check for files exceeding 1MB (GitHub Pages recommendation)
-    medium_files = [(fp, s) for fp, s in file_sizes if s > 1 * 1024 * 1024 and s <= 5 * 1024 * 1024]
-    if medium_files:
-        print(f"\nNote: Found {len(medium_files)} file(s) between 1MB and 5MB:")
-        print("  These files exceed GitHub Pages recommended limit of 1MB per file.")
-
 
 def extract_common_resources(output_dir: Path) -> tuple[Optional[Path], Optional[Path], Optional[Path]]:
     """Extract common CSS and JavaScript from HTML files into shared files.
@@ -540,46 +146,64 @@ def extract_common_resources(output_dir: Path) -> tuple[Optional[Path], Optional
         print(f"Warning: Output directory {output_dir} does not exist")
         return None, None, None
     
-    # Find a sample HTML file to extract common resources from
     html_files = list(output_dir.rglob("*.html"))
     if not html_files:
         print("No HTML files found to extract resources from")
         return None, None, None
     
-    sample_file = html_files[0]
-    print(f"Using {sample_file.name} as template for common resources")
+    # Sort by size to find substantive files first (likely class documentation)
+    html_files.sort(key=lambda f: f.stat().st_size, reverse=True)
+    
+    js_parts = []
+    common_css = ""
+    
+    print(f"Scanning {len(html_files)} files for extractable resources...")
     
     try:
-        content = sample_file.read_text(encoding="utf-8")
+        for file in html_files:
+            try:
+                content = file.read_text(encoding="utf-8")
+                
+                # Extract inline CSS (between <style type="text/css"> and </style>)
+                if not common_css:
+                    css_match = re.search(r'<style[^>]*type=["\']text/css["\'][^>]*>(.*?)</style>', content, re.DOTALL)
+                    if css_match:
+                        common_css = css_match.group(1).strip()
+                
+                # Extract common JavaScript (content inside script tags)
+                # We'll extract the menu toggle and search scripts
+                
+                # Menu toggle script
+                if not any('menu-toggle' in part for part in js_parts):
+                    menu_match = re.search(
+                        r'<script[^>]*>(\s*\$\(["\']#menu-toggle["\']\)\.click\(function\(e\).*?)</script>',
+                        content,
+                        re.DOTALL
+                    )
+                    if menu_match:
+                        js_parts.append(menu_match.group(1).strip())
+                
+                # Search input script
+                if not any('search-input-sidebar' in part for part in js_parts):
+                    search_match = re.search(
+                        r'<script[^>]*>(\s*\$\(["\']#search-input-sidebar["\']\)\.keyup\(function.*?)</script>',
+                        content,
+                        re.DOTALL
+                    )
+                    if search_match:
+                        js_parts.append(search_match.group(1).strip())
+                
+                # If we found everything, we can stop
+                if common_css and len(js_parts) >= 2:
+                    print(f"Found all resources in {file.name}")
+                    break
+                    
+            except Exception:
+                continue
         
-        # Extract inline CSS (between <style type="text/css"> and </style>)
-        css_match = re.search(r'<style[^>]*type=["\']text/css["\'][^>]*>(.*?)</style>', content, re.DOTALL)
-        common_css = ""
-        if css_match:
-            common_css = css_match.group(1).strip()
-            print(f"  Extracted {len(common_css)} characters of inline CSS")
-        
-        # Extract common JavaScript (scripts before closing body tag, excluding page-specific ones)
-        # We'll extract the menu toggle and search scripts
-        js_parts = []
-        
-        # Menu toggle script
-        menu_script_match = re.search(
-            r'<script[^>]*>\s*\$\(["\']#menu-toggle["\']\)\.click\(function\(e\)[^<]*</script>',
-            content,
-            re.DOTALL
-        )
-        if menu_script_match:
-            js_parts.append(menu_script_match.group(0))
-        
-        # Search input script
-        search_script_match = re.search(
-            r'<script[^>]*>\s*\$\(["\']#search-input-sidebar["\']\)\.keyup\(function[^<]*</script>',
-            content,
-            re.DOTALL
-        )
-        if search_script_match:
-            js_parts.append(search_script_match.group(0))
+        if not common_css and not js_parts:
+            print("Could not find common resources in any file")
+            return None, None, None
         
         # Create shared resources directory
         shared_dir = output_dir / "static" / "shared"
@@ -590,13 +214,18 @@ def extract_common_resources(output_dir: Path) -> tuple[Optional[Path], Optional
         if common_css:
             common_css_file.write_text(common_css, encoding="utf-8")
             print(f"  Created {common_css_file.relative_to(output_dir)}")
+        else:
+            common_css_file = None
         
         # Write common JS file
         common_js_file = shared_dir / "common.js"
         if js_parts:
-            common_js = "\n\n".join(js_parts)
+            # Wrap in document ready to ensure DOM and jQuery are available
+            common_js = "$(document).ready(function() {\n" + "\n\n".join(js_parts) + "\n});"
             common_js_file.write_text(common_js, encoding="utf-8")
             print(f"  Created {common_js_file.relative_to(output_dir)}")
+        else:
+            common_js_file = None
         
         return common_css_file, common_js_file, shared_dir
         
@@ -626,16 +255,6 @@ def optimize_html_files(output_dir: Path, common_css_file: Optional[Path] = None
     
     print(f"Found {len(html_files)} HTML file(s) to optimize")
     
-    # Calculate relative paths for shared resources
-    css_link = None
-    js_link = None
-    if common_css_file and common_css_file.exists():
-        css_link = common_css_file.relative_to(output_dir).as_posix()
-        print(f"  Will replace inline CSS with: {css_link}")
-    if common_js_file and common_js_file.exists():
-        js_link = common_js_file.relative_to(output_dir).as_posix()
-        print(f"  Will replace inline JS with: {js_link}")
-    
     total_saved = 0
     optimized_count = 0
     css_replaced_count = 0
@@ -644,7 +263,13 @@ def optimize_html_files(output_dir: Path, common_css_file: Optional[Path] = None
     
     for html_file in html_files:
         try:
-            # Read original file
+            # Skip if it's the index file we just created for namespaces
+            # (although we might want to optimize it too, but let's be safe)
+            if html_file.name == "index.html" and html_file.parent != output_dir:
+                # Check if it's one of our redirect pages
+                # Actually, optimization should be fine for them too
+                pass
+            
             original_content = html_file.read_text(encoding="utf-8")
             original_size = len(original_content.encode("utf-8"))
             
@@ -657,7 +282,7 @@ def optimize_html_files(output_dir: Path, common_css_file: Optional[Path] = None
             # Calculate correct relative path to shared resources
             css_link_relative = None
             js_link_relative = None
-            if css_link and common_css_file:
+            if common_css_file:
                 # Calculate relative path from html_file to css_file
                 css_file_rel = common_css_file.relative_to(output_dir)
                 # Go up from html_file's directory to output_dir, then to css_file
@@ -667,7 +292,7 @@ def optimize_html_files(output_dir: Path, common_css_file: Optional[Path] = None
                 else:
                     css_link_relative = str(css_file_rel).replace('\\', '/')
             
-            if js_link and common_js_file:
+            if common_js_file:
                 # Calculate relative path from html_file to js_file
                 js_file_rel = common_js_file.relative_to(output_dir)
                 # Go up from html_file's directory to output_dir, then to js_file
@@ -689,13 +314,13 @@ def optimize_html_files(output_dir: Path, common_css_file: Optional[Path] = None
             # Replace common JavaScript with link to shared JS file
             if js_link_relative:
                 # Replace menu toggle script
-                menu_script_pattern = r'<script[^>]*>\s*\$\(["\']#menu-toggle["\']\)\.click\(function\(e\)[^<]*</script>'
+                menu_script_pattern = r'<script[^>]*>\s*\$\(["\']#menu-toggle["\']\)\.click\(function\(e\).*?</script>'
                 if re.search(menu_script_pattern, optimized_content, re.DOTALL):
                     optimized_content = re.sub(menu_script_pattern, '', optimized_content, flags=re.DOTALL)
                     js_replaced_count += 1
                 
                 # Replace search input script
-                search_script_pattern = r'<script[^>]*>\s*\$\(["\']#search-input-sidebar["\']\)\.keyup\(function[^<]*</script>'
+                search_script_pattern = r'<script[^>]*>\s*\$\(["\']#search-input-sidebar["\']\)\.keyup\(function.*?</script>'
                 if re.search(search_script_pattern, optimized_content, re.DOTALL):
                     optimized_content = re.sub(search_script_pattern, '', optimized_content, flags=re.DOTALL)
                 
@@ -736,30 +361,29 @@ def optimize_html_files(output_dir: Path, common_css_file: Optional[Path] = None
             
             # Add defer to non-critical scripts (only if not already present)
             # Defer jQuery and Bootstrap (non-critical for initial render)
+            # CRITICAL: Only defer jQuery if common JS extraction succeeded.
+            # If extraction failed, inline scripts using jQuery might remain and break if jQuery is deferred.
             def add_defer_if_missing(match):
                 attrs = match.group(1)
                 if 'defer' not in attrs and 'async' not in attrs:
                     return f'<script{attrs} defer>'
                 return match.group(0)
             
-            # Apply defer to jQuery
-            optimized_content = re.sub(
-                r'<script([^>]*src=["\']static/libs/jquery[^"\']*["\'][^>]*)>',
-                add_defer_if_missing,
-                optimized_content
-            )
+            # Apply defer to jQuery ONLY if we successfully extracted common JS
+            if js_link_relative:
+                optimized_content = re.sub(
+                    r'<script([^>]*src=["\']static/libs/jquery[^"\']*["\'][^>]*)>',
+                    add_defer_if_missing,
+                    optimized_content
+                )
+            
             # Apply defer to Bootstrap
             optimized_content = re.sub(
                 r'<script([^>]*src=["\']static/libs/bootstrap[^"\']*["\'][^>]*)>',
                 add_defer_if_missing,
                 optimized_content
             )
-            # Apply defer to Chart.js
-            optimized_content = re.sub(
-                r'<script([^>]*src=["\']static/libs/chartjs[^"\']*["\'][^>]*)>',
-                add_defer_if_missing,
-                optimized_content
-            )
+            # Chart.js needs to be loaded synchronously for inline scripts to work
             # Apply defer to IE viewport bug workaround (non-critical)
             optimized_content = re.sub(
                 r'<script([^>]*src=["\']static/libs/bootstrap-3_3_7-dist/js/ie10-viewport-bug-workaround\.js["\'][^>]*)>',
@@ -846,267 +470,33 @@ def optimize_html_files(output_dir: Path, common_css_file: Optional[Path] = None
     if optimized_count > 0 or css_replaced_count > 0 or js_replaced_count > 0 or lazy_loading_added > 0:
         total_saved_mb = total_saved / (1024 * 1024)
         total_saved_kb = total_saved / 1024
-        print(f"\nOptimization complete:")
-        print(f"  - Files optimized: {optimized_count}/{len(html_files)}")
-        if css_replaced_count > 0:
-            print(f"  - Inline CSS replaced with shared file: {css_replaced_count} files")
-        if js_replaced_count > 0:
-            print(f"  - Inline JS replaced with shared file: {js_replaced_count} files")
-        if lazy_loading_added > 0:
-            print(f"  - Lazy loading added to images: {lazy_loading_added} images")
-            print(f"  - Scripts deferred: jQuery, Bootstrap, Chart.js (non-critical scripts)")
-        print(f"  - Total space saved: {total_saved_kb:.1f} KB ({total_saved_mb:.2f} MB)")
-        
-        # Estimate additional savings from shared resources
-        if css_link and css_replaced_count > 0:
-            # Each file had ~164 lines of CSS, estimate ~8KB per file saved
-            estimated_css_savings = css_replaced_count * 8 * 1024  # 8KB per file
-            print(f"  - Estimated CSS deduplication savings: {estimated_css_savings / (1024*1024):.1f} MB")
-        if js_link and js_replaced_count > 0:
-            # Each file had ~200 bytes of JS, estimate savings
-            estimated_js_savings = js_replaced_count * 200
-            print(f"  - Estimated JS deduplication savings: {estimated_js_savings / (1024*1024):.1f} MB")
-        
-        print(f"\n  Performance improvements:")
-        print(f"  - Images load only when visible (lazy loading)")
-        print(f"  - Non-critical scripts deferred (faster initial page load)")
-        print(f"  - Shared CSS/JS cached by browser (reduced bandwidth)")
+        print(f"Optimization complete:")
+        print(f"  - Optimized {optimized_count} files")
+        print(f"  - Replaced {css_replaced_count} inline CSS blocks")
+        print(f"  - Replaced {js_replaced_count} inline JS blocks")
+        print(f"  - Added lazy loading to {lazy_loading_added} images")
+        print(f"  - Saved {total_saved_kb:.2f} KB ({total_saved_mb:.2f} MB)")
     else:
-        print("No significant optimization opportunities found")
+        print("Optimization complete: No improvements found")
 
 
-def create_index_html(output_dir: Path) -> None:
-    """Create an index.html file that redirects to the main documentation entry point.
+def analyze_file_sizes(directory: Path):
+    """Analyze file sizes and report largest files."""
+    print("Analyzing file sizes...")
     
-    GitHub Pages requires an index.html at the root to serve the homepage.
-    This function detects the primary entry point (preferring entities.html)
-    and creates a redirect page with improved error handling and loading indicators.
-    """
-    print("Creating index.html...")
+    files = list(directory.rglob("*"))
+    files = [f for f in files if f.is_file()]
     
-    if not output_dir.exists():
-        print(f"Warning: Output directory {output_dir} does not exist")
+    if not files:
         return
-    
-    # Priority order for main entry points based on actual Ontospy output
-    # NOTE: Do NOT include "index.html" here as it would create a redirect loop
-    # Based on actual files: entities-az.html, entities-tree-classes.html, etc.
-    preferred_files = [
-        "entities-az.html",           # Main A-Z listing (most comprehensive)
-        "entities-tree-classes.html", # Class hierarchy
-        "entities-tree-properties.html", # Properties hierarchy
-        "entities-tree-concepts.html", # Concepts hierarchy
-        "entities-tree-shapes.html",  # Shapes hierarchy
-        "statistics.html",            # Statistics page
-        "classes.html",               # Fallback: simple classes list
-        "entities.html"               # Fallback: simple entities list
-    ]
-    
-    # Find all HTML files in the output directory, excluding index.html
-    html_files = [f for f in output_dir.iterdir() if f.is_file() and f.suffix == ".html" and f.name != "index.html"]
-    
-    if not html_files:
-        print("Warning: No HTML files found in output directory (excluding index.html)")
-        return
-    
-    # Determine the target file
-    target_file = None
-    target_file_size = 0
-    
-    # First, try preferred files (excluding index.html)
-    for preferred in preferred_files:
-        candidate = output_dir / preferred
-        if candidate.exists() and candidate.is_file() and candidate.suffix == ".html" and candidate.name != "index.html":
-            target_file = preferred
-            target_file_size = candidate.stat().st_size
-            print(f"Found preferred entry point: {target_file}")
-            break
-    
-    # If no preferred file found, use the first HTML file (excluding index.html)
-    if target_file is None:
-        # Sort by name for consistency
-        html_files_sorted = sorted(html_files, key=lambda x: x.name)
-        for html_file in html_files_sorted:
-            if html_file.name != "index.html":
-                target_file = html_file.name
-                target_file_size = html_file.stat().st_size
-                print(f"Using first available HTML file as entry point: {target_file}")
-                break
-    
-    if target_file is None:
-        print("ERROR: Could not determine target file for index.html redirect")
-        print(f"Available HTML files in output directory:")
-        for html_file in sorted(html_files, key=lambda x: x.name)[:20]:  # Show first 20
-            print(f"  - {html_file.name}")
-        if len(html_files) > 20:
-            print(f"  ... and {len(html_files) - 20} more files")
-        return
-    
-    # Verify target file is accessible and check its size
-    target_path = output_dir / target_file
-    if not target_path.exists():
-        print(f"ERROR: Target file {target_file} does not exist at {target_path}")
-        return
-    
-    target_file_size_mb = target_file_size / (1024 * 1024)
-    if target_file_size_mb > 5:
-        print(f"Warning: Target file {target_file} is {target_file_size_mb:.2f} MB - may cause loading issues")
-    
-    # Create index.html with improved redirect, loading indicator, and error handling
-    index_content = f"""<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0; url={target_file}">
-    <title>CAC Ontology Documentation - Loading...</title>
-    <style>
-        body {{
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            background: #f5f5f5;
-            color: #333;
-        }}
-        .container {{
-            text-align: center;
-            max-width: 600px;
-        }}
-        .spinner {{
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }}
-        @keyframes spin {{
-            0% {{ transform: rotate(0deg); }}
-            100% {{ transform: rotate(360deg); }}
-        }}
-        .message {{
-            margin: 20px 0;
-            font-size: 16px;
-            line-height: 1.6;
-        }}
-        .link {{
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 24px;
-            background: #3498db;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: 500;
-        }}
-        .link:hover {{
-            background: #2980b9;
-        }}
-        .error {{
-            color: #e74c3c;
-            margin-top: 20px;
-            padding: 15px;
-            background: #ffeaea;
-            border-radius: 4px;
-            display: none;
-        }}
-    </style>
-    <script>
-        (function() {{
-            var targetUrl = "{target_file}";
-            var redirectAttempted = false;
-            var maxWaitTime = 30000; // 30 seconds
-            var startTime = Date.now();
-            
-            function attemptRedirect() {{
-                if (redirectAttempted) return;
-                redirectAttempted = true;
-                
-                try {{
-                    // Try immediate redirect
-                    window.location.replace(targetUrl);
-                }} catch (e) {{
-                    console.error("Redirect error:", e);
-                    showError("Redirect failed. Please use the link below.");
-                }}
-            }}
-            
-            function showError(message) {{
-                var errorDiv = document.getElementById("error");
-                if (errorDiv) {{
-                    errorDiv.textContent = message;
-                    errorDiv.style.display = "block";
-                }}
-            }}
-            
-            function checkTimeout() {{
-                var elapsed = Date.now() - startTime;
-                if (elapsed > maxWaitTime) {{
-                    showError("Page is taking longer than expected to load. The documentation file may be very large. Please use the link below or wait a bit longer.");
-                }}
-            }}
-            
-            // Attempt redirect immediately
-            attemptRedirect();
-            
-            // Check for timeout
-            setTimeout(checkTimeout, maxWaitTime);
-            
-            // Fallback: try again after a short delay
-            setTimeout(function() {{
-                if (window.location.href.indexOf(targetUrl) === -1) {{
-                    attemptRedirect();
-                }}
-            }}, 1000);
-        }})();
-    </script>
-</head>
-<body>
-    <div class="container">
-        <div class="spinner"></div>
-        <div class="message">
-            <h1>Loading CAC Ontology Documentation</h1>
-            <p>Redirecting to the documentation...</p>
-            <p style="font-size: 14px; color: #666;">If this page does not redirect automatically, please use the link below.</p>
-        </div>
-        <a href="{target_file}" class="link">Go to Documentation</a>
-        <div id="error" class="error"></div>
-    </div>
-</body>
-</html>
-"""
-    
-    index_path = output_dir / "index.html"
-    try:
-        # Remove existing index.html if it exists (to avoid conflicts)
-        if index_path.exists():
-            print(f"  Removing existing index.html before creating new one")
-            index_path.unlink()
         
-        index_path.write_text(index_content, encoding="utf-8")
-        print(f"Created index.html redirecting to {target_file}")
-        print(f"  Target file size: {target_file_size_mb:.2f} MB")
-        print(f"  Redirect URL: {target_file}")
-        
-        # Verify the created file
-        if index_path.exists():
-            created_size = index_path.stat().st_size
-            print(f"  Created index.html size: {created_size:,} bytes")
-        else:
-            print(f"  WARNING: index.html was not created successfully!")
-            
-    except Exception as e:
-        print(f"ERROR creating index.html: {e}")
-        import traceback
-        traceback.print_exc()
-
-
+    # Sort by size
+    files.sort(key=lambda f: f.stat().st_size, reverse=True)
+    
+    print("Largest files:")
+    for i, file in enumerate(files[:10]):
+        size_mb = file.stat().st_size / (1024 * 1024)
+        print(f"  {i+1}. {file.relative_to(directory)}: {size_mb:.2f} MB")
 
 def generate_namespace_indices(graph: Graph, output_dir: Path) -> None:
     """Generate index pages for each namespace module to handle IRI redirects.
@@ -1137,114 +527,112 @@ def generate_namespace_indices(graph: Graph, output_dir: Path) -> None:
         if not isinstance(subject, rdflib.URIRef):
             continue
             
-        uri_str = str(subject)
-        if not uri_str.startswith(base_ns):
+        subject_str = str(subject)
+        if not subject_str.startswith(base_ns):
             continue
             
-        # Determine type
-        entity_type = None
-        type_prefix = None
-        
-        # Check rdf:type
+        # Check if it's a Class or Property (Concept is SKOS, Shapes are SHACL)
         types = list(graph.objects(subject, RDF.type))
-        is_class = any(t in (OWL.Class, RDFS.Class) for t in types)
-        is_prop = any(t in (OWL.ObjectProperty, OWL.DatatypeProperty, RDF.Property, OWL.AnnotationProperty) for t in types)
+        entity_type = None
         
-        if is_class:
+        if OWL.Class in types or RDFS.Class in types:
             entity_type = "Class"
-            type_prefix = "class"
-        elif is_prop:
+        elif any(t for t in types if str(t).endswith("Property")):
             entity_type = "Property"
-            type_prefix = "prop"
-        else:
+        elif any(str(t) == "http://www.w3.org/2004/02/skos/core#Concept" for t in types):
+            entity_type = "Concept"
+        elif any(str(t) == "http://www.w3.org/ns/shacl#NodeShape" for t in types):
+            entity_type = "Shape"
+            
+        if not entity_type:
             continue
             
-        # Determine prefix and local name
-        try:
-            prefix, _, local_name = graph.compute_qname(subject)
-        except Exception:
-            # Fallback if qname computation fails
-            if "#" in uri_str:
-                ns_part, local_name = uri_str.split("#", 1)
-                # Find prefix for this ns_part
-                prefix = None
-                for p, n in graph.namespaces():
-                    if str(n) == ns_part + "#" or str(n) == ns_part:
-                        prefix = p
-                        break
-                if not prefix:
-                    # Last resort: use the last part of the path as prefix guess
-                    # e.g. .../abduction# -> cacontology-abduction (heuristic)
-                    continue
-            else:
-                continue
-
-        # Identify module path
+        # Parse namespace and local name
         # e.g. https://cacontology.projectvic.org/abduction#StrangerAbduction
-        ns_uri = uri_str.split("#")[0] if "#" in uri_str else uri_str
+        # namespace part: abduction/ (or empty for core)
+        # local name: StrangerAbduction
         
-        if ns_uri.rstrip("/") == base_ns.rstrip("/"):
-             module_path = ""
-        else:
-             module_path = ns_uri.replace(base_ns, "").strip("/")
-        
-        if module_path not in ns_entities:
-            ns_entities[module_path] = []
-            
-        filename = get_filename(prefix, local_name, type_prefix)
-        
-        ns_entities[module_path].append({
-            "name": local_name,
-            "type": entity_type,
-            "file": filename,
-            "uri": uri_str
-        })
-        count += 1
-        
-    print(f"  Found {count} entities across {len(ns_entities)} namespaces")
+        if "#" in subject_str:
+            ns_part, local_name = subject_str.split("#", 1)
+            if ns_part.startswith(base_ns):
+                module_path = ns_part[len(base_ns):]
+                if module_path.endswith("/"):
+                    module_path = module_path[:-1]
+                
+                # Map to ontospy prefix format
+                # core -> cacontology
+                # abduction -> cacontology-abduction
+                ontospy_prefix = "cacontology"
+                if module_path:
+                    ontospy_prefix = f"cacontology-{module_path.replace('/', '-')}"
+                
+                type_prefix = "class" if entity_type == "Class" else \
+                             "prop" if entity_type == "Property" else \
+                             "concept" if entity_type == "Concept" else \
+                             "shape"
+                             
+                filename = get_filename(ontospy_prefix, local_name, type_prefix)
+                
+                if module_path not in ns_entities:
+                    ns_entities[module_path] = []
+                    
+                ns_entities[module_path].append({
+                    "id": local_name,
+                    "name": local_name,
+                    "type": entity_type,
+                    "file": filename,
+                    "uri": subject_str
+                })
+                count += 1
 
-    # Generate index files
+    print(f"Found {count} entities across {len(ns_entities)} modules")
+    
+    # Generate index pages
     for module_path, entities in ns_entities.items():
-        # Skip if no module path (root) - strictly following plan to create subdirs
         if not module_path:
-            continue
-             
+            continue # Skip root, as we already have an index.html
+            
+        # Create directory
         target_dir = output_dir / module_path
-        try:
-            target_dir.mkdir(parents=True, exist_ok=True)
-        except Exception as e:
-            print(f"  Warning: Could not create directory {target_dir}: {e}")
-            continue
+        target_dir.mkdir(parents=True, exist_ok=True)
         
-        # Sort entities
+        # Create mapping for JS redirect
+        redirect_map = {e["id"]: f"../{e['file']}" for e in entities}
+        
+        # Sort entities by name
         entities.sort(key=lambda x: x["name"])
         
-        # Create JSON map for JS
-        redirect_map = {e["name"]: f"../{e['file']}" for e in entities}
-        
-        # Generate HTML
+        # Generate index.html
         html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CAC Ontology - {module_path.title()} Module</title>
+    <title>{module_path.title()} Module - CAC Ontology</title>
     <style>
-        body {{ font-family: system-ui, -apple-system, sans-serif; line-height: 1.5; max-width: 800px; margin: 0 auto; padding: 20px; background: #f9f9f9; color: #333; }}
-        h1 {{ border-bottom: 1px solid #eee; padding-bottom: 10px; color: #2c3e50; }}
-        .container {{ background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }}
-        .entity-list {{ list-style: none; padding: 0; columns: 2; }}
-        .entity-list li {{ margin: 5px 0; break-inside: avoid; }}
-        .type-badge {{ 
-            display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.75em; font-weight: bold; margin-right: 8px; width: 60px; text-align: center; text-transform: uppercase;
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
         }}
-        .class-badge {{ background: #e3f2fd; color: #0d47a1; }}
-        .prop-badge {{ background: #f3e5f5; color: #7b1fa2; }}
-        a {{ text-decoration: none; color: #0277bd; }}
-        a:hover {{ text-decoration: underline; color: #01579b; }}
-        .loading {{ display: none; font-size: 1.2em; color: #666; text-align: center; margin: 40px 0; }}
-        .back-link {{ display: inline-block; margin-bottom: 20px; color: #666; font-size: 0.9em; }}
-        @media (max-width: 600px) {{ .entity-list {{ columns: 1; }} }}
+        h1 {{ color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }}
+        .entity-list {{ list-style: none; padding: 0; }}
+        .entity-list li {{ margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; }}
+        .type-badge {{ 
+            display: inline-block; padding: 2px 8px; border-radius: 12px; 
+            font-size: 0.8em; font-weight: bold; margin-right: 10px; color: white;
+        }}
+        .class-badge {{ background-color: #3498db; }}
+        .prop-badge {{ background-color: #27ae60; }}
+        .conc-badge {{ background-color: #e67e22; }}
+        .shap-badge {{ background-color: #9b59b6; }}
+        a {{ color: #2980b9; text-decoration: none; }}
+        a:hover {{ text-decoration: underline; }}
+        .loading {{ text-align: center; margin-top: 50px; font-style: italic; color: #666; display: none; }}
+        .back-link {{ display: inline-block; margin-bottom: 20px; font-size: 0.9em; }}
     </style>
     <script>
         // Redirect logic
@@ -1346,28 +734,9 @@ def main():
         print("The site may not deploy correctly or may experience severe loading issues.")
         print("Consider:")
         print("  - Splitting documentation into multiple repositories")
-        print("  - Using a different hosting solution for large documentation")
-        print("  - Reducing the scope of generated documentation")
+        print("  - Hosting documentation externally (e.g., AWS S3, Netlify)")
+        print("  - Optimizing generated HTML further")
         print("=" * 60)
-        print("")
-        # Don't fail the build, but make it very clear this is a problem
-    
-    # Create index.html for GitHub Pages
-    create_index_html(output_dir)
-    
-    # Generate namespace index pages for IRI resolution
-    generate_namespace_indices(merged_graph, output_dir)
-    
-    # Cleanup
-    print(f"Cleaning up temporary files...")
-    shutil.rmtree(TEMP_DIR, ignore_errors=True)
-    
-    print("=" * 60)
-    print("Documentation generation complete!")
-    print(f"Documentation available at: {output_dir}")
-    print("=" * 60)
-
 
 if __name__ == "__main__":
     main()
-
