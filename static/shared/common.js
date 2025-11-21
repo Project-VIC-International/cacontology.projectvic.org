@@ -1,11 +1,8 @@
-<script>
+$(document).ready(function() {
 $("#menu-toggle").click(function(e) {
     e.preventDefault();
     $("#wrapper").toggleClass("toggled");
 });
-</script>
-
-<script type="text/javascript">
 
 $('#search-input-sidebar').keyup(function() {
 
@@ -18,5 +15,4 @@ $('#search-input-sidebar').keyup(function() {
       return !~text.indexOf(val);
   }).hide();
 });
-
-</script>
+});
