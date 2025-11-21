@@ -4,6 +4,7 @@ import re
 import json
 import sys
 import shutil
+import subprocess
 from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Set, Tuple
@@ -37,9 +38,30 @@ CACON = Namespace("https://cacontology.projectvic.org#")
 
 def clone_ontology_repo():
     """Clone or update the ontology repository."""
-    # For this script, we assume the ontology is already present in the expected directory
-    # relative to the script execution
-    pass  # Logic handled by CI/CD or manual setup
+    ontology_repo_path = REPO_ROOT / "ontology_repo"
+    
+    if ontology_repo_path.exists():
+        print(f"Ontology repository found at {ontology_repo_path}")
+        # Check if it's a git repo and pull
+        if (ontology_repo_path / ".git").exists():
+            print("Updating ontology repository...")
+            try:
+                subprocess.run(["git", "-C", str(ontology_repo_path), "pull"], check=True)
+            except subprocess.CalledProcessError as e:
+                print(f"Warning: Failed to update ontology repo: {e}")
+    else:
+        print("Cloning ontology repository...")
+        try:
+            subprocess.run([
+                "git", "clone", 
+                "https://github.com/Project-VIC-International/CAC-Ontology.git", 
+                str(ontology_repo_path)
+            ], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Error cloning ontology repo: {e}")
+            sys.exit(1)
+            
+    return ontology_repo_path
 
 def find_ontology_files(base_dir: Path) -> Tuple[List[Path], List[Path]]:
     """Recursively find all .ttl files in the ontology and shapes directories."""
