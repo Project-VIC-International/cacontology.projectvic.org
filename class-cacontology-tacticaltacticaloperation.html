@@ -4349,10 +4349,10 @@
               <h3 class="panel-title">Shapes (4)</h3>
             </div>
             <div class="panel-body">
-                <li><a href="shape-cacontology-tacticaltemporalvalidationshape.html" title="https://cacontology.projectvic.org/tactical#TemporalValidationShape">cacontology-tactical:TemporalValidationShape</a></li>
                 <li><a href="shape-cacontology-tacticaltacticaloperationshape.html" title="https://cacontology.projectvic.org/tactical#TacticalOperationShape">cacontology-tactical:TacticalOperationShape</a></li>
-                <li><a href="shape-cacontology-tacticaldataqualityshape.html" title="https://cacontology.projectvic.org/tactical#DataQualityShape">cacontology-tactical:DataQualityShape</a></li>
                 <li><a href="shape-cacontology-tacticaltacticaloperationcrossreferenceshape.html" title="https://cacontology.projectvic.org/tactical#TacticalOperationCrossReferenceShape">cacontology-tactical:TacticalOperationCrossReferenceShape</a></li>
+                <li><a href="shape-cacontology-tacticaldataqualityshape.html" title="https://cacontology.projectvic.org/tactical#DataQualityShape">cacontology-tactical:DataQualityShape</a></li>
+                <li><a href="shape-cacontology-tacticaltemporalvalidationshape.html" title="https://cacontology.projectvic.org/tactical#TemporalValidationShape">cacontology-tactical:TemporalValidationShape</a></li>
             </div>
           </div>
         </div>
@@ -5290,8 +5290,10 @@
                         <a class="propcolor" title="cacontology-tactical:operationType" href="prop-cacontology-tacticaloperationtype.html">cacontology-tactical:operationType</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Type of tactical operation (raid, arrest, rescue, standoff_resolution).
                       <br>
                     </td>
                     <td>
@@ -5305,7 +5307,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:string</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5336,8 +5339,10 @@
                         <a class="propcolor" title="cacontology-tactical:planningDuration" href="prop-cacontology-tacticalplanningduration.html">cacontology-tactical:planningDuration</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Time spent planning the tactical operation (in hours).
                       <br>
                     </td>
                     <td>
@@ -5351,7 +5356,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:decimal</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5359,10 +5365,8 @@
                         <a class="propcolor" title="cacontology-tactical:riskLevel" href="prop-cacontology-tacticalrisklevel.html">cacontology-tactical:riskLevel</a>
                     </td>
                     <td>
-                      owl:DatatypeProperty
                     </td>
                     <td>
-                      Assessed risk level of the operation (low, medium, high, extreme).
                       <br>
                     </td>
                     <td>
@@ -5376,8 +5380,7 @@
                           <br>
                     </td>
                     <td>
-                              <i>xsd:string</i>
-                            <br>
+                          <i>owl:Thing</i>
                     </td>
                 </tr>
                 <tr>
@@ -5453,7 +5456,7 @@
 	</div><!-- /#page-content-wrapper -->
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 02:28:45 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
+      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 03:19:21 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
     </div>
   </footer>
 </div><!-- /#wrapper -->

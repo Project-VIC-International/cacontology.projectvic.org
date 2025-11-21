@@ -4360,13 +4360,13 @@
               <h3 class="panel-title">Shapes (8)</h3>
             </div>
             <div class="panel-body">
-                <li><a href="shape-cacontology-forensicsdataqualityshape.html" title="https://cacontology.projectvic.org/forensics#DataQualityShape">cacontology-forensics:DataQualityShape</a></li>
-                <li><a href="shape-cacontology-forensicstemporalvalidationshape.html" title="https://cacontology.projectvic.org/forensics#TemporalValidationShape">cacontology-forensics:TemporalValidationShape</a></li>
-                <li><a href="shape-cacontology-forensicsforensicacquisitioncrossreferenceshape.html" title="https://cacontology.projectvic.org/forensics#ForensicAcquisitionCrossReferenceShape">cacontology-forensics:ForensicAcquisitionCrossReferenceShape</a></li>
-                <li><a href="shape-cacontology-forensicsforensicacquisitionactionextendedshape.html" title="https://cacontology.projectvic.org/forensics#ForensicAcquisitionActionExtendedShape">cacontology-forensics:ForensicAcquisitionActionExtendedShape</a></li>
                 <li><a href="shape-cacontology-forensicswriteblockingvalidationshape.html" title="https://cacontology.projectvic.org/forensics#WriteBlockingValidationShape">cacontology-forensics:WriteBlockingValidationShape</a></li>
                 <li><a href="shape-cacontology-forensicsforensictoolvalidationbusinessrule.html" title="https://cacontology.projectvic.org/forensics#ForensicToolValidationBusinessRule">cacontology-forensics:ForensicToolValidationBusinessRule</a></li>
                 <li><a href="shape-cacontology-forensicsforensicacquisitionactionshape.html" title="https://cacontology.projectvic.org/forensics#ForensicAcquisitionActionShape">cacontology-forensics:ForensicAcquisitionActionShape</a></li>
+                <li><a href="shape-cacontology-forensicsdataqualityshape.html" title="https://cacontology.projectvic.org/forensics#DataQualityShape">cacontology-forensics:DataQualityShape</a></li>
+                <li><a href="shape-cacontology-forensicsforensicacquisitioncrossreferenceshape.html" title="https://cacontology.projectvic.org/forensics#ForensicAcquisitionCrossReferenceShape">cacontology-forensics:ForensicAcquisitionCrossReferenceShape</a></li>
+                <li><a href="shape-cacontology-forensicstemporalvalidationshape.html" title="https://cacontology.projectvic.org/forensics#TemporalValidationShape">cacontology-forensics:TemporalValidationShape</a></li>
+                <li><a href="shape-cacontology-forensicsforensicacquisitionactionextendedshape.html" title="https://cacontology.projectvic.org/forensics#ForensicAcquisitionActionExtendedShape">cacontology-forensics:ForensicAcquisitionActionExtendedShape</a></li>
                 <li><a href="shape-cacontology-forensicsexaminercertificationbusinessrule.html" title="https://cacontology.projectvic.org/forensics#ExaminerCertificationBusinessRule">cacontology-forensics:ExaminerCertificationBusinessRule</a></li>
             </div>
           </div>
@@ -5261,8 +5261,10 @@
                         <a class="propcolor" title="cacontology-forensics:evidenceSeized" href="prop-cacontology-forensicsevidenceseized.html">cacontology-forensics:evidenceSeized</a>
                     </td>
                     <td>
+                      owl:ObjectProperty
                     </td>
                     <td>
+                      Links an acquisition action to the original evidence item that was seized.
                       <br>
                     </td>
                     <td>
@@ -5275,7 +5277,8 @@
                         <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <a title="uco-observable:ObservableObject" href="class-uco-observableobservableobject.html" class="rdfclass">uco-observable:ObservableObject</a>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5283,8 +5286,10 @@
                         <a class="propcolor" title="cacontology-forensics:forensicCopy" href="prop-cacontology-forensicsforensiccopy.html">cacontology-forensics:forensicCopy</a>
                     </td>
                     <td>
+                      owl:ObjectProperty
                     </td>
                     <td>
+                      Links an acquisition action to the forensic copy that was created.
                       <br>
                     </td>
                     <td>
@@ -5297,7 +5302,8 @@
                         <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <a title="cacontology-forensics:ForensicImage" href="class-cacontology-forensicsforensicimage.html" class="rdfclass">cacontology-forensics:ForensicImage</a>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5305,8 +5311,10 @@
                         <a class="propcolor" title="cacontology-forensics:writeBlockingUsed" href="prop-cacontology-forensicswriteblockingused.html">cacontology-forensics:writeBlockingUsed</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Indicates whether write-blocking hardware or software was used during acquisition.
                       <br>
                     </td>
                     <td>
@@ -5320,7 +5328,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:boolean</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5465,7 +5474,7 @@
 	</div><!-- /#page-content-wrapper -->
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 02:28:17 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
+      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 03:18:54 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
     </div>
   </footer>
 </div><!-- /#wrapper -->

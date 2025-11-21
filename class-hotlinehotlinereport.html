@@ -4280,7 +4280,7 @@
               <li>
                 <a href="class-gufosituation.html" title="'Situation'">gufo:Situation</a>
                   <ul>
-                    <li><a style="font-weight: bold;" title="'Hotline Report' - A report submitted to a hotline about potential child sexual abuse material. Enhanced as gUFO Situation representing complex multi-party coordination..">hotline:HotlineReport</a>
+                    <li><a style="font-weight: bold;" title="'Hotline Report' - gUFO Situation: Complex multi-party contexts involving coordination between reporters, hotline staff, evidence analysis, and law enforcement coordination. - A report..">hotline:HotlineReport</a>
                       <ul>
                         <li><a href="class-hotlineespreport.html" title="'Electronic Service Provider Report' - A report submitted by an electronic service provider.">hotline:ESPReport</a></li>
                         <li><a href="class-hotlinepublicreport.html" title="'Public Report' - A report submitted by a member of the public.">hotline:PublicReport</a></li>
@@ -4291,7 +4291,7 @@
               <li>
                 <a href="class-uco-observableobservation.html" title="'Observation'">uco-observable:Observation</a>
                   <ul>
-                    <li><a style="font-weight: bold;" title="'Hotline Report' - A report submitted to a hotline about potential child sexual abuse material. Enhanced as gUFO Situation representing complex multi-party coordination..">hotline:HotlineReport</a>
+                    <li><a style="font-weight: bold;" title="'Hotline Report' - gUFO Situation: Complex multi-party contexts involving coordination between reporters, hotline staff, evidence analysis, and law enforcement coordination. - A report..">hotline:HotlineReport</a>
                       <ul>
                         <li><a href="class-hotlineespreport.html" title="'Electronic Service Provider Report' - A report submitted by an electronic service provider.">hotline:ESPReport</a></li>
                         <li><a href="class-hotlinepublicreport.html" title="'Public Report' - A report submitted by a member of the public.">hotline:PublicReport</a></li>
@@ -4333,7 +4333,7 @@
               <h3 class="panel-title">Description</h3>
             </div>
             <div class="panel-body">
-              <p>A report submitted to a hotline about potential child sexual abuse material. Enhanced as gUFO Situation representing complex multi-party coordination contexts involving reporters, hotline organizations, evidence, and processing workflows. - gUFO Situation: Complex multi-party contexts involving coordination between reporters, hotline staff, evidence analysis, and law enforcement coordination.</p>
+              <p>gUFO Situation: Complex multi-party contexts involving coordination between reporters, hotline staff, evidence analysis, and law enforcement coordination. - A report submitted to a hotline about potential child sexual abuse material. Enhanced as gUFO Situation representing complex multi-party coordination contexts involving reporters, hotline organizations, evidence, and processing workflows.</p>
             </div>
           </div>
         </div>
@@ -4358,8 +4358,8 @@
               <h3 class="panel-title">Shapes (2)</h3>
             </div>
             <div class="panel-body">
-                <li><a href="shape-hotlinelifecyclevalidationshape.html" title="https://cacontology.projectvic.org/hotlines/core#LifecycleValidationShape">hotline:LifecycleValidationShape</a></li>
                 <li><a href="shape-hotlinehotlinereportshape.html" title="https://cacontology.projectvic.org/hotlines/core#HotlineReportShape">hotline:HotlineReportShape</a></li>
+                <li><a href="shape-hotlinelifecyclevalidationshape.html" title="https://cacontology.projectvic.org/hotlines/core#LifecycleValidationShape">hotline:LifecycleValidationShape</a></li>
             </div>
           </div>
         </div>
@@ -5069,8 +5069,10 @@
                         <a class="propcolor" title="hotline:currentPhase" href="prop-hotlinecurrentphase.html">hotline:currentPhase</a>
                     </td>
                     <td>
+                      owl:ObjectProperty
                     </td>
                     <td>
+                      Links a hotline report to its current operational phase. gUFO Phase modeling for temporal state management.
                       <br>
                     </td>
                     <td>
@@ -5083,7 +5085,8 @@
                         <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <a title="gufo:Phase" href="class-gufophase.html" class="rdfclass">gufo:Phase</a>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5091,8 +5094,10 @@
                         <a class="propcolor" title="hotline:hasEvidence" href="prop-hotlinehasevidence.html">hotline:hasEvidence</a>
                     </td>
                     <td>
+                      owl:ObjectProperty
                     </td>
                     <td>
+                      Links a hotline report to its evidence items.
                       <br>
                     </td>
                     <td>
@@ -5105,7 +5110,8 @@
                         <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <a title="hotline:EvidenceItem" href="class-hotlineevidenceitem.html" class="rdfclass">hotline:EvidenceItem</a>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5113,8 +5119,10 @@
                         <a class="propcolor" title="hotline:intakeChannel" href="prop-hotlineintakechannel.html">hotline:intakeChannel</a>
                     </td>
                     <td>
+                      owl:ObjectProperty
                     </td>
                     <td>
+                      Links a hotline report to the channel through which it was received.
                       <br>
                     </td>
                     <td>
@@ -5127,7 +5135,8 @@
                         <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <a title="hotline:IntakeChannel" href="class-hotlineintakechannel.html" class="rdfclass">hotline:IntakeChannel</a>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5135,8 +5144,10 @@
                         <a class="propcolor" title="hotline:involvesCoordination" href="prop-hotlineinvolvescoordination.html">hotline:involvesCoordination</a>
                     </td>
                     <td>
+                      owl:ObjectProperty
                     </td>
                     <td>
+                      Links a hotline report to coordination situations involving multiple agencies.
                       <br>
                     </td>
                     <td>
@@ -5148,7 +5159,8 @@
                         <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <a title="hotline:MultiAgencyCoordination" href="class-hotlinemultiagencycoordination.html" class="rdfclass">hotline:MultiAgencyCoordination</a>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5203,8 +5215,10 @@
                         <a class="propcolor" title="hotline:status" href="prop-hotlinestatus.html">hotline:status</a>
                     </td>
                     <td>
+                      owl:ObjectProperty
                     </td>
                     <td>
+                      Links a hotline report to its current status (a skos:Concept from the StatusScheme).
                       <br>
                     </td>
                     <td>
@@ -5215,7 +5229,8 @@
                     <td>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <a title="skos:Concept" href="class-skosconcept.html" class="rdfclass">skos:Concept</a>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5267,7 +5282,7 @@
 	</div><!-- /#page-content-wrapper -->
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 02:28:54 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
+      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 03:19:31 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
     </div>
   </footer>
 </div><!-- /#wrapper -->

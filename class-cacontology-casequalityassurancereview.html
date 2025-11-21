@@ -4281,14 +4281,14 @@
               <li>
                 <a href="class-gufoevent.html" title="'Event'">gufo:Event</a>
                   <ul>
-                    <li><a style="font-weight: bold;" title="'Quality Assurance Review' - Systematic quality assurance review ensuring compliance with standards and procedures. Enhanced as gUFO Event. - gUFO Event: Quality assurance processes..">cacontology-case:QualityAssuranceReview</a>
+                    <li><a style="font-weight: bold;" title="'Quality Assurance Review' - gUFO Event: Quality assurance processes with compliance evaluation. - Systematic quality assurance review ensuring compliance with standards and procedures. Enhanced..">cacontology-case:QualityAssuranceReview</a>
                   </li>
                 </ul>
               </li>
               <li>
-                <a href="class-cacontology-casecasereview.html" title="'Case Review' - Formal review processes for case quality assurance, supervisory oversight, and legal compliance. Enhanced as gUFO Event for review processes. -..">cacontology-case:CaseReview</a>
+                <a href="class-cacontology-casecasereview.html" title="'Case Review' - gUFO Event: Review processes with defined temporal boundaries, participants, and evaluation outcomes. - Formal review processes for case quality assurance,..">cacontology-case:CaseReview</a>
                   <ul>
-                    <li><a style="font-weight: bold;" title="'Quality Assurance Review' - Systematic quality assurance review ensuring compliance with standards and procedures. Enhanced as gUFO Event. - gUFO Event: Quality assurance processes..">cacontology-case:QualityAssuranceReview</a>
+                    <li><a style="font-weight: bold;" title="'Quality Assurance Review' - gUFO Event: Quality assurance processes with compliance evaluation. - Systematic quality assurance review ensuring compliance with standards and procedures. Enhanced..">cacontology-case:QualityAssuranceReview</a>
                   </li>
                 </ul>
               </li>
@@ -4326,7 +4326,7 @@
               <h3 class="panel-title">Description</h3>
             </div>
             <div class="panel-body">
-              <p>Systematic quality assurance review ensuring compliance with standards and procedures. Enhanced as gUFO Event. - gUFO Event: Quality assurance processes with compliance evaluation.</p>
+              <p>gUFO Event: Quality assurance processes with compliance evaluation. - Systematic quality assurance review ensuring compliance with standards and procedures. Enhanced as gUFO Event.</p>
             </div>
           </div>
         </div>
@@ -5223,8 +5223,10 @@
                         <a class="propcolor" title="cacontology-case:reviewType" href="prop-cacontology-casereviewtype.html">cacontology-case:reviewType</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Type of review (supervisory_review, peer_review, quality_assurance, legal_review, administrative_review, external_review).
                       <br>
                     </td>
                     <td>
@@ -5238,7 +5240,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:string</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5272,8 +5275,10 @@
                         <a class="propcolor" title="cacontology-gufo:reviewEndTime" href="prop-cacontology-guforeviewendtime.html">cacontology-gufo:reviewEndTime</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Temporal point when case review ends using gUFO temporal framework.
                       <br>
                     </td>
                     <td>
@@ -5287,7 +5292,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:dateTime</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5338,7 +5344,7 @@
 	</div><!-- /#page-content-wrapper -->
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 02:28:10 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
+      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 03:18:46 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
     </div>
   </footer>
 </div><!-- /#wrapper -->
