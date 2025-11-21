@@ -23,6 +23,9 @@
 <link rel="stylesheet" href="static/shared/common.css">
   </head>
   <body>
+                <div style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; padding: 8px 20px; font-size: 14px; color: #6c757d; text-align: right;">
+                    Ontology Version: <strong>2.1.0</strong>
+                </div>
 <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -4366,11 +4369,11 @@
               <h3 class="panel-title">Shapes (5)</h3>
             </div>
             <div class="panel-body">
-                <li><a href="shape-cacontology-coorddataqualityshape.html" title="https://cacontology.projectvic.org/investigation-coordination#DataQualityShape">cacontology-coord:DataQualityShape</a></li>
-                <li><a href="shape-cacontology-coordresourcesharingdurationshape.html" title="https://cacontology.projectvic.org/investigation-coordination#ResourceSharingDurationShape">cacontology-coord:ResourceSharingDurationShape</a></li>
-                <li><a href="shape-cacontology-coordresourcesharingtemporalshape.html" title="https://cacontology.projectvic.org/investigation-coordination#ResourceSharingTemporalShape">cacontology-coord:ResourceSharingTemporalShape</a></li>
                 <li><a href="shape-cacontology-coordresourcesharingshape.html" title="https://cacontology.projectvic.org/investigation-coordination#ResourceSharingShape">cacontology-coord:ResourceSharingShape</a></li>
                 <li><a href="shape-cacontology-coordresourcesharingparticipationshape.html" title="https://cacontology.projectvic.org/investigation-coordination#ResourceSharingParticipationShape">cacontology-coord:ResourceSharingParticipationShape</a></li>
+                <li><a href="shape-cacontology-coorddataqualityshape.html" title="https://cacontology.projectvic.org/investigation-coordination#DataQualityShape">cacontology-coord:DataQualityShape</a></li>
+                <li><a href="shape-cacontology-coordresourcesharingtemporalshape.html" title="https://cacontology.projectvic.org/investigation-coordination#ResourceSharingTemporalShape">cacontology-coord:ResourceSharingTemporalShape</a></li>
+                <li><a href="shape-cacontology-coordresourcesharingdurationshape.html" title="https://cacontology.projectvic.org/investigation-coordination#ResourceSharingDurationShape">cacontology-coord:ResourceSharingDurationShape</a></li>
             </div>
           </div>
         </div>
@@ -5239,8 +5242,10 @@
                         <a class="propcolor" title="cacontology-coord:availabilityLevel" href="prop-cacontology-coordavailabilitylevel.html">cacontology-coord:availabilityLevel</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Availability level of shared resources (immediate, short_notice, scheduled, on_request, limited, emergency_only).
                       <br>
                     </td>
                     <td>
@@ -5254,7 +5259,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:string</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5262,8 +5268,10 @@
                         <a class="propcolor" title="cacontology-coord:costSharing" href="prop-cacontology-coordcostsharing.html">cacontology-coord:costSharing</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Whether cost sharing is involved in resource sharing.
                       <br>
                     </td>
                     <td>
@@ -5277,7 +5285,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:boolean</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5373,8 +5382,10 @@
                         <a class="propcolor" title="cacontology-coord:reimbursement" href="prop-cacontology-coordreimbursement.html">cacontology-coord:reimbursement</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Whether reimbursement is required for resource sharing.
                       <br>
                     </td>
                     <td>
@@ -5388,7 +5399,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:boolean</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5396,8 +5408,10 @@
                         <a class="propcolor" title="cacontology-coord:resourceType" href="prop-cacontology-coordresourcetype.html">cacontology-coord:resourceType</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Type of resource being shared (personnel, equipment, facilities, technology, expertise, funding, vehicles, specialized_units).
                       <br>
                     </td>
                     <td>
@@ -5411,7 +5425,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:string</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5419,8 +5434,10 @@
                         <a class="propcolor" title="cacontology-coord:sharingDuration" href="prop-cacontology-coordsharingduration.html">cacontology-coord:sharingDuration</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Duration of resource sharing in hours.
                       <br>
                     </td>
                     <td>
@@ -5434,7 +5451,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:decimal</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5603,13 +5621,13 @@
 	</div><!-- /#page-content-wrapper -->
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 03:18:47 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
+      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 17:49:12 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
     </div>
   </footer>
 </div><!-- /#wrapper -->
 <!-- Bootstrap core JavaScript
 ================================================== -->
-<script src="static/libs/jquery/1_12_4/jquery.min.js" defer></script>
+<script src="static/libs/jquery/1_12_4/jquery.min.js"></script>
 <script src="static/libs/bootstrap-3_3_7-dist/js/bootstrap.min.js" defer></script>
 <script src="static/libs/bootstrap-3_3_7-dist/js/ie10-viewport-bug-workaround.js" defer></script>
 <script src="static/libs/chartjs-2_4_0/chart.bundle.js"></script>

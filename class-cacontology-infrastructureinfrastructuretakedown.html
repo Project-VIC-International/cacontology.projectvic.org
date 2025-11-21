@@ -23,6 +23,9 @@
 <link rel="stylesheet" href="static/shared/common.css">
   </head>
   <body>
+                <div style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; padding: 8px 20px; font-size: 14px; color: #6c757d; text-align: right;">
+                    Ontology Version: <strong>2.1.0</strong>
+                </div>
 <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -4362,15 +4365,15 @@
               <h3 class="panel-title">Shapes (10)</h3>
             </div>
             <div class="panel-body">
-                <li><a href="shape-cacontology-infrastructuredataqualityshape.html" title="https://cacontology.projectvic.org/infrastructure#DataQualityShape">cacontology-infrastructure:DataQualityShape</a></li>
-                <li><a href="shape-cacontology-infrastructure-shapestakedowneventtypevalidationshape.html" title="https://cacontology.projectvic.org/infrastructure/shapes#TakedownEventTypeValidationShape">cacontology-infrastructure-shapes:TakedownEventTypeValidationShape</a></li>
-                <li><a href="shape-cacontology-infrastructure-shapesenhancedtakedownshape.html" title="https://cacontology.projectvic.org/infrastructure/shapes#EnhancedTakedownShape">cacontology-infrastructure-shapes:EnhancedTakedownShape</a></li>
-                <li><a href="shape-cacontology-infrastructuretakedowneffectivenessvalidationshape.html" title="https://cacontology.projectvic.org/infrastructure#TakedownEffectivenessValidationShape">cacontology-infrastructure:TakedownEffectivenessValidationShape</a></li>
                 <li><a href="shape-cacontology-infrastructuretakedowntargetcrossreferenceshape.html" title="https://cacontology.projectvic.org/infrastructure#TakedownTargetCrossReferenceShape">cacontology-infrastructure:TakedownTargetCrossReferenceShape</a></li>
+                <li><a href="shape-cacontology-infrastructureinfrastructuretakedownshape.html" title="https://cacontology.projectvic.org/infrastructure#InfrastructureTakedownShape">cacontology-infrastructure:InfrastructureTakedownShape</a></li>
+                <li><a href="shape-cacontology-infrastructure-shapestakedowneventtypevalidationshape.html" title="https://cacontology.projectvic.org/infrastructure/shapes#TakedownEventTypeValidationShape">cacontology-infrastructure-shapes:TakedownEventTypeValidationShape</a></li>
+                <li><a href="shape-cacontology-infrastructure-shapeseffectivetakedownrule.html" title="https://cacontology.projectvic.org/infrastructure/shapes#EffectiveTakedownRule">cacontology-infrastructure-shapes:EffectiveTakedownRule</a></li>
+                <li><a href="shape-cacontology-infrastructure-shapesenhancedtakedownshape.html" title="https://cacontology.projectvic.org/infrastructure/shapes#EnhancedTakedownShape">cacontology-infrastructure-shapes:EnhancedTakedownShape</a></li>
+                <li><a href="shape-cacontology-infrastructuredataqualityshape.html" title="https://cacontology.projectvic.org/infrastructure#DataQualityShape">cacontology-infrastructure:DataQualityShape</a></li>
+                <li><a href="shape-cacontology-infrastructuretakedowneffectivenessvalidationshape.html" title="https://cacontology.projectvic.org/infrastructure#TakedownEffectivenessValidationShape">cacontology-infrastructure:TakedownEffectivenessValidationShape</a></li>
                 <li><a href="shape-cacontology-infrastructuretemporalvalidationshape.html" title="https://cacontology.projectvic.org/infrastructure#TemporalValidationShape">cacontology-infrastructure:TemporalValidationShape</a></li>
                 <li><a href="shape-cacontology-infrastructure-shapestakedowneventtemporalshape.html" title="https://cacontology.projectvic.org/infrastructure/shapes#TakedownEventTemporalShape">cacontology-infrastructure-shapes:TakedownEventTemporalShape</a></li>
-                <li><a href="shape-cacontology-infrastructure-shapeseffectivetakedownrule.html" title="https://cacontology.projectvic.org/infrastructure/shapes#EffectiveTakedownRule">cacontology-infrastructure-shapes:EffectiveTakedownRule</a></li>
-                <li><a href="shape-cacontology-infrastructureinfrastructuretakedownshape.html" title="https://cacontology.projectvic.org/infrastructure#InfrastructureTakedownShape">cacontology-infrastructure:InfrastructureTakedownShape</a></li>
                 <li><a href="shape-cacontology-infrastructure-shapestakedownparticipationshape.html" title="https://cacontology.projectvic.org/infrastructure/shapes#TakedownParticipationShape">cacontology-infrastructure-shapes:TakedownParticipationShape</a></li>
             </div>
           </div>
@@ -5268,10 +5271,8 @@
                         <a class="propcolor" title="cacontology-infrastructure:hasTakedownCompleteness" href="prop-cacontology-infrastructurehastakedowncompleteness.html">cacontology-infrastructure:hasTakedownCompleteness</a>
                     </td>
                     <td>
-                      owl:DatatypeProperty
                     </td>
                     <td>
-                      Completeness assessment of infrastructure takedown (gUFO quality aspect).
                       <br>
                     </td>
                     <td>
@@ -5284,8 +5285,7 @@
                           <br>
                     </td>
                     <td>
-                              <i>xsd:double</i>
-                            <br>
+                          <i>owl:Thing</i>
                     </td>
                 </tr>
                 <tr>
@@ -5293,10 +5293,8 @@
                         <a class="propcolor" title="cacontology-infrastructure:hasTakedownEffectiveness" href="prop-cacontology-infrastructurehastakedowneffectiveness.html">cacontology-infrastructure:hasTakedownEffectiveness</a>
                     </td>
                     <td>
-                      owl:DatatypeProperty
                     </td>
                     <td>
-                      Effectiveness rating of takedown operations (gUFO quality aspect).
                       <br>
                     </td>
                     <td>
@@ -5309,8 +5307,7 @@
                           <br>
                     </td>
                     <td>
-                              <i>xsd:double</i>
-                            <br>
+                          <i>owl:Thing</i>
                     </td>
                 </tr>
                 <tr>
@@ -5318,10 +5315,8 @@
                         <a class="propcolor" title="cacontology-infrastructure:hasTakedownSpeed" href="prop-cacontology-infrastructurehastakedownspeed.html">cacontology-infrastructure:hasTakedownSpeed</a>
                     </td>
                     <td>
-                      owl:DatatypeProperty
                     </td>
                     <td>
-                      Speed rating of takedown execution (gUFO quality aspect).
                       <br>
                     </td>
                     <td>
@@ -5334,8 +5329,7 @@
                           <br>
                     </td>
                     <td>
-                              <i>xsd:string</i>
-                            <br>
+                          <i>owl:Thing</i>
                     </td>
                 </tr>
                 <tr>
@@ -5343,8 +5337,10 @@
                         <a class="propcolor" title="cacontology-infrastructure:takedownDuration" href="prop-cacontology-infrastructuretakedownduration.html">cacontology-infrastructure:takedownDuration</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Duration of takedown operation in hours.
                       <br>
                     </td>
                     <td>
@@ -5358,7 +5354,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:decimal</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5436,13 +5433,13 @@
 	</div><!-- /#page-content-wrapper -->
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 03:18:59 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
+      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 17:49:23 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
     </div>
   </footer>
 </div><!-- /#wrapper -->
 <!-- Bootstrap core JavaScript
 ================================================== -->
-<script src="static/libs/jquery/1_12_4/jquery.min.js" defer></script>
+<script src="static/libs/jquery/1_12_4/jquery.min.js"></script>
 <script src="static/libs/bootstrap-3_3_7-dist/js/bootstrap.min.js" defer></script>
 <script src="static/libs/bootstrap-3_3_7-dist/js/ie10-viewport-bug-workaround.js" defer></script>
 <script src="static/libs/chartjs-2_4_0/chart.bundle.js"></script>

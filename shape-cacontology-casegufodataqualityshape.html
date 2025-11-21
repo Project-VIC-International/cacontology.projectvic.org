@@ -23,6 +23,9 @@
 <link rel="stylesheet" href="static/shared/common.css">
   </head>
   <body>
+                <div style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; padding: 8px 20px; font-size: 14px; color: #6c757d; text-align: right;">
+                    Ontology Version: <strong>2.1.0</strong>
+                </div>
 <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -4330,11 +4333,11 @@
               <h3 class="panel-title">Target Classes (5)</h3>
             </div>
             <div class="panel-body">
+                <li><a href="class-cacontology-casecasereview.html">cacontology-case:CaseReview</a></li>
+                <li><a href="class-cacontology-casecaseworkflow.html">cacontology-case:CaseWorkflow</a></li>
                 <li><a href="class-cacontology-casecaseassignment.html">cacontology-case:CaseAssignment</a></li>
                 <li><a href="class-cacontology-casecasemanagement.html">cacontology-case:CaseManagement</a></li>
                 <li><a href="class-cacontology-casecasedocumentation.html">cacontology-case:CaseDocumentation</a></li>
-                <li><a href="class-cacontology-casecasereview.html">cacontology-case:CaseReview</a></li>
-                <li><a href="class-cacontology-casecaseworkflow.html">cacontology-case:CaseWorkflow</a></li>
             </div>
           </div>
         </div>
@@ -4346,7 +4349,7 @@
                 <h3 class="panel-title">Shape Properties</h3>
               </div>
               <div class="panel-body" style="overflow: auto;">
-                <p>Instances of cacontology-case:CaseAssignment can have the following properties:</p>
+                <p>Instances of cacontology-case:CaseReview can have the following properties:</p>
               </div>
               <table class="table table-bordered" style="overflow: auto;">
                 <tr class="table-classproperties">
@@ -4357,26 +4360,12 @@
                 </tr>
                   <tr>
                       <td colspan="5">
-                        <small class="label label-info label-xs">cacontology-case:CaseAssignment</small>
+                        <small class="label label-info label-xs">cacontology-case:CaseReview</small>
                       </td>
                   </tr>
                   <tr>
                       <td>
-                          <a class="propcolor" title="cacontology-case:assignedToRole" href="prop-cacontology-caseassignedtorole.html">cacontology-case:assignedToRole</a>
-                      </td>
-                      <td>
-                        0
-                      </td>
-                      <td>
-                      </td>
-                      <td>
-                            <a title="gufo:Role" href="class-guforole.html" class="rdfclass">gufo:Role</a>
-                          <br>
-                      </td>
-                  </tr>
-                  <tr>
-                      <td>
-                          <a class="propcolor" title="cacontology-case:assignmentType" href="prop-cacontology-caseassignmenttype.html">cacontology-case:assignmentType</a>
+                          <a class="propcolor" title="cacontology-case:reviewType" href="prop-cacontology-casereviewtype.html">cacontology-case:reviewType</a>
                       </td>
                       <td>
                         1
@@ -4391,7 +4380,7 @@
                   </tr>
                   <tr>
                       <td>
-                          <a class="propcolor" title="cacontology-gufo:assignmentBeginTime" href="prop-cacontology-gufoassignmentbegintime.html">cacontology-gufo:assignmentBeginTime</a>
+                          <a class="propcolor" title="cacontology-gufo:reviewBeginTime" href="prop-cacontology-guforeviewbegintime.html">cacontology-gufo:reviewBeginTime</a>
                       </td>
                       <td>
                         1
@@ -4406,7 +4395,7 @@
                   </tr>
                   <tr>
                       <td>
-                          <a class="propcolor" title="cacontology-gufo:assignmentEndTime" href="prop-cacontology-gufoassignmentendtime.html">cacontology-gufo:assignmentEndTime</a>
+                          <a class="propcolor" title="cacontology-gufo:reviewEndTime" href="prop-cacontology-guforeviewendtime.html">cacontology-gufo:reviewEndTime</a>
                       </td>
                       <td>
                         0
@@ -4490,20 +4479,20 @@
 	</div><!-- /#page-content-wrapper -->
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 03:20:31 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
+      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 17:50:52 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
     </div>
   </footer>
 </div><!-- /#wrapper -->
 <!-- Bootstrap core JavaScript
 ================================================== -->
-<script src="static/libs/jquery/1_12_4/jquery.min.js" defer></script>
+<script src="static/libs/jquery/1_12_4/jquery.min.js"></script>
 <script src="static/libs/bootstrap-3_3_7-dist/js/bootstrap.min.js" defer></script>
 <script src="static/libs/bootstrap-3_3_7-dist/js/ie10-viewport-bug-workaround.js" defer></script>
 <script src="static/libs/chartjs-2_4_0/chart.bundle.js"></script>
   <script type="text/javascript">
     $(document).ready(function (){
       $('#sidebar-wrapper').animate({
-          scrollTop: $("#sd_5956").offset().top - 100
+          scrollTop: $("#sd_6524").offset().top - 100
       }, 100);
     });
   </script><script src="static/shared/common.js" defer></script>

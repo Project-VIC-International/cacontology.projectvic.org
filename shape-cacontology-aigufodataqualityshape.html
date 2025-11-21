@@ -23,6 +23,9 @@
 <link rel="stylesheet" href="static/shared/common.css">
   </head>
   <body>
+                <div style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; padding: 8px 20px; font-size: 14px; color: #6c757d; text-align: right;">
+                    Ontology Version: <strong>2.1.0</strong>
+                </div>
 <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -4330,11 +4333,11 @@
               <h3 class="panel-title">Target Classes (5)</h3>
             </div>
             <div class="panel-body">
-                <li><a href="class-cacontology-aiaicontentdetection.html">cacontology-ai:AIContentDetection</a></li>
-                <li><a href="class-cacontology-aiaicsaminvestigation.html">cacontology-ai:AICSAMInvestigation</a></li>
-                <li><a href="class-cacontology-aiaigeneratedcsam.html">cacontology-ai:AIGeneratedCSAM</a></li>
                 <li><a href="class-cacontology-aiaidetectiontool.html">cacontology-ai:AIDetectionTool</a></li>
+                <li><a href="class-cacontology-aiaicsaminvestigation.html">cacontology-ai:AICSAMInvestigation</a></li>
                 <li><a href="class-cacontology-aiaicontentgeneration.html">cacontology-ai:AIContentGeneration</a></li>
+                <li><a href="class-cacontology-aiaicontentdetection.html">cacontology-ai:AIContentDetection</a></li>
+                <li><a href="class-cacontology-aiaigeneratedcsam.html">cacontology-ai:AIGeneratedCSAM</a></li>
             </div>
           </div>
         </div>
@@ -4346,7 +4349,7 @@
                 <h3 class="panel-title">Shape Properties</h3>
               </div>
               <div class="panel-body" style="overflow: auto;">
-                <p>Instances of cacontology-ai:AIContentDetection can have the following properties:</p>
+                <p>Instances of cacontology-ai:AIDetectionTool can have the following properties:</p>
               </div>
               <table class="table table-bordered" style="overflow: auto;">
                 <tr class="table-classproperties">
@@ -4357,12 +4360,12 @@
                 </tr>
                   <tr>
                       <td colspan="5">
-                        <small class="label label-info label-xs">cacontology-ai:AIContentDetection</small>
+                        <small class="label label-info label-xs">cacontology-ai:AIDetectionTool</small>
                       </td>
                   </tr>
                   <tr>
                       <td>
-                          <a class="propcolor" title="cacontology-ai:detectionConfidence" href="prop-cacontology-aidetectionconfidence.html">cacontology-ai:detectionConfidence</a>
+                          <a class="propcolor" title="cacontology-ai:falsePositiveRate" href="prop-cacontology-aifalsepositiverate.html">cacontology-ai:falsePositiveRate</a>
                       </td>
                       <td>
                         0
@@ -4372,65 +4375,6 @@
                       </td>
                       <td>
                             <i>xsd:decimal</i>
-                            <br>
-                      </td>
-                  </tr>
-                  <tr>
-                      <td>
-                          <a class="propcolor" title="cacontology-ai:detectionMethod" href="prop-cacontology-aidetectionmethod.html">cacontology-ai:detectionMethod</a>
-                      </td>
-                      <td>
-                        0
-                      </td>
-                      <td>
-                        1
-                      </td>
-                      <td>
-                            <i>xsd:string</i>
-                            <br>
-                      </td>
-                  </tr>
-                  <tr>
-                      <td>
-                          <a class="propcolor" title="cacontology-ai:evidenceAdmissibility" href="prop-cacontology-aievidenceadmissibility.html">cacontology-ai:evidenceAdmissibility</a>
-                      </td>
-                      <td>
-                        0
-                      </td>
-                      <td>
-                        1
-                      </td>
-                      <td>
-                            <i>xsd:string</i>
-                            <br>
-                      </td>
-                  </tr>
-                  <tr>
-                      <td>
-                          <a class="propcolor" title="cacontology-ai:processingTime" href="prop-cacontology-aiprocessingtime.html">cacontology-ai:processingTime</a>
-                      </td>
-                      <td>
-                        0
-                      </td>
-                      <td>
-                        1
-                      </td>
-                      <td>
-                            <i>xsd:decimal</i>
-                            <br>
-                      </td>
-                  </tr>
-                  <tr>
-                      <td>
-                          <a class="propcolor" title="cacontology-gufo:detectionTimePoint" href="prop-cacontology-gufodetectiontimepoint.html">cacontology-gufo:detectionTimePoint</a>
-                      </td>
-                      <td>
-                        1
-                      </td>
-                      <td>
-                      </td>
-                      <td>
-                            <i>xsd:dateTime</i>
                             <br>
                       </td>
                   </tr>
@@ -4456,7 +4400,22 @@
                         1
                       </td>
                       <td>
-                            <i>xsd:dateTime</i>
+                            <i>xsd:string</i>
+                            <br>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <a class="propcolor" title="" href=".html"></a>
+                      </td>
+                      <td>
+                        0
+                      </td>
+                      <td>
+                        1
+                      </td>
+                      <td>
+                            <i>xsd:string</i>
                             <br>
                       </td>
                   </tr>
@@ -4505,20 +4464,20 @@
 	</div><!-- /#page-content-wrapper -->
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 03:20:29 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
+      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 17:50:49 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
     </div>
   </footer>
 </div><!-- /#wrapper -->
 <!-- Bootstrap core JavaScript
 ================================================== -->
-<script src="static/libs/jquery/1_12_4/jquery.min.js" defer></script>
+<script src="static/libs/jquery/1_12_4/jquery.min.js"></script>
 <script src="static/libs/bootstrap-3_3_7-dist/js/bootstrap.min.js" defer></script>
 <script src="static/libs/bootstrap-3_3_7-dist/js/ie10-viewport-bug-workaround.js" defer></script>
 <script src="static/libs/chartjs-2_4_0/chart.bundle.js"></script>
   <script type="text/javascript">
     $(document).ready(function (){
       $('#sidebar-wrapper').animate({
-          scrollTop: $("#sd_6364").offset().top - 100
+          scrollTop: $("#sd_6120").offset().top - 100
       }, 100);
     });
   </script><script src="static/shared/common.js" defer></script>

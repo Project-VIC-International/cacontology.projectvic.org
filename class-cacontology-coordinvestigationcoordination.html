@@ -23,6 +23,9 @@
 <link rel="stylesheet" href="static/shared/common.css">
   </head>
   <body>
+                <div style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; padding: 8px 20px; font-size: 14px; color: #6c757d; text-align: right;">
+                    Ontology Version: <strong>2.1.0</strong>
+                </div>
 <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -4374,11 +4377,11 @@
               <h3 class="panel-title">Shapes (7)</h3>
             </div>
             <div class="panel-body">
-                <li><a href="shape-cacontology-coorddataqualityshape.html" title="https://cacontology.projectvic.org/investigation-coordination#DataQualityShape">cacontology-coord:DataQualityShape</a></li>
-                <li><a href="shape-cacontology-coordinvestigationcoordinationshape.html" title="https://cacontology.projectvic.org/investigation-coordination#InvestigationCoordinationShape">cacontology-coord:InvestigationCoordinationShape</a></li>
                 <li><a href="shape-cacontology-coordcoordinationeffectivenesssuccessbusinessrule.html" title="https://cacontology.projectvic.org/investigation-coordination#CoordinationEffectivenessSuccessBusinessRule">cacontology-coord:CoordinationEffectivenessSuccessBusinessRule</a></li>
-                <li><a href="shape-cacontology-coordtemporalvalidationshape.html" title="https://cacontology.projectvic.org/investigation-coordination#TemporalValidationShape">cacontology-coord:TemporalValidationShape</a></li>
                 <li><a href="shape-cacontology-coordinvestigationcoordinationparticipationshape.html" title="https://cacontology.projectvic.org/investigation-coordination#InvestigationCoordinationParticipationShape">cacontology-coord:InvestigationCoordinationParticipationShape</a></li>
+                <li><a href="shape-cacontology-coordtemporalvalidationshape.html" title="https://cacontology.projectvic.org/investigation-coordination#TemporalValidationShape">cacontology-coord:TemporalValidationShape</a></li>
+                <li><a href="shape-cacontology-coordinvestigationcoordinationshape.html" title="https://cacontology.projectvic.org/investigation-coordination#InvestigationCoordinationShape">cacontology-coord:InvestigationCoordinationShape</a></li>
+                <li><a href="shape-cacontology-coorddataqualityshape.html" title="https://cacontology.projectvic.org/investigation-coordination#DataQualityShape">cacontology-coord:DataQualityShape</a></li>
                 <li><a href="shape-cacontology-coordcoordinationcrossreferenceshape.html" title="https://cacontology.projectvic.org/investigation-coordination#CoordinationCrossReferenceShape">cacontology-coord:CoordinationCrossReferenceShape</a></li>
                 <li><a href="shape-cacontology-coordinvestigationcoordinationtemporalshape.html" title="https://cacontology.projectvic.org/investigation-coordination#InvestigationCoordinationTemporalShape">cacontology-coord:InvestigationCoordinationTemporalShape</a></li>
             </div>
@@ -5407,8 +5410,10 @@
                         <a class="propcolor" title="cacontology-coord:coordinationType" href="prop-cacontology-coordcoordinationtype.html">cacontology-coord:coordinationType</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Type of coordination (joint_investigation, parallel_investigation, information_sharing, resource_sharing, task_force_coordination, multi_agency_coordination).
                       <br>
                     </td>
                     <td>
@@ -5422,7 +5427,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:string</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5430,8 +5436,10 @@
                         <a class="propcolor" title="cacontology-coord:hasComplexityLevel" href="prop-cacontology-coordhascomplexitylevel.html">cacontology-coord:hasComplexityLevel</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Coordination complexity level assessment (simple, moderate, complex, highly_complex, extremely_complex) - gUFO quality aspect.
                       <br>
                     </td>
                     <td>
@@ -5444,7 +5452,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:string</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5584,8 +5593,10 @@
                         <a class="propcolor" title="cacontology-coord:leadAgency" href="prop-cacontology-coordleadagency.html">cacontology-coord:leadAgency</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Name or identifier of the lead agency in the coordination.
                       <br>
                     </td>
                     <td>
@@ -5599,7 +5610,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:string</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5607,8 +5619,10 @@
                         <a class="propcolor" title="cacontology-coord:participatingAgencies" href="prop-cacontology-coordparticipatingagencies.html">cacontology-coord:participatingAgencies</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Number of agencies participating in the coordination.
                       <br>
                     </td>
                     <td>
@@ -5622,7 +5636,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:nonNegativeInteger</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5837,13 +5852,13 @@
 	</div><!-- /#page-content-wrapper -->
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 03:18:47 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
+      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 17:49:12 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
     </div>
   </footer>
 </div><!-- /#wrapper -->
 <!-- Bootstrap core JavaScript
 ================================================== -->
-<script src="static/libs/jquery/1_12_4/jquery.min.js" defer></script>
+<script src="static/libs/jquery/1_12_4/jquery.min.js"></script>
 <script src="static/libs/bootstrap-3_3_7-dist/js/bootstrap.min.js" defer></script>
 <script src="static/libs/bootstrap-3_3_7-dist/js/ie10-viewport-bug-workaround.js" defer></script>
 <script src="static/libs/chartjs-2_4_0/chart.bundle.js"></script>

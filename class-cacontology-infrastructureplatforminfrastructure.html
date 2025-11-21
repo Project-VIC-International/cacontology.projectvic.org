@@ -23,6 +23,9 @@
 <link rel="stylesheet" href="static/shared/common.css">
   </head>
   <body>
+                <div style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; padding: 8px 20px; font-size: 14px; color: #6c757d; text-align: right;">
+                    Ontology Version: <strong>2.1.0</strong>
+                </div>
 <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -4381,17 +4384,17 @@
             </div>
             <div class="panel-body">
                 <li><a href="shape-cacontology-infrastructure-shapesinfrastructuretemporalshape.html" title="https://cacontology.projectvic.org/infrastructure/shapes#InfrastructureTemporalShape">cacontology-infrastructure-shapes:InfrastructureTemporalShape</a></li>
-                <li><a href="shape-cacontology-infrastructure-shapesinfrastructureobjecttypevalidationshape.html" title="https://cacontology.projectvic.org/infrastructure/shapes#InfrastructureObjectTypeValidationShape">cacontology-infrastructure-shapes:InfrastructureObjectTypeValidationShape</a></li>
-                <li><a href="shape-cacontology-infrastructure-shapesinfrastructurecompositionshape.html" title="https://cacontology.projectvic.org/infrastructure/shapes#InfrastructureCompositionShape">cacontology-infrastructure-shapes:InfrastructureCompositionShape</a></li>
-                <li><a href="shape-cacontology-infrastructureinfrastructurehostingcrossreferenceshape.html" title="https://cacontology.projectvic.org/infrastructure#InfrastructureHostingCrossReferenceShape">cacontology-infrastructure:InfrastructureHostingCrossReferenceShape</a></li>
-                <li><a href="shape-cacontology-infrastructure-shapesvulnerabilityassessmentrule.html" title="https://cacontology.projectvic.org/infrastructure/shapes#VulnerabilityAssessmentRule">cacontology-infrastructure-shapes:VulnerabilityAssessmentRule</a></li>
-                <li><a href="shape-cacontology-infrastructurepaymentsystemcrossreferenceshape.html" title="https://cacontology.projectvic.org/infrastructure#PaymentSystemCrossReferenceShape">cacontology-infrastructure:PaymentSystemCrossReferenceShape</a></li>
                 <li><a href="shape-cacontology-infrastructure-shapesenhancedplatforminfrastructureshape.html" title="https://cacontology.projectvic.org/infrastructure/shapes#EnhancedPlatformInfrastructureShape">cacontology-infrastructure-shapes:EnhancedPlatformInfrastructureShape</a></li>
                 <li><a href="shape-cacontology-infrastructure-shapesinfrastructuredataqualityshape.html" title="https://cacontology.projectvic.org/infrastructure/shapes#InfrastructureDataQualityShape">cacontology-infrastructure-shapes:InfrastructureDataQualityShape</a></li>
+                <li><a href="shape-cacontology-infrastructure-shapesvulnerabilityassessmentrule.html" title="https://cacontology.projectvic.org/infrastructure/shapes#VulnerabilityAssessmentRule">cacontology-infrastructure-shapes:VulnerabilityAssessmentRule</a></li>
+                <li><a href="shape-cacontology-infrastructure-shapesinfrastructureobjecttypevalidationshape.html" title="https://cacontology.projectvic.org/infrastructure/shapes#InfrastructureObjectTypeValidationShape">cacontology-infrastructure-shapes:InfrastructureObjectTypeValidationShape</a></li>
                 <li><a href="shape-cacontology-infrastructuredataqualityshape.html" title="https://cacontology.projectvic.org/infrastructure#DataQualityShape">cacontology-infrastructure:DataQualityShape</a></li>
+                <li><a href="shape-cacontology-infrastructure-shapesinfrastructurecompositionshape.html" title="https://cacontology.projectvic.org/infrastructure/shapes#InfrastructureCompositionShape">cacontology-infrastructure-shapes:InfrastructureCompositionShape</a></li>
+                <li><a href="shape-cacontology-infrastructureinfrastructurehostingcrossreferenceshape.html" title="https://cacontology.projectvic.org/infrastructure#InfrastructureHostingCrossReferenceShape">cacontology-infrastructure:InfrastructureHostingCrossReferenceShape</a></li>
                 <li><a href="shape-cacontology-infrastructureplatforminfrastructureshape.html" title="https://cacontology.projectvic.org/infrastructure#PlatformInfrastructureShape">cacontology-infrastructure:PlatformInfrastructureShape</a></li>
                 <li><a href="shape-cacontology-infrastructure-shapeshighperformanceinfrastructurerule.html" title="https://cacontology.projectvic.org/infrastructure/shapes#HighPerformanceInfrastructureRule">cacontology-infrastructure-shapes:HighPerformanceInfrastructureRule</a></li>
                 <li><a href="shape-cacontology-infrastructure-shapesinfrastructureparticipationshape.html" title="https://cacontology.projectvic.org/infrastructure/shapes#InfrastructureParticipationShape">cacontology-infrastructure-shapes:InfrastructureParticipationShape</a></li>
+                <li><a href="shape-cacontology-infrastructurepaymentsystemcrossreferenceshape.html" title="https://cacontology.projectvic.org/infrastructure#PaymentSystemCrossReferenceShape">cacontology-infrastructure:PaymentSystemCrossReferenceShape</a></li>
             </div>
           </div>
         </div>
@@ -5223,8 +5226,10 @@
                         <a class="propcolor" title="cacontology-infrastructure:hasInfrastructureReliability" href="prop-cacontology-infrastructurehasinfrastructurereliability.html">cacontology-infrastructure:hasInfrastructureReliability</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Overall reliability assessment of platform infrastructure (gUFO quality aspect).
                       <br>
                     </td>
                     <td>
@@ -5237,7 +5242,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:double</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5270,8 +5276,10 @@
                         <a class="propcolor" title="cacontology-infrastructure:hasInfrastructureVulnerability" href="prop-cacontology-infrastructurehasinfrastructurevulnerability.html">cacontology-infrastructure:hasInfrastructureVulnerability</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Vulnerability level of infrastructure to detection and takedown (gUFO quality aspect).
                       <br>
                     </td>
                     <td>
@@ -5284,7 +5292,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:string</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5339,13 +5348,13 @@
 	</div><!-- /#page-content-wrapper -->
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 03:18:59 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
+      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 17:49:23 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
     </div>
   </footer>
 </div><!-- /#wrapper -->
 <!-- Bootstrap core JavaScript
 ================================================== -->
-<script src="static/libs/jquery/1_12_4/jquery.min.js" defer></script>
+<script src="static/libs/jquery/1_12_4/jquery.min.js"></script>
 <script src="static/libs/bootstrap-3_3_7-dist/js/bootstrap.min.js" defer></script>
 <script src="static/libs/bootstrap-3_3_7-dist/js/ie10-viewport-bug-workaround.js" defer></script>
 <script src="static/libs/chartjs-2_4_0/chart.bundle.js"></script>

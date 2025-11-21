@@ -23,6 +23,9 @@
 <link rel="stylesheet" href="static/shared/common.css">
   </head>
   <body>
+                <div style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; padding: 8px 20px; font-size: 14px; color: #6c757d; text-align: right;">
+                    Ontology Version: <strong>2.1.0</strong>
+                </div>
 <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -5182,8 +5185,10 @@
                         <a class="propcolor" title="cacontology-case:casePriority" href="prop-cacontology-casecasepriority.html">cacontology-case:casePriority</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Priority level of the case (critical, high, medium, low, routine, administrative). Enhanced with gUFO Situation priority modeling.
                       <br>
                     </td>
                     <td>
@@ -5197,7 +5202,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:string</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5205,8 +5211,10 @@
                         <a class="propcolor" title="cacontology-case:caseStatus" href="prop-cacontology-casecasestatus.html">cacontology-case:caseStatus</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Current status of the case (open, active, pending, suspended, closed, archived, transferred, merged). Enhanced with gUFO Object state modeling.
                       <br>
                     </td>
                     <td>
@@ -5220,7 +5228,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:string</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5228,8 +5237,10 @@
                         <a class="propcolor" title="cacontology-case:currentPhase" href="prop-cacontology-casecurrentphase.html">cacontology-case:currentPhase</a>
                     </td>
                     <td>
+                      owl:ObjectProperty
                     </td>
                     <td>
+                      Links case management to its current operational phase. gUFO Phase modeling for case state management.
                       <br>
                     </td>
                     <td>
@@ -5243,7 +5254,8 @@
                         <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <a title="gufo:Phase" href="class-gufophase.html" class="rdfclass">gufo:Phase</a>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5294,13 +5306,13 @@
 	</div><!-- /#page-content-wrapper -->
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 03:18:45 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
+      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 17:49:10 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
     </div>
   </footer>
 </div><!-- /#wrapper -->
 <!-- Bootstrap core JavaScript
 ================================================== -->
-<script src="static/libs/jquery/1_12_4/jquery.min.js" defer></script>
+<script src="static/libs/jquery/1_12_4/jquery.min.js"></script>
 <script src="static/libs/bootstrap-3_3_7-dist/js/bootstrap.min.js" defer></script>
 <script src="static/libs/bootstrap-3_3_7-dist/js/ie10-viewport-bug-workaround.js" defer></script>
 <script src="static/libs/chartjs-2_4_0/chart.bundle.js"></script>
