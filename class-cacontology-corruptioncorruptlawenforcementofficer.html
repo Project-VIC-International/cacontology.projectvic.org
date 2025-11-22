@@ -4351,11 +4351,11 @@
               <h3 class="panel-title">Shapes (5)</h3>
             </div>
             <div class="panel-body">
-                <li><a href="shape-cacontology-corruption-shapesofficercareertemporalshape.html" title="https://cacontology.projectvic.org/law-enforcement-corruption/shapes#OfficerCareerTemporalShape">cacontology-corruption-shapes:OfficerCareerTemporalShape</a></li>
-                <li><a href="shape-cacontology-corruption-shapescorruptlawenforcementofficershape.html" title="https://cacontology.projectvic.org/law-enforcement-corruption/shapes#CorruptLawEnforcementOfficerShape">cacontology-corruption-shapes:CorruptLawEnforcementOfficerShape</a></li>
                 <li><a href="shape-cacontology-corruption-shapesofficerparticipationshape.html" title="https://cacontology.projectvic.org/law-enforcement-corruption/shapes#OfficerParticipationShape">cacontology-corruption-shapes:OfficerParticipationShape</a></li>
                 <li><a href="shape-cacontology-corruption-shapescorruptofficerrolevalidationshape.html" title="https://cacontology.projectvic.org/law-enforcement-corruption/shapes#CorruptOfficerRoleValidationShape">cacontology-corruption-shapes:CorruptOfficerRoleValidationShape</a></li>
                 <li><a href="shape-cacontology-corruption-shapestrustbetrayalrule.html" title="https://cacontology.projectvic.org/law-enforcement-corruption/shapes#TrustBetrayalRule">cacontology-corruption-shapes:TrustBetrayalRule</a></li>
+                <li><a href="shape-cacontology-corruption-shapescorruptlawenforcementofficershape.html" title="https://cacontology.projectvic.org/law-enforcement-corruption/shapes#CorruptLawEnforcementOfficerShape">cacontology-corruption-shapes:CorruptLawEnforcementOfficerShape</a></li>
+                <li><a href="shape-cacontology-corruption-shapesofficercareertemporalshape.html" title="https://cacontology.projectvic.org/law-enforcement-corruption/shapes#OfficerCareerTemporalShape">cacontology-corruption-shapes:OfficerCareerTemporalShape</a></li>
             </div>
           </div>
         </div>
@@ -4945,10 +4945,8 @@
                         <a class="propcolor" title="cacontology-corruption:corruptionDuration" href="prop-cacontology-corruptioncorruptionduration.html">cacontology-corruption:corruptionDuration</a>
                     </td>
                     <td>
-                      owl:DatatypeProperty
                     </td>
                     <td>
-                      Duration of corrupt activities in months before detection.
                       <br>
                     </td>
                     <td>
@@ -4960,8 +4958,7 @@
                           <br>
                     </td>
                     <td>
-                              <i>xsd:nonNegativeInteger</i>
-                            <br>
+                          <i>owl:Thing</i>
                     </td>
                 </tr>
                 <tr>
@@ -4969,8 +4966,10 @@
                         <a class="propcolor" title="cacontology-corruption:departmentAffiliation" href="prop-cacontology-corruptiondepartmentaffiliation.html">cacontology-corruption:departmentAffiliation</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Law enforcement department or military unit affiliation.
                       <br>
                     </td>
                     <td>
@@ -4983,7 +4982,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:string</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5013,8 +5013,10 @@
                         <a class="propcolor" title="cacontology-corruption:hasCorruptionDependency" href="prop-cacontology-corruptionhascorruptiondependency.html">cacontology-corruption:hasCorruptionDependency</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Officer dependency on corrupt activities (low, moderate, high, complete, systemic) - gUFO quality aspect.
                       <br>
                     </td>
                     <td>
@@ -5027,7 +5029,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:string</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5057,10 +5060,8 @@
                         <a class="propcolor" title="cacontology-corruption:hasTrustBetrayalLevel" href="prop-cacontology-corruptionhastrustbetrayallevel.html">cacontology-corruption:hasTrustBetrayalLevel</a>
                     </td>
                     <td>
-                      owl:DatatypeProperty
                     </td>
                     <td>
-                      Level of public trust betrayal (minimal, moderate, significant, severe, complete) - gUFO quality aspect.
                       <br>
                     </td>
                     <td>
@@ -5073,8 +5074,7 @@
                           <br>
                     </td>
                     <td>
-                              <i>xsd:string</i>
-                            <br>
+                          <i>owl:Thing</i>
                     </td>
                 </tr>
                 <tr>
@@ -5082,8 +5082,10 @@
                         <a class="propcolor" title="cacontology-corruption:participatesIn" href="prop-cacontology-corruptionparticipatesin.html">cacontology-corruption:participatesIn</a>
                     </td>
                     <td>
+                      owl:ObjectProperty
                     </td>
                     <td>
+                      Links an officer or organization to corruption activities they participate in - gUFO participation relation.
                       <br>
                     </td>
                     <td>
@@ -5096,7 +5098,8 @@
                         <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <a title="cacontology-corruption:LawEnforcementCorruption" href="class-cacontology-corruptionlawenforcementcorruption.html" class="rdfclass">cacontology-corruption:LawEnforcementCorruption</a>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5172,7 +5175,7 @@
 	</div><!-- /#page-content-wrapper -->
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 17:49:12 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
+      <p class="text-muted">Documentation automatically generated on Sat, 22 Nov 2025 03:12:39 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
     </div>
   </footer>
 </div><!-- /#wrapper -->

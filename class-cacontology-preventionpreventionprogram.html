@@ -4379,12 +4379,12 @@
               <h3 class="panel-title">Shapes (6)</h3>
             </div>
             <div class="panel-body">
+                <li><a href="shape-cacontology-preventionprogramdurationvalidationshape.html" title="https://cacontology.projectvic.org/prevention#ProgramDurationValidationShape">cacontology-prevention:ProgramDurationValidationShape</a></li>
+                <li><a href="shape-cacontology-preventionpreventionprogramdeliveryvalidationshape.html" title="https://cacontology.projectvic.org/prevention#PreventionProgramDeliveryValidationShape">cacontology-prevention:PreventionProgramDeliveryValidationShape</a></li>
+                <li><a href="shape-cacontology-preventionpreventioneffectivenessvalidationshape.html" title="https://cacontology.projectvic.org/prevention#PreventionEffectivenessValidationShape">cacontology-prevention:PreventionEffectivenessValidationShape</a></li>
                 <li><a href="shape-cacontology-preventionpreventionprogramshape.html" title="https://cacontology.projectvic.org/prevention#PreventionProgramShape">cacontology-prevention:PreventionProgramShape</a></li>
                 <li><a href="shape-cacontology-preventiondataqualityshape.html" title="https://cacontology.projectvic.org/prevention#DataQualityShape">cacontology-prevention:DataQualityShape</a></li>
-                <li><a href="shape-cacontology-preventionpreventionprogramdeliveryvalidationshape.html" title="https://cacontology.projectvic.org/prevention#PreventionProgramDeliveryValidationShape">cacontology-prevention:PreventionProgramDeliveryValidationShape</a></li>
                 <li><a href="shape-cacontology-preventiontemporalvalidationshape.html" title="https://cacontology.projectvic.org/prevention#TemporalValidationShape">cacontology-prevention:TemporalValidationShape</a></li>
-                <li><a href="shape-cacontology-preventionprogramdurationvalidationshape.html" title="https://cacontology.projectvic.org/prevention#ProgramDurationValidationShape">cacontology-prevention:ProgramDurationValidationShape</a></li>
-                <li><a href="shape-cacontology-preventionpreventioneffectivenessvalidationshape.html" title="https://cacontology.projectvic.org/prevention#PreventionEffectivenessValidationShape">cacontology-prevention:PreventionEffectivenessValidationShape</a></li>
             </div>
           </div>
         </div>
@@ -4474,8 +4474,8 @@
                           <span>Organization supporting the prevention program. - Links disclosure to support system that enabled it.</span>
                         </td>
                         <td class="fourthtd">
-                                  <a title="uco-identity:Organization" href="class-uco-identityorganization.html" class="rdfclass">uco-identity:Organization</a>
                                   <a title="cacontology-prevention:SafeDisclosureEnvironment" href="class-cacontology-preventionsafedisclosureenvironment.html" class="rdfclass">cacontology-prevention:SafeDisclosureEnvironment</a>
+                                  <a title="uco-identity:Organization" href="class-uco-identityorganization.html" class="rdfclass">uco-identity:Organization</a>
                         </td>
                       </tr>
                       <tr>
@@ -5240,8 +5240,10 @@
                         <a class="propcolor" title="cacontology-prevention:participantCount" href="prop-cacontology-preventionparticipantcount.html">cacontology-prevention:participantCount</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Number of participants in prevention program.
                       <br>
                     </td>
                     <td>
@@ -5255,7 +5257,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:nonNegativeInteger</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5263,10 +5266,8 @@
                         <a class="propcolor" title="cacontology-prevention:programDuration" href="prop-cacontology-preventionprogramduration.html">cacontology-prevention:programDuration</a>
                     </td>
                     <td>
-                      owl:DatatypeProperty
                     </td>
                     <td>
-                      Duration of prevention program in months.
                       <br>
                     </td>
                     <td>
@@ -5280,8 +5281,7 @@
                           <br>
                     </td>
                     <td>
-                              <i>xsd:decimal</i>
-                            <br>
+                          <i>owl:Thing</i>
                     </td>
                 </tr>
                 <tr>
@@ -5382,7 +5382,7 @@
 	</div><!-- /#page-content-wrapper -->
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 17:49:34 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
+      <p class="text-muted">Documentation automatically generated on Sat, 22 Nov 2025 03:13:00 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
     </div>
   </footer>
 </div><!-- /#wrapper -->

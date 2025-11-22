@@ -4348,9 +4348,9 @@
               <h3 class="panel-title">Shapes (3)</h3>
             </div>
             <div class="panel-body">
-                <li><a href="shape-cacontology-coordjointinvestigationresourceintegrationbusinessrule.html" title="https://cacontology.projectvic.org/investigation-coordination#JointInvestigationResourceIntegrationBusinessRule">cacontology-coord:JointInvestigationResourceIntegrationBusinessRule</a></li>
-                <li><a href="shape-cacontology-coordjointinvestigationcompositionshape.html" title="https://cacontology.projectvic.org/investigation-coordination#JointInvestigationCompositionShape">cacontology-coord:JointInvestigationCompositionShape</a></li>
                 <li><a href="shape-cacontology-coordjointinvestigationshape.html" title="https://cacontology.projectvic.org/investigation-coordination#JointInvestigationShape">cacontology-coord:JointInvestigationShape</a></li>
+                <li><a href="shape-cacontology-coordjointinvestigationcompositionshape.html" title="https://cacontology.projectvic.org/investigation-coordination#JointInvestigationCompositionShape">cacontology-coord:JointInvestigationCompositionShape</a></li>
+                <li><a href="shape-cacontology-coordjointinvestigationresourceintegrationbusinessrule.html" title="https://cacontology.projectvic.org/investigation-coordination#JointInvestigationResourceIntegrationBusinessRule">cacontology-coord:JointInvestigationResourceIntegrationBusinessRule</a></li>
             </div>
           </div>
         </div>
@@ -5434,8 +5434,10 @@
                         <a class="propcolor" title="cacontology-coord:hasCoordinationIntensity" href="prop-cacontology-coordhascoordinationintensity.html">cacontology-coord:hasCoordinationIntensity</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Coordination integration intensity (minimal, moderate, high, intensive, fully_integrated) - gUFO quality aspect.
                       <br>
                     </td>
                     <td>
@@ -5448,7 +5450,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:string</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5478,8 +5481,10 @@
                         <a class="propcolor" title="cacontology-coord:investigationScope" href="prop-cacontology-coordinvestigationscope.html">cacontology-coord:investigationScope</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Scope of the joint investigation (single_case, related_cases, criminal_network, organized_crime, multi_jurisdictional, international).
                       <br>
                     </td>
                     <td>
@@ -5493,7 +5498,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:string</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5527,8 +5533,10 @@
                         <a class="propcolor" title="cacontology-coord:sharedCommand" href="prop-cacontology-coordsharedcommand.html">cacontology-coord:sharedCommand</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Whether shared command structure is used in the joint investigation.
                       <br>
                     </td>
                     <td>
@@ -5542,7 +5550,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:boolean</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5650,10 +5659,8 @@
                         <a class="propcolor" title="cacontology-coord:coordinationType" href="prop-cacontology-coordcoordinationtype.html">cacontology-coord:coordinationType</a>
                     </td>
                     <td>
-                      owl:DatatypeProperty
                     </td>
                     <td>
-                      Type of coordination (joint_investigation, parallel_investigation, information_sharing, resource_sharing, task_force_coordination, multi_agency_coordination).
                       <br>
                     </td>
                     <td>
@@ -5667,8 +5674,7 @@
                           <br>
                     </td>
                     <td>
-                              <i>xsd:string</i>
-                            <br>
+                          <i>owl:Thing</i>
                     </td>
                 </tr>
                 <tr>
@@ -5676,10 +5682,8 @@
                         <a class="propcolor" title="cacontology-coord:hasComplexityLevel" href="prop-cacontology-coordhascomplexitylevel.html">cacontology-coord:hasComplexityLevel</a>
                     </td>
                     <td>
-                      owl:DatatypeProperty
                     </td>
                     <td>
-                      Coordination complexity level assessment (simple, moderate, complex, highly_complex, extremely_complex) - gUFO quality aspect.
                       <br>
                     </td>
                     <td>
@@ -5692,8 +5696,7 @@
                           <br>
                     </td>
                     <td>
-                              <i>xsd:string</i>
-                            <br>
+                          <i>owl:Thing</i>
                     </td>
                 </tr>
                 <tr>
@@ -5859,10 +5862,8 @@
                         <a class="propcolor" title="cacontology-coord:participatingAgencies" href="prop-cacontology-coordparticipatingagencies.html">cacontology-coord:participatingAgencies</a>
                     </td>
                     <td>
-                      owl:DatatypeProperty
                     </td>
                     <td>
-                      Number of agencies participating in the coordination.
                       <br>
                     </td>
                     <td>
@@ -5876,8 +5877,7 @@
                           <br>
                     </td>
                     <td>
-                              <i>xsd:nonNegativeInteger</i>
-                            <br>
+                          <i>owl:Thing</i>
                     </td>
                 </tr>
                 <tr>
@@ -6090,7 +6090,7 @@
 	</div><!-- /#page-content-wrapper -->
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 17:49:12 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
+      <p class="text-muted">Documentation automatically generated on Sat, 22 Nov 2025 03:12:38 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
     </div>
   </footer>
 </div><!-- /#wrapper -->

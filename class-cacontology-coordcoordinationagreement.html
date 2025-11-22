@@ -4369,10 +4369,10 @@
               <h3 class="panel-title">Shapes (4)</h3>
             </div>
             <div class="panel-body">
-                <li><a href="shape-cacontology-coordcoordinationagreementtemporalshape.html" title="https://cacontology.projectvic.org/investigation-coordination#CoordinationAgreementTemporalShape">cacontology-coord:CoordinationAgreementTemporalShape</a></li>
                 <li><a href="shape-cacontology-coordcoordinationagreementshape.html" title="https://cacontology.projectvic.org/investigation-coordination#CoordinationAgreementShape">cacontology-coord:CoordinationAgreementShape</a></li>
                 <li><a href="shape-cacontology-coorddataqualityshape.html" title="https://cacontology.projectvic.org/investigation-coordination#DataQualityShape">cacontology-coord:DataQualityShape</a></li>
                 <li><a href="shape-cacontology-coordagreementvalidityshape.html" title="https://cacontology.projectvic.org/investigation-coordination#AgreementValidityShape">cacontology-coord:AgreementValidityShape</a></li>
+                <li><a href="shape-cacontology-coordcoordinationagreementtemporalshape.html" title="https://cacontology.projectvic.org/investigation-coordination#CoordinationAgreementTemporalShape">cacontology-coord:CoordinationAgreementTemporalShape</a></li>
             </div>
           </div>
         </div>
@@ -5040,8 +5040,10 @@
                         <a class="propcolor" title="cacontology-coord:agreementScope" href="prop-cacontology-coordagreementscope.html">cacontology-coord:agreementScope</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Scope of the agreement (specific_case, case_category, ongoing_cooperation, resource_sharing, information_sharing, comprehensive).
                       <br>
                     </td>
                     <td>
@@ -5055,7 +5057,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:string</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5063,8 +5066,10 @@
                         <a class="propcolor" title="cacontology-coord:agreementType" href="prop-cacontology-coordagreementtype.html">cacontology-coord:agreementType</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Type of coordination agreement (mou, moa, formal_agreement, informal_agreement, task_force_charter, joint_operations_plan).
                       <br>
                     </td>
                     <td>
@@ -5078,7 +5083,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:string</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5112,8 +5118,10 @@
                         <a class="propcolor" title="cacontology-coord:expirationDate" href="prop-cacontology-coordexpirationdate.html">cacontology-coord:expirationDate</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Date when the agreement expires.
                       <br>
                     </td>
                     <td>
@@ -5127,7 +5135,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:dateTime</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5223,8 +5232,10 @@
                         <a class="propcolor" title="cacontology-coord:renewalClause" href="prop-cacontology-coordrenewalclause.html">cacontology-coord:renewalClause</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Whether the agreement contains a renewal clause.
                       <br>
                     </td>
                     <td>
@@ -5238,7 +5249,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:boolean</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5246,8 +5258,10 @@
                         <a class="propcolor" title="cacontology-coord:terminationClause" href="prop-cacontology-coordterminationclause.html">cacontology-coord:terminationClause</a>
                     </td>
                     <td>
+                      owl:DatatypeProperty
                     </td>
                     <td>
+                      Whether the agreement contains a termination clause.
                       <br>
                     </td>
                     <td>
@@ -5261,7 +5275,8 @@
                           <br>
                     </td>
                     <td>
-                          <i>owl:Thing</i>
+                              <i>xsd:boolean</i>
+                            <br>
                     </td>
                 </tr>
                 <tr>
@@ -5430,7 +5445,7 @@
 	</div><!-- /#page-content-wrapper -->
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Documentation automatically generated on Fri, 21 Nov 2025 17:49:11 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
+      <p class="text-muted">Documentation automatically generated on Sat, 22 Nov 2025 03:12:37 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.1.1)</p>
     </div>
   </footer>
 </div><!-- /#wrapper -->
