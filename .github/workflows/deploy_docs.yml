@@ -20,12 +20,12 @@ jobs:
     
     steps:
     - name: Checkout documentation repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
     
     - name: Checkout ontology repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: Project-VIC-International/CAC-Ontology
         path: ontology-repo
