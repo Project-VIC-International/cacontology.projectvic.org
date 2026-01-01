@@ -347,6 +347,107 @@ jobs:
         echo ""
         echo "=========================================="
     
+    - name: Validate namespace IRI resolution
+      run: |
+        echo "=========================================="
+        echo "Namespace IRI Resolution Validation"
+        echo "=========================================="
+        
+        if [ ! -d "docs" ]; then
+          echo "ERROR: docs/ directory does not exist!"
+          exit 1
+        fi
+        
+        # Count namespace directories (directories with index.html that aren't the root)
+        namespace_dirs=$(find docs -mindepth 2 -name "index.html" -exec dirname {} \; | sort -u)
+        namespace_count=$(echo "$namespace_dirs" | grep -c . || echo "0")
+        
+        echo ""
+        echo "Namespace Index Pages Found: $namespace_count"
+        
+        if [ -n "$namespace_dirs" ]; then
+          echo ""
+          echo "Namespace directories with index pages:"
+          echo "$namespace_dirs" | while read dir; do
+            rel_path=${dir#docs/}
+            entity_count=$(grep -c '<li>' "$dir/index.html" 2>/dev/null || echo "0")
+            echo "  ✓ /$rel_path/ ($entity_count entities)"
+          done
+        else
+          echo "  ⚠ WARNING: No namespace index pages found!"
+          echo "  This means IRIs like https://cacontology.projectvic.org/abduction#EntityName"
+          echo "  will not resolve to documentation pages."
+        fi
+        
+        # Check for common namespace patterns that should have index pages
+        echo ""
+        echo "Checking for expected namespaces..."
+        expected_namespaces=(
+          "abduction"
+          "ai-generated"
+          "asset-forfeiture"
+          "athletic"
+          "case-management"
+          "forensics"
+          "grooming"
+          "trafficking"
+          "sextortion"
+        )
+        
+        missing_namespaces=0
+        for ns in "${expected_namespaces[@]}"; do
+          if [ -f "docs/$ns/index.html" ]; then
+            echo "  ✓ /$ns/ exists"
+          else
+            # Check if there are any class/prop files for this namespace
+            if find docs -name "*-cacontology-$ns*.html" -type f | head -1 | grep -q .; then
+              echo "  ⚠ /$ns/ missing but entities exist in documentation"
+              missing_namespaces=$((missing_namespaces + 1))
+            fi
+          fi
+        done
+        
+        # Validate that namespace index pages have proper redirect JavaScript
+        echo ""
+        echo "Validating namespace index page structure..."
+        validation_errors=0
+        
+        for dir in $namespace_dirs; do
+          index_file="$dir/index.html"
+          if [ -f "$index_file" ]; then
+            # Check for entityMap JavaScript object
+            if ! grep -q "entityMap" "$index_file"; then
+              echo "  ⚠ $index_file: Missing entityMap redirect logic"
+              validation_errors=$((validation_errors + 1))
+            fi
+            # Check for back link
+            if ! grep -q "Back to Main Documentation" "$index_file"; then
+              echo "  ⚠ $index_file: Missing back link to main documentation"
+            fi
+          fi
+        done
+        
+        # Summary
+        echo ""
+        echo "Namespace IRI Resolution Summary:"
+        if [ "$namespace_count" -gt 0 ] && [ "$validation_errors" -eq 0 ] && [ "$missing_namespaces" -eq 0 ]; then
+          echo "  ✓ All namespace index pages are properly configured"
+          echo "  ✓ IRIs should resolve correctly to documentation"
+        else
+          if [ "$namespace_count" -eq 0 ]; then
+            echo "  ⚠ No namespace index pages found - IRIs may not resolve"
+          fi
+          if [ "$validation_errors" -gt 0 ]; then
+            echo "  ⚠ $validation_errors namespace pages have validation errors"
+          fi
+          if [ "$missing_namespaces" -gt 0 ]; then
+            echo "  ⚠ $missing_namespaces expected namespaces are missing index pages"
+          fi
+        fi
+        
+        echo ""
+        echo "=========================================="
+    
     - name: Prepare docs for GitHub Pages
       run: |
         # Create .nojekyll file to prevent Jekyll processing

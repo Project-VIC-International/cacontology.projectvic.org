@@ -733,6 +733,170 @@ def generate_namespace_indices(graph: Graph, output_dir: Path) -> None:
             print(f"  Error writing index for /{module_path}: {e}")
 
 
+def validate_iri_resolution(graph: Graph, output_dir: Path) -> Dict[str, List[str]]:
+    """Validate that all CAC Ontology IRIs resolve to documentation pages.
+    
+    This checks that:
+    1. All classes have corresponding documentation files
+    2. All properties have corresponding documentation files
+    3. All namespace index pages exist for namespaces with entities
+    4. All hash-based IRIs can resolve via namespace pages
+    
+    Returns a dictionary with:
+    - 'missing_files': List of expected files that don't exist
+    - 'missing_namespaces': List of namespaces without index pages
+    - 'broken_links': List of broken internal links in HTML files
+    """
+    print("Validating IRI resolution...")
+    
+    results: Dict[str, List[str]] = {
+        "missing_files": [],
+        "missing_namespaces": [],
+        "broken_links": [],
+        "validated_entities": 0,
+        "validated_namespaces": 0
+    }
+    
+    base_ns = "https://cacontology.projectvic.org/"
+    
+    # Helper to get expected filename (same logic as generate_namespace_indices)
+    def get_expected_filename(prefix: str, local_name: str, type_prefix: str) -> str:
+        slug = f"{prefix}{local_name}".lower()
+        return f"{type_prefix}-{slug}.html"
+    
+    # Track namespaces found
+    namespaces_found: Set[str] = set()
+    
+    # Check all CAC Ontology entities
+    for subject in set(graph.subjects()):
+        if not isinstance(subject, rdflib.URIRef):
+            continue
+            
+        subject_str = str(subject)
+        if not subject_str.startswith(base_ns):
+            continue
+        
+        # Determine entity type
+        types = list(graph.objects(subject, RDF.type))
+        entity_type = None
+        
+        if OWL.Class in types or RDFS.Class in types:
+            entity_type = "Class"
+            type_prefix = "class"
+        elif any(t for t in types if str(t).endswith("Property")):
+            entity_type = "Property"
+            type_prefix = "prop"
+        elif any(str(t) == "http://www.w3.org/2004/02/skos/core#Concept" for t in types):
+            entity_type = "Concept"
+            type_prefix = "concept"
+        elif any(str(t) == "http://www.w3.org/ns/shacl#NodeShape" for t in types):
+            entity_type = "Shape"
+            type_prefix = "shape"
+        
+        if not entity_type:
+            continue
+        
+        # Parse namespace and local name
+        if "#" in subject_str:
+            ns_part, local_name = subject_str.split("#", 1)
+            if ns_part.startswith(base_ns):
+                module_path = ns_part[len(base_ns):]
+                if module_path.endswith("/"):
+                    module_path = module_path[:-1]
+                
+                # Track namespace
+                if module_path:
+                    namespaces_found.add(module_path)
+                
+                # Build expected filename
+                ontospy_prefix = "cacontology"
+                if module_path:
+                    ontospy_prefix = f"cacontology-{module_path.replace('/', '-')}"
+                
+                expected_file = get_expected_filename(ontospy_prefix, local_name, type_prefix)
+                expected_path = output_dir / expected_file
+                
+                if not expected_path.exists():
+                    results["missing_files"].append(f"{subject_str} -> {expected_file}")
+                else:
+                    results["validated_entities"] += 1
+    
+    # Check namespace index pages exist
+    for namespace in namespaces_found:
+        namespace_index = output_dir / namespace / "index.html"
+        if namespace_index.exists():
+            results["validated_namespaces"] += 1
+        else:
+            results["missing_namespaces"].append(namespace)
+    
+    # Validate internal links in HTML files
+    html_files = list(output_dir.rglob("*.html"))
+    link_pattern = re.compile(r'href=["\']([^"\'#]+\.html)["\']')
+    
+    for html_file in html_files:
+        try:
+            content = html_file.read_text(encoding="utf-8")
+            links = link_pattern.findall(content)
+            
+            for link in links:
+                # Skip external links
+                if link.startswith("http://") or link.startswith("https://"):
+                    continue
+                
+                # Resolve relative path
+                if link.startswith("../"):
+                    # Relative to parent
+                    target_path = html_file.parent.parent / link[3:]
+                elif link.startswith("./"):
+                    target_path = html_file.parent / link[2:]
+                else:
+                    target_path = html_file.parent / link
+                
+                # Normalize path
+                try:
+                    target_path = target_path.resolve()
+                    if not target_path.exists():
+                        # Check if it might be in output_dir root
+                        alt_path = output_dir / link.replace("../", "")
+                        if not alt_path.exists():
+                            results["broken_links"].append(
+                                f"{html_file.relative_to(output_dir)} -> {link}"
+                            )
+                except Exception:
+                    pass
+                    
+        except Exception as e:
+            print(f"  Warning: Could not validate links in {html_file.name}: {e}")
+    
+    # Print summary
+    print(f"  Validated {results['validated_entities']} entity documentation files")
+    print(f"  Validated {results['validated_namespaces']}/{len(namespaces_found)} namespace index pages")
+    
+    if results["missing_files"]:
+        print(f"\n  WARNING: {len(results['missing_files'])} entities missing documentation files:")
+        for missing in results["missing_files"][:10]:  # Show first 10
+            print(f"    - {missing}")
+        if len(results["missing_files"]) > 10:
+            print(f"    ... and {len(results['missing_files']) - 10} more")
+    
+    if results["missing_namespaces"]:
+        print(f"\n  WARNING: {len(results['missing_namespaces'])} namespaces missing index pages:")
+        for ns in results["missing_namespaces"]:
+            print(f"    - /{ns}/")
+    
+    if results["broken_links"]:
+        print(f"\n  WARNING: {len(results['broken_links'])} broken internal links found:")
+        for link in results["broken_links"][:10]:  # Show first 10
+            print(f"    - {link}")
+        if len(results["broken_links"]) > 10:
+            print(f"    ... and {len(results['broken_links']) - 10} more")
+    
+    if not results["missing_files"] and not results["missing_namespaces"] and not results["broken_links"]:
+        print("  All IRIs resolve correctly!")
+    
+    return results
+
+
 def main():
     """Main documentation generation workflow."""
     print("=" * 60)
@@ -766,11 +930,17 @@ def main():
     output_dir = REPO_ROOT / OUTPUT_DIR
     generate_documentation(temp_ontology, output_dir)
     
+    # Generate namespace index pages for IRI resolution
+    generate_namespace_indices(merged_graph, output_dir)
+    
     # Extract common CSS and JavaScript into shared files
     common_css_file, common_js_file, shared_dir = extract_common_resources(output_dir)
     
     # Optimize HTML files to reduce size (and replace inline resources with shared files)
     optimize_html_files(output_dir, common_css_file, common_js_file, version_info)
+    
+    # Validate IRI resolution
+    validation_results = validate_iri_resolution(merged_graph, output_dir)
     
     # Analyze file sizes and report potential issues
     analyze_file_sizes(output_dir)
