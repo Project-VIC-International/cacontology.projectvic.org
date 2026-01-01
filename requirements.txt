@@ -1,13 +1,16 @@
 # Ontology Documentation Generation
-ontospy[docs]>=2.1.1
-ontodocs>=1.0.0
-# Django 4.0 removed {% ifequal %}, so we need an older version for ontodocs
-Django<4.0
-rdflib>=6.3.2
+ontospy>=2.1.1
+ontodocs>=1.2.0
 
-# Ontology Processing
-robotframework>=6.1.1
+# Django 4.0 removed {% ifequal %} template tag which ontodocs uses
+# Keep Django < 4.0 for compatibility with ontodocs templates
+Django>=3.2,<4.0
 
-# Additional utilities
+# RDF Processing
+rdflib>=7.0.0
+
+# Ontology Processing (optional, for advanced workflows)
+robotframework>=7.0.0
+
+# HTTP utilities
 requests>=2.31.0
-
