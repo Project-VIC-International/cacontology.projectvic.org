@@ -562,6 +562,18 @@ def generate_namespace_indices(graph: Graph, output_dir: Path) -> None:
     # Base namespace
     base_ns = "https://cacontology.projectvic.org/"
     
+    # Build namespace URI to prefix mapping from RDF namespace declarations
+    # Ontospy uses these prefixes (e.g., "cacontology-registry") not URL paths (e.g., "sex-offender-registry")
+    ns_uri_to_prefix: Dict[str, str] = {}
+    for prefix, uri in graph.namespaces():
+        uri_str = str(uri)
+        prefix_str = str(prefix)
+        # Only track CAC ontology namespaces
+        if uri_str.startswith(base_ns) or prefix_str.startswith("cacontology"):
+            ns_uri_to_prefix[uri_str] = prefix_str
+    
+    print(f"  Found {len(ns_uri_to_prefix)} CAC ontology namespace prefixes")
+    
     # Collect entities by namespace
     ns_entities = {}
     
@@ -611,12 +623,21 @@ def generate_namespace_indices(graph: Graph, output_dir: Path) -> None:
                 if module_path.endswith("/"):
                     module_path = module_path[:-1]
                 
-                # Map to ontospy prefix format
-                # core -> cacontology
-                # abduction -> cacontology-abduction
-                ontospy_prefix = "cacontology"
-                if module_path:
-                    ontospy_prefix = f"cacontology-{module_path.replace('/', '-')}"
+                # Look up the Ontospy prefix from namespace mappings
+                # The namespace URI includes the # (e.g., "https://cacontology.projectvic.org/abduction#")
+                ns_uri_with_hash = ns_part + "#"
+                
+                if ns_uri_with_hash in ns_uri_to_prefix:
+                    # Use the actual RDF prefix (e.g., "cacontology-registry")
+                    ontospy_prefix = ns_uri_to_prefix[ns_uri_with_hash]
+                elif ns_part in ns_uri_to_prefix:
+                    # Try without hash
+                    ontospy_prefix = ns_uri_to_prefix[ns_part]
+                else:
+                    # Fallback: derive from URL path (may not work for all namespaces)
+                    ontospy_prefix = "cacontology"
+                    if module_path:
+                        ontospy_prefix = f"cacontology-{module_path.replace('/', '-')}"
                 
                 type_prefix = "class" if entity_type == "Class" else \
                              "prop" if entity_type == "Property" else \
@@ -637,7 +658,7 @@ def generate_namespace_indices(graph: Graph, output_dir: Path) -> None:
                 })
                 count += 1
 
-    print(f"Found {count} entities across {len(ns_entities)} modules")
+    print(f"  Found {count} entities across {len(ns_entities)} modules")
     
     # Generate index pages
     for module_path, entities in ns_entities.items():
@@ -759,6 +780,15 @@ def validate_iri_resolution(graph: Graph, output_dir: Path) -> Dict[str, List[st
     
     base_ns = "https://cacontology.projectvic.org/"
     
+    # Build namespace URI to prefix mapping from RDF namespace declarations
+    # (same logic as generate_namespace_indices)
+    ns_uri_to_prefix: Dict[str, str] = {}
+    for prefix, uri in graph.namespaces():
+        uri_str = str(uri)
+        prefix_str = str(prefix)
+        if uri_str.startswith(base_ns) or prefix_str.startswith("cacontology"):
+            ns_uri_to_prefix[uri_str] = prefix_str
+    
     # Helper to get expected filename (same logic as generate_namespace_indices)
     def get_expected_filename(prefix: str, local_name: str, type_prefix: str) -> str:
         slug = f"{prefix}{local_name}".lower()
@@ -808,10 +838,18 @@ def validate_iri_resolution(graph: Graph, output_dir: Path) -> Dict[str, List[st
                 if module_path:
                     namespaces_found.add(module_path)
                 
-                # Build expected filename
-                ontospy_prefix = "cacontology"
-                if module_path:
-                    ontospy_prefix = f"cacontology-{module_path.replace('/', '-')}"
+                # Look up the Ontospy prefix from namespace mappings
+                ns_uri_with_hash = ns_part + "#"
+                
+                if ns_uri_with_hash in ns_uri_to_prefix:
+                    ontospy_prefix = ns_uri_to_prefix[ns_uri_with_hash]
+                elif ns_part in ns_uri_to_prefix:
+                    ontospy_prefix = ns_uri_to_prefix[ns_part]
+                else:
+                    # Fallback: derive from URL path
+                    ontospy_prefix = "cacontology"
+                    if module_path:
+                        ontospy_prefix = f"cacontology-{module_path.replace('/', '-')}"
                 
                 expected_file = get_expected_filename(ontospy_prefix, local_name, type_prefix)
                 expected_path = output_dir / expected_file
