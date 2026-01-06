@@ -865,6 +865,14 @@ The <slug> is the lowercase concatenation of the namespace prefix and local name
 Example: The property `forensics#priorityClassification` has the URL:
   {SITE_BASE_URL}/prop-cacontology-forensicspriorityclassification.html
 
+## Key navigation pages (recommended starting points)
+- Entities A-Z: {SITE_BASE_URL}/entities-az.html
+- Classes tree: {SITE_BASE_URL}/entities-tree-classes.html
+- Properties tree: {SITE_BASE_URL}/entities-tree-properties.html
+- Shapes tree: {SITE_BASE_URL}/entities-tree-shapes.html
+- Concepts tree: {SITE_BASE_URL}/entities-tree-concepts.html
+- Statistics: {SITE_BASE_URL}/stats.html
+
 ## Machine-friendly artifacts (recommended for bulk lookup)
 - Sitemap: {SITE_BASE_URL}/sitemap.xml
 - Entity index (JSONL): {SITE_BASE_URL}/entities.jsonl
@@ -926,40 +934,68 @@ def publish_ontology_dump(temp_ontology: Path, output_dir: Path) -> None:
 
 
 def generate_sitemap(output_dir: Path) -> None:
-    """Generate sitemap.xml from the built docs directory."""
+    """Generate sitemap.xml from the built docs directory with priority and lastmod."""
     print("Generating sitemap.xml...")
     
-    # Collect all HTML files and key text/data files
-    urls = []
+    # Current build date in ISO 8601 format for lastmod
+    build_date = datetime.now().strftime("%Y-%m-%d")
+    
+    # Define high-priority pages (hub pages and key entry points)
+    high_priority_pages = {
+        "index.html": "1.0",
+        "entities-az.html": "0.9",
+        "entities-tree-classes.html": "0.9",
+        "entities-tree-properties.html": "0.9",
+        "entities-tree-shapes.html": "0.9",
+        "entities-tree-concepts.html": "0.9",
+        "stats.html": "0.9",
+        "llms.txt": "0.8",
+        "entities.jsonl": "0.8",
+        "cacontology.ttl": "0.7",
+    }
+    
+    # Collect all URLs with their priorities
+    url_entries = []  # List of (url, priority)
     
     # Add HTML pages
     for html_file in output_dir.rglob("*.html"):
         rel_path = html_file.relative_to(output_dir)
-        url = f"{SITE_BASE_URL}/{str(rel_path).replace(os.sep, '/')}"
-        urls.append(url)
+        rel_path_str = str(rel_path).replace(os.sep, '/')
+        url = f"{SITE_BASE_URL}/{rel_path_str}"
+        priority = high_priority_pages.get(rel_path_str, "0.5")
+        url_entries.append((url, priority))
     
     # Add key non-HTML files
     for filename in ["llms.txt", "entities.jsonl", "cacontology.ttl"]:
         file_path = output_dir / filename
         if file_path.exists():
-            urls.append(f"{SITE_BASE_URL}/{filename}")
+            url = f"{SITE_BASE_URL}/{filename}"
+            priority = high_priority_pages.get(filename, "0.5")
+            url_entries.append((url, priority))
     
-    print(f"  Found {len(urls)} URLs to include")
+    print(f"  Found {len(url_entries)} URLs to include")
     
     # Check if we need to split (sitemap limit is 50,000 URLs)
-    if len(urls) > 50000:
+    if len(url_entries) > 50000:
         print("  WARNING: More than 50,000 URLs - sitemap splitting not yet implemented")
         print("  Truncating to first 50,000 URLs")
-        urls = urls[:50000]
+        url_entries = url_entries[:50000]
     
     # Generate sitemap XML
     urlset = Element("urlset")
     urlset.set("xmlns", "http://www.sitemaps.org/schemas/sitemap/0.9")
     
-    for url in sorted(urls):
+    for url, priority in sorted(url_entries, key=lambda x: x[0]):
         url_elem = SubElement(urlset, "url")
+        
         loc = SubElement(url_elem, "loc")
         loc.text = url
+        
+        lastmod = SubElement(url_elem, "lastmod")
+        lastmod.text = build_date
+        
+        priority_elem = SubElement(url_elem, "priority")
+        priority_elem.text = priority
     
     sitemap_file = output_dir / "sitemap.xml"
     tree = ElementTree(urlset)
