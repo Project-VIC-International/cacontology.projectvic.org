@@ -4,7 +4,7 @@ ontodocs>=1.2.0
 
 # Django 4.0 removed {% ifequal %} template tag which ontodocs uses
 # Keep Django < 4.0 for compatibility with ontodocs templates
-Django>=3.2,<4.0
+Django>=3.2,<7.0
 
 # RDF Processing
 rdflib>=7.0.0
