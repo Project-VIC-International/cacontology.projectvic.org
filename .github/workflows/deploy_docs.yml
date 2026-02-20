@@ -9,6 +9,11 @@ on:
     # Run daily at 2 AM UTC to check for ontology updates
     - cron: '0 2 * * *'
 
+# Avoid concurrent runs racing to push `gh-pages`.
+concurrency:
+  group: deploy-documentation
+  cancel-in-progress: true
+
 permissions:
   contents: write
   pages: write
@@ -482,4 +487,4 @@ jobs:
         publish_branch: gh-pages
         cname: cacontology.projectvic.org
         keep_files: false
-        force_orphan: false
+        force_orphan: true
