@@ -390,6 +390,7 @@ jobs:
           "case-management"
           "forensics"
           "grooming"
+          "soe"
           "trafficking"
           "sextortion"
         )

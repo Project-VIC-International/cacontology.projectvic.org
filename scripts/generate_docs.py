@@ -30,8 +30,6 @@ except ImportError:
 
 # Configuration
 REPO_ROOT = Path(__file__).parent.parent
-ONTOLOGY_DIR = "ontology_repo/ontology"
-SHAPES_DIR = "ontology_repo/shapes"
 OUTPUT_DIR = "docs"
 TEMP_DIR = "temp_build"
 
@@ -43,6 +41,22 @@ CACON = Namespace("https://cacontology.projectvic.org#")
 
 def clone_ontology_repo():
     """Clone or update the ontology repository."""
+    configured_repo_path = os.environ.get("ONTOLOGY_REPO_PATH", "").strip()
+    if configured_repo_path:
+        ontology_repo_path = Path(configured_repo_path)
+        if not ontology_repo_path.is_absolute():
+            ontology_repo_path = REPO_ROOT / ontology_repo_path
+        ontology_repo_path = ontology_repo_path.resolve()
+
+        if not ontology_repo_path.exists():
+            print(
+                f"Warning: ONTOLOGY_REPO_PATH is set but does not exist: "
+                f"{ontology_repo_path}. Falling back to default clone behavior."
+            )
+        else:
+            print(f"Using configured ontology repository path: {ontology_repo_path}")
+            return ontology_repo_path
+
     ontology_repo_path = REPO_ROOT / "ontology_repo"
     
     if ontology_repo_path.exists():
@@ -73,8 +87,8 @@ def find_ontology_files(base_dir: Path) -> Tuple[List[Path], List[Path]]:
     ontology_files = []
     shapes_files = []
     
-    base_ontology = REPO_ROOT / ONTOLOGY_DIR
-    base_shapes = REPO_ROOT / SHAPES_DIR
+    base_ontology = base_dir / "ontology"
+    base_shapes = base_dir / "shapes"
     
     if base_ontology.exists():
         ontology_files = list(base_ontology.rglob("*.ttl"))
@@ -933,6 +947,180 @@ def publish_ontology_dump(temp_ontology: Path, output_dir: Path) -> None:
     print(f"  TTL size: {ttl_size_mb:.2f} MB, gzipped: {gz_size_mb:.2f} MB")
 
 
+def _parse_version_tuple(version_str: str) -> Tuple[int, ...]:
+    """Best-effort semver-ish parsing for picking latest redirects.
+
+    Examples:
+      "2.10.0" -> (2, 10, 0)
+      "2.5.0-rc1" -> (2, 5, 0)  (suffix ignored)
+    """
+    core = re.split(r"[-+]", version_str.strip(), maxsplit=1)[0]
+    parts: List[int] = []
+    for p in core.split("."):
+        try:
+            parts.append(int(p))
+        except ValueError:
+            break
+    return tuple(parts) if parts else (0,)
+
+
+def publish_versioned_ontology_documents(repo_path: Path, output_dir: Path) -> None:
+    """Publish each ontology/shapes TTL at its owl:versionIRI path.
+
+    Problem this solves:
+      - Namespace docs like `/analyst-wellbeing/` are generated (hash IRIs).
+      - But versionIRIs like `/analyst-wellbeing/shapes/2.10.0` are not, so the
+        ontology document IRIs (especially SHACL shapes ontologies) 404.
+
+    Approach:
+      - For every `.ttl` in the ontology repo, parse it and find any `owl:Ontology`.
+      - For each ontology, derive a relative path from `owl:versionIRI` (or the
+        ontology IRI if `owl:versionIRI` is missing).
+      - Write the original Turtle source to `docs/<rel>/index.ttl`.
+      - If `docs/<rel>/index.html` does not already exist, create a tiny HTML
+        redirect page that points to `index.ttl`.
+      - Also create a parent redirect (e.g., `docs/<module>/shapes/index.html`)
+        pointing at the latest discovered version directory.
+    """
+    print("Publishing versioned ontology documents (per-module TTL)...")
+
+    base_ns = "https://cacontology.projectvic.org/"
+    ontology_dir = repo_path / "ontology"
+    if not ontology_dir.exists():
+        print(f"  WARNING: Ontology directory not found: {ontology_dir}")
+        return
+
+    ttl_files = sorted(ontology_dir.rglob("*.ttl"))
+    print(f"  Scanning {len(ttl_files)} TTL files for owl:Ontology declarations")
+
+    # Track latest version per parent path (e.g., analyst-wellbeing/shapes -> 2.10.0)
+    latest_by_parent: Dict[str, Tuple[Tuple[int, ...], str]] = {}
+
+    published_count = 0
+    skipped_count = 0
+
+    for ttl_file in ttl_files:
+        try:
+            g = Graph()
+            g.parse(str(ttl_file), format="turtle")
+        except Exception as e:
+            print(f"  WARNING: Could not parse {ttl_file.name}: {e}")
+            skipped_count += 1
+            continue
+
+        ontologies = list(g.subjects(RDF.type, OWL.Ontology))
+        if not ontologies:
+            continue
+
+        for ont in ontologies:
+            version_iri = None
+            for _, _, o in g.triples((ont, OWL.versionIRI, None)):
+                version_iri = str(o)
+                break
+            if not version_iri:
+                version_iri = str(ont)
+
+            # Ignore non-CAC ontology documents.
+            if not version_iri.startswith(base_ns):
+                continue
+
+            # Normalize (no fragment, no trailing '#')
+            version_iri = version_iri.split("#", 1)[0].rstrip("#")
+            rel = version_iri[len(base_ns) :].lstrip("/")
+            if not rel:
+                continue
+
+            target_dir = output_dir / rel
+            if target_dir.exists() and target_dir.is_file():
+                print(f"  WARNING: Cannot create directory over file: {target_dir}")
+                skipped_count += 1
+                continue
+
+            target_dir.mkdir(parents=True, exist_ok=True)
+            ttl_dest = target_dir / "index.ttl"
+            shutil.copy2(ttl_file, ttl_dest)
+
+            # If the directory doesn't already have an index page, create one
+            # that redirects to the raw Turtle document.
+            index_html = target_dir / "index.html"
+            if not index_html.exists():
+                title = f"CAC Ontology Document - {rel}"
+                index_html.write_text(
+                    "\n".join(
+                        [
+                            "<!doctype html>",
+                            "<html lang=\"en\">",
+                            "<head>",
+                            "  <meta charset=\"utf-8\">",
+                            "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">",
+                            f"  <title>{title}</title>",
+                            "  <meta http-equiv=\"refresh\" content=\"0; url=index.ttl\">",
+                            "  <style>",
+                            "    body { font-family: -apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,Arial,sans-serif; padding: 24px; }",
+                            "    code { background: #f3f3f3; padding: 2px 6px; border-radius: 4px; }",
+                            "  </style>",
+                            "</head>",
+                            "<body>",
+                            "  <p>Redirecting to Turtle source: <a href=\"index.ttl\"><code>index.ttl</code></a></p>",
+                            f"  <p><a href=\"{SITE_BASE_URL}/index.html\">Back to documentation</a></p>",
+                            "</body>",
+                            "</html>",
+                            "",
+                        ]
+                    ),
+                    encoding="utf-8",
+                )
+
+            # Track parent -> latest version directory redirect.
+            # Only do this for version-like last segments (e.g., 2.10.0).
+            last_seg = rel.split("/")[-1]
+            if re.fullmatch(r"\d+\.\d+\.\d+(?:[-+].+)?", last_seg):
+                parent = "/".join(rel.split("/")[:-1])
+                if parent:
+                    v_tuple = _parse_version_tuple(last_seg)
+                    cur = latest_by_parent.get(parent)
+                    if cur is None or v_tuple > cur[0]:
+                        latest_by_parent[parent] = (v_tuple, last_seg)
+
+            published_count += 1
+
+    # Create stable parent redirects like /analyst-wellbeing/shapes/ -> /analyst-wellbeing/shapes/2.10.0/
+    redirect_created = 0
+    for parent, (_, latest_version) in sorted(latest_by_parent.items()):
+        parent_dir = output_dir / parent
+        parent_dir.mkdir(parents=True, exist_ok=True)
+        parent_index = parent_dir / "index.html"
+        if parent_index.exists():
+            continue
+        parent_index.write_text(
+            "\n".join(
+                [
+                    "<!doctype html>",
+                    "<html lang=\"en\">",
+                    "<head>",
+                    "  <meta charset=\"utf-8\">",
+                    "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">",
+                    f"  <title>CAC Ontology - {parent}</title>",
+                    f"  <meta http-equiv=\"refresh\" content=\"0; url={latest_version}/\">",
+                    "</head>",
+                    "<body>",
+                    f"  <p>Redirecting to latest version: <a href=\"{latest_version}/\">{latest_version}/</a></p>",
+                    "</body>",
+                    "</html>",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+        redirect_created += 1
+
+    print(f"  Published {published_count} ontology documents into versionIRI directories")
+    if skipped_count:
+        print(f"  Skipped {skipped_count} files/ontologies due to parse/path issues")
+    if redirect_created:
+        print(f"  Created {redirect_created} parent redirects for latest versions")
+
+
 def generate_sitemap(output_dir: Path) -> None:
     """Generate sitemap.xml from the built docs directory with priority and lastmod."""
     print("Generating sitemap.xml...")
@@ -1059,8 +1247,10 @@ def validate_iri_resolution(graph: Graph, output_dir: Path) -> Dict[str, List[st
         "missing_files": [],
         "missing_namespaces": [],
         "broken_links": [],
+        "missing_ontology_documents": [],
         "validated_entities": 0,
-        "validated_namespaces": 0
+        "validated_namespaces": 0,
+        "validated_ontology_documents": 0,
     }
     
     base_ns = "https://cacontology.projectvic.org/"
@@ -1151,6 +1341,31 @@ def validate_iri_resolution(graph: Graph, output_dir: Path) -> Dict[str, List[st
             results["validated_namespaces"] += 1
         else:
             results["missing_namespaces"].append(namespace)
+
+    # Check ontology document IRIs (owl:Ontology and owl:versionIRI) are published
+    # into docs/<relative>/index.ttl by publish_versioned_ontology_documents().
+    ontology_doc_iris: Set[str] = set()
+    for ont in graph.subjects(RDF.type, OWL.Ontology):
+        version_iri = None
+        for _, _, o in graph.triples((ont, OWL.versionIRI, None)):
+            version_iri = str(o)
+            break
+        if not version_iri:
+            version_iri = str(ont)
+
+        if version_iri.startswith(base_ns):
+            version_iri = version_iri.split("#", 1)[0].rstrip("#")
+            ontology_doc_iris.add(version_iri)
+
+    for iri in sorted(ontology_doc_iris):
+        rel = iri[len(base_ns) :].lstrip("/")
+        if not rel:
+            continue
+        ttl_path = output_dir / rel / "index.ttl"
+        if ttl_path.exists():
+            results["validated_ontology_documents"] += 1
+        else:
+            results["missing_ontology_documents"].append(rel)
     
     # Validate internal links in HTML files
     html_files = list(output_dir.rglob("*.html"))
@@ -1194,6 +1409,10 @@ def validate_iri_resolution(graph: Graph, output_dir: Path) -> Dict[str, List[st
     # Print summary
     print(f"  Validated {results['validated_entities']} entity documentation files")
     print(f"  Validated {results['validated_namespaces']}/{len(namespaces_found)} namespace index pages")
+    if ontology_doc_iris:
+        print(
+            f"  Validated {results['validated_ontology_documents']}/{len(ontology_doc_iris)} ontology document TTL publications"
+        )
     
     if results["missing_files"]:
         print(f"\n  WARNING: {len(results['missing_files'])} entities missing documentation files:")
@@ -1206,6 +1425,13 @@ def validate_iri_resolution(graph: Graph, output_dir: Path) -> Dict[str, List[st
         print(f"\n  WARNING: {len(results['missing_namespaces'])} namespaces missing index pages:")
         for ns in results["missing_namespaces"]:
             print(f"    - /{ns}/")
+
+    if results["missing_ontology_documents"]:
+        print(f"\n  WARNING: {len(results['missing_ontology_documents'])} ontology documents missing index.ttl:")
+        for rel in results["missing_ontology_documents"][:10]:
+            print(f"    - /{rel}/index.ttl")
+        if len(results["missing_ontology_documents"]) > 10:
+            print(f"    ... and {len(results['missing_ontology_documents']) - 10} more")
     
     if results["broken_links"]:
         print(f"\n  WARNING: {len(results['broken_links'])} broken internal links found:")
@@ -1214,7 +1440,12 @@ def validate_iri_resolution(graph: Graph, output_dir: Path) -> Dict[str, List[st
         if len(results["broken_links"]) > 10:
             print(f"    ... and {len(results['broken_links']) - 10} more")
     
-    if not results["missing_files"] and not results["missing_namespaces"] and not results["broken_links"]:
+    if (
+        not results["missing_files"]
+        and not results["missing_namespaces"]
+        and not results["missing_ontology_documents"]
+        and not results["broken_links"]
+    ):
         print("  All IRIs resolve correctly!")
     
     return results
@@ -1272,6 +1503,7 @@ def main():
     generate_llms_txt(output_dir, version_info)
     generate_entities_jsonl(all_entities, output_dir)
     publish_ontology_dump(temp_ontology, output_dir)
+    publish_versioned_ontology_documents(repo_path, output_dir)
     generate_sitemap(output_dir)
     verify_ai_artifacts(output_dir)
     print("=" * 60)
