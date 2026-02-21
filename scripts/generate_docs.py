@@ -6,6 +6,7 @@ import sys
 import shutil
 import subprocess
 import gzip
+import html
 from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Set, Tuple
@@ -14,8 +15,8 @@ from xml.etree.ElementTree import Element, SubElement, ElementTree
 # Check if rdflib is installed
 try:
     import rdflib
-    from rdflib import Graph, Namespace
-    from rdflib.namespace import RDF, RDFS, OWL
+    from rdflib import Graph, Namespace, URIRef
+    from rdflib.namespace import RDF, RDFS, OWL, DCTERMS
 except ImportError:
     print("Error: rdflib is not installed. Please run 'pip install rdflib'")
     sys.exit(1)
@@ -35,6 +36,7 @@ TEMP_DIR = "temp_build"
 
 # Site configuration
 SITE_BASE_URL = "https://cacontology.projectvic.org"
+SITE_BASE_NS = f"{SITE_BASE_URL}/"
 
 # Namespaces
 CACON = Namespace("https://cacontology.projectvic.org#")
@@ -149,6 +151,124 @@ def get_ontology_version(graph: Graph) -> str:
         return iri
         
     return ""
+
+
+def _get_preferred_literal(graph: Graph, subject: URIRef, predicate: URIRef) -> str:
+    """Return literal value preferring @en when available."""
+    values = list(graph.objects(subject, predicate))
+    if not values:
+        return ""
+    for value in values:
+        if getattr(value, "language", None) == "en":
+            return str(value)
+    return str(values[0])
+
+
+def _extract_module_path_and_version(path: str) -> Tuple[str, str]:
+    """Extract module path and version from relative ontology path."""
+    path = path.strip("/")
+    if not path:
+        return "", ""
+
+    segments = path.split("/")
+    last = segments[-1]
+    if re.fullmatch(r"\d+\.\d+\.\d+(?:[-+].+)?", last):
+        return "/".join(segments[:-1]), last
+    return path, ""
+
+
+def _build_module_doc_url(version_iri: str) -> str:
+    """Build a browser URL for a versioned ontology document."""
+    normalized = version_iri.split("#", 1)[0].rstrip("#")
+    if normalized.startswith(SITE_BASE_NS):
+        rel = normalized[len(SITE_BASE_NS):].lstrip("/")
+        return f"{SITE_BASE_URL}/{rel}/" if rel else f"{SITE_BASE_URL}/"
+    return normalized
+
+
+def build_module_registry(repo_path: Path) -> Dict[str, Dict[str, str]]:
+    """Extract latest module metadata from upstream ontology declarations."""
+    print("Building module metadata registry from ontology files...")
+
+    ontology_dir = repo_path / "ontology"
+    if not ontology_dir.exists():
+        print(f"  WARNING: Ontology directory not found: {ontology_dir}")
+        return {}
+
+    ttl_files = sorted(ontology_dir.rglob("*.ttl"))
+    latest_by_module: Dict[str, Dict[str, Any]] = {}
+    skipped_files = 0
+
+    for ttl_file in ttl_files:
+        try:
+            graph = Graph()
+            graph.parse(str(ttl_file), format="turtle")
+        except Exception as e:
+            print(f"  WARNING: Could not parse {ttl_file.name}: {e}")
+            skipped_files += 1
+            continue
+
+        for ont in graph.subjects(RDF.type, OWL.Ontology):
+            version_iri = ""
+            for _, _, o in graph.triples((ont, OWL.versionIRI, None)):
+                version_iri = str(o)
+                break
+            if not version_iri:
+                version_iri = str(ont)
+
+            if not version_iri.startswith(SITE_BASE_NS):
+                continue
+
+            normalized_iri = version_iri.split("#", 1)[0].rstrip("#")
+            rel = normalized_iri[len(SITE_BASE_NS):].lstrip("/")
+            if not rel:
+                continue
+
+            module_path, parsed_version = _extract_module_path_and_version(rel)
+            if module_path == "":
+                # Root ontology maps to the base namespace.
+                namespace_iri = f"{SITE_BASE_URL}#"
+            else:
+                namespace_iri = f"{SITE_BASE_NS}{module_path}#"
+
+            label = _get_preferred_literal(graph, ont, RDFS.label)
+            definition = _get_preferred_literal(graph, ont, DCTERMS.description) or _get_preferred_literal(
+                graph, ont, RDFS.comment
+            )
+            version_info = _get_preferred_literal(graph, ont, OWL.versionInfo) or parsed_version
+
+            current = latest_by_module.get(module_path)
+            candidate_tuple = _parse_version_tuple(version_info or parsed_version or "0.0.0")
+            if current is None or candidate_tuple > current["version_tuple"]:
+                latest_by_module[module_path] = {
+                    "module_path": module_path,
+                    "label": label,
+                    "definition": definition,
+                    "namespace_iri": namespace_iri,
+                    "version": version_info or parsed_version,
+                    "version_iri": normalized_iri,
+                    "doc_url": _build_module_doc_url(normalized_iri),
+                    "version_tuple": candidate_tuple,
+                }
+
+    # Mark whether a module has a corresponding shapes module.
+    for module_path, metadata in latest_by_module.items():
+        if module_path.endswith("/shapes") or module_path == "":
+            metadata["has_shapes"] = False
+        else:
+            metadata["has_shapes"] = f"{module_path}/shapes" in latest_by_module
+
+    # Remove internal-only tuple field.
+    registry: Dict[str, Dict[str, str]] = {}
+    for module_path, metadata in latest_by_module.items():
+        cleaned = dict(metadata)
+        cleaned.pop("version_tuple", None)
+        registry[module_path] = cleaned
+
+    print(f"  Registry contains {len(registry)} module entries")
+    if skipped_files:
+        print(f"  Skipped {skipped_files} ontology files due to parse issues")
+    return registry
 
 def generate_documentation(ontology_file: Path, output_dir: Path):
     """Generate HTML documentation using Ontospy."""
@@ -569,7 +689,9 @@ def analyze_file_sizes(directory: Path):
         size_mb = file.stat().st_size / (1024 * 1024)
         print(f"  {i+1}. {file.relative_to(directory)}: {size_mb:.2f} MB")
 
-def generate_namespace_indices(graph: Graph, output_dir: Path) -> List[Dict[str, str]]:
+def generate_namespace_indices(
+    graph: Graph, output_dir: Path, module_registry: Optional[Dict[str, Dict[str, str]]] = None
+) -> List[Dict[str, str]]:
     """Generate index pages for each namespace module to handle IRI redirects.
     
     This creates directory structures matching the IRI namespaces (e.g. /abduction/)
@@ -738,6 +860,32 @@ def generate_namespace_indices(graph: Graph, output_dir: Path) -> List[Dict[str,
         # Sort entities by name
         entities.sort(key=lambda x: x["name"])
         
+        metadata = (module_registry or {}).get(module_path, {})
+        module_label = metadata.get("label") or f"{module_path.title()} Module"
+        module_definition = metadata.get("definition", "")
+        module_namespace_iri = metadata.get("namespace_iri") or f"{base_ns}{module_path}#"
+        module_doc_url = metadata.get("doc_url", "")
+        shapes_path = f"{module_path}/shapes"
+        has_shapes_module = shapes_path in (module_registry or {})
+        module_definition_html = html.escape(module_definition) if module_definition else ""
+        module_label_html = html.escape(module_label)
+        module_namespace_html = html.escape(module_namespace_iri)
+
+        links_html = []
+        if module_doc_url:
+            links_html.append(
+                f'<a href="{html.escape(module_doc_url)}">Ontology document (latest version)</a>'
+            )
+        if has_shapes_module:
+            links_html.append(f'<a href="../{shapes_path}/">SHACL shapes module</a>')
+        module_links_html = " | ".join(links_html)
+        definition_line_html = (
+            f'<p><span class="meta-label">Definition:</span> {module_definition_html}</p>'
+            if module_definition_html
+            else ""
+        )
+        links_line_html = f"<p>{module_links_html}</p>" if module_links_html else ""
+
         # Generate index.html
         html_content = f"""<!DOCTYPE html>
 <html lang="en">
@@ -769,6 +917,14 @@ def generate_namespace_indices(graph: Graph, output_dir: Path) -> List[Dict[str,
         a:hover {{ text-decoration: underline; }}
         .loading {{ text-align: center; margin-top: 50px; font-style: italic; color: #666; display: none; }}
         .back-link {{ display: inline-block; margin-bottom: 20px; font-size: 0.9em; }}
+        .module-meta {{
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+        }}
+        .module-meta p {{ margin: 6px 0; }}
+        .module-meta .meta-label {{ font-weight: 600; }}
     </style>
     <script>
         // Redirect logic
@@ -799,9 +955,14 @@ def generate_namespace_indices(graph: Graph, output_dir: Path) -> List[Dict[str,
     </div>
     <div id="content" class="container">
         <a href="../index.html" class="back-link">← Back to Main Documentation</a>
-        <h1>{module_path.title()} Module</h1>
+        <h1>{module_label_html}</h1>
+        <div class="module-meta">
+            <p><span class="meta-label">Namespace:</span> <code>{module_namespace_html}</code></p>
+            {definition_line_html}
+            {links_line_html}
+        </div>
         <p>This is the namespace index for the <code>{module_path}</code> module.</p>
-        <p>Select a class or property to view its documentation:</p>
+        <p>Select a class, property, concept, or shape to view its documentation:</p>
         
         <ul class="entity-list">
             {''.join(f'<li><span class="type-badge {e["type"].lower()[:4]}-badge">{e["type"]}</span><a href="../{e["file"]}">{e["name"]}</a></li>' for e in entities)}
@@ -964,7 +1125,74 @@ def _parse_version_tuple(version_str: str) -> Tuple[int, ...]:
     return tuple(parts) if parts else (0,)
 
 
-def publish_versioned_ontology_documents(repo_path: Path, output_dir: Path) -> None:
+def augment_homepage_namespaces(output_dir: Path, module_registry: Dict[str, Dict[str, str]]) -> None:
+    """Post-process docs/index.html to ensure module + shapes namespaces are listed."""
+    print("Augmenting homepage namespace list...")
+
+    index_path = output_dir / "index.html"
+    if not index_path.exists():
+        print("  WARNING: docs/index.html not found; skipping namespace augmentation")
+        return
+
+    content = index_path.read_text(encoding="utf-8")
+    panel_pattern = re.compile(
+        r"(<h3 class=\"panel-title\">Namespaces</h3>\s*</div>\s*<div class=\"panel-body\"[^>]*>\s*<dl[^>]*>)(.*?)(</dl>)",
+        re.DOTALL,
+    )
+    match = panel_pattern.search(content)
+    if not match:
+        print("  WARNING: Could not locate Namespaces panel in docs/index.html")
+        return
+
+    before, body, after = match.groups()
+    existing_uris = set(
+        re.findall(r"<dd><a href=\"([^\"]+)\" target=\"_blank\">", body, flags=re.DOTALL)
+    )
+
+    namespace_entries: List[Tuple[str, str]] = [("cacontology", f"{SITE_BASE_URL}#")]
+    for module_path, metadata in sorted(module_registry.items()):
+        namespace_iri = metadata.get("namespace_iri", "").strip()
+        if not namespace_iri:
+            continue
+        if module_path == "":
+            prefix = "cacontology"
+        else:
+            prefix = f"cacontology-{module_path.replace('/', '-')}"
+        namespace_entries.append((prefix, namespace_iri))
+
+    # De-duplicate by namespace URI, keeping earliest prefix assignment.
+    seen_uris: Set[str] = set()
+    deduped_entries: List[Tuple[str, str]] = []
+    for prefix, iri in namespace_entries:
+        if iri in seen_uris:
+            continue
+        seen_uris.add(iri)
+        deduped_entries.append((prefix, iri))
+
+    missing_entries = [(p, iri) for p, iri in deduped_entries if iri not in existing_uris]
+    if not missing_entries:
+        print("  No missing namespaces to append")
+        return
+
+    append_html = "".join(
+        [
+            f'                     <dt><span class="label label-info">{html.escape(prefix)}</span></dt>\n'
+            f'                     <dd><a href="{html.escape(iri)}" target="_blank">{html.escape(iri)}</a></dd>\n'
+            for prefix, iri in sorted(missing_entries, key=lambda x: x[0])
+        ]
+    )
+
+    new_body = body + ("\n" if not body.endswith("\n") else "") + append_html
+    new_content = content[: match.start()] + before + new_body + after + content[match.end() :]
+    index_path.write_text(new_content, encoding="utf-8")
+    print(f"  Appended {len(missing_entries)} namespace entries")
+
+
+def publish_versioned_ontology_documents(
+    repo_path: Path,
+    output_dir: Path,
+    module_registry: Optional[Dict[str, Dict[str, str]]] = None,
+) -> None:
     """Publish each ontology/shapes TTL at its owl:versionIRI path.
 
     Problem this solves:
@@ -1092,26 +1320,62 @@ def publish_versioned_ontology_documents(repo_path: Path, output_dir: Path) -> N
         parent_index = parent_dir / "index.html"
         if parent_index.exists():
             continue
-        parent_index.write_text(
-            "\n".join(
-                [
-                    "<!doctype html>",
-                    "<html lang=\"en\">",
-                    "<head>",
-                    "  <meta charset=\"utf-8\">",
-                    "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">",
-                    f"  <title>CAC Ontology - {parent}</title>",
-                    f"  <meta http-equiv=\"refresh\" content=\"0; url={latest_version}/\">",
-                    "</head>",
-                    "<body>",
-                    f"  <p>Redirecting to latest version: <a href=\"{latest_version}/\">{latest_version}/</a></p>",
-                    "</body>",
-                    "</html>",
-                    "",
-                ]
-            ),
-            encoding="utf-8",
-        )
+        if parent.endswith("/shapes") and module_registry and parent in module_registry:
+            metadata = module_registry[parent]
+            label = html.escape(metadata.get("label", f"{parent}"))
+            definition = html.escape(metadata.get("definition", ""))
+            namespace_iri = html.escape(metadata.get("namespace_iri", f"{SITE_BASE_NS}{parent}#"))
+            parent_index.write_text(
+                "\n".join(
+                    [
+                        "<!doctype html>",
+                        "<html lang=\"en\">",
+                        "<head>",
+                        "  <meta charset=\"utf-8\">",
+                        "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">",
+                        f"  <title>{label}</title>",
+                        "  <style>",
+                        "    body { font-family: -apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,Arial,sans-serif; max-width: 860px; margin: 0 auto; padding: 24px; line-height: 1.6; color: #333; }",
+                        "    .meta { background: #f8f9fa; border-radius: 6px; padding: 12px 14px; margin: 14px 0 18px 0; }",
+                        "    .meta p { margin: 6px 0; }",
+                        "  </style>",
+                        "</head>",
+                        "<body>",
+                        f"  <h1>{label}</h1>",
+                        "  <div class=\"meta\">",
+                        f"    <p><strong>Namespace:</strong> <code>{namespace_iri}</code></p>",
+                        (f"    <p><strong>Definition:</strong> {definition}</p>" if definition else ""),
+                        "  </div>",
+                        f"  <p><a href=\"{latest_version}/\">View latest version ({latest_version})</a></p>",
+                        f"  <p><a href=\"{SITE_BASE_URL}/index.html\">Back to documentation</a></p>",
+                        "</body>",
+                        "</html>",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+        else:
+            parent_index.write_text(
+                "\n".join(
+                    [
+                        "<!doctype html>",
+                        "<html lang=\"en\">",
+                        "<head>",
+                        "  <meta charset=\"utf-8\">",
+                        "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">",
+                        f"  <title>CAC Ontology - {parent}</title>",
+                        f"  <meta http-equiv=\"refresh\" content=\"0; url={latest_version}/\">",
+                        "</head>",
+                        "<body>",
+                        f"  <p>Redirecting to latest version: <a href=\"{latest_version}/\">{latest_version}/</a></p>",
+                        "</body>",
+                        "</html>",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
         redirect_created += 1
 
     print(f"  Published {published_count} ontology documents into versionIRI directories")
@@ -1475,6 +1739,9 @@ def main():
     
     # Merge all ontologies
     merged_graph = merge_ontologies(ontology_files, shapes_files, temp_ontology)
+
+    # Build module metadata directly from ontology declarations.
+    module_registry = build_module_registry(repo_path)
     
     # Get ontology version
     version_info = get_ontology_version(merged_graph)
@@ -1486,7 +1753,10 @@ def main():
     
     # Generate namespace index pages for IRI resolution
     # Also returns the master entity list for entities.jsonl
-    all_entities = generate_namespace_indices(merged_graph, output_dir)
+    all_entities = generate_namespace_indices(merged_graph, output_dir, module_registry)
+
+    # Ensure homepage namespace panel includes all CAC modules/shapes namespaces.
+    augment_homepage_namespaces(output_dir, module_registry)
     
     # Extract common CSS and JavaScript into shared files
     common_css_file, common_js_file, shared_dir = extract_common_resources(output_dir)
@@ -1503,7 +1773,7 @@ def main():
     generate_llms_txt(output_dir, version_info)
     generate_entities_jsonl(all_entities, output_dir)
     publish_ontology_dump(temp_ontology, output_dir)
-    publish_versioned_ontology_documents(repo_path, output_dir)
+    publish_versioned_ontology_documents(repo_path, output_dir, module_registry)
     generate_sitemap(output_dir)
     verify_ai_artifacts(output_dir)
     print("=" * 60)
