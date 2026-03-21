@@ -6,10 +6,20 @@ This repository contains the automation for generating and deploying the CAC Ont
 
 The documentation is automatically generated using [Ontospy](https://github.com/lambdamusic/Ontospy) from the ontology files in the main [CAC-Ontology repository](https://github.com/Project-VIC-International/CAC-Ontology). The documentation mirrors the structure and style of the [CASE Ontology documentation site](https://ontology.caseontology.org/documentation/index.html).
 
+### CAC Ontology Architecture (v3.0.0+)
+
+The ontology family uses a three-layer architecture:
+
+1. **Semantic Spine** (`cac-core:` namespace) -- A stable, top-level class hierarchy organized by ontological kind (Entity, EnduringEntity, Event, Situation, Role, Phase). All domain modules anchor to the spine.
+2. **Bridge Modules** -- Alignment layers mediating between the spine and external foundational ontologies (gUFO, CASE, UCO).
+3. **Domain Modules** (35+) -- Specialized modules organized into six areas: Core Framework, International Coordination, Criminal Activities, Specialized Investigation, Technical Support, and Victim Services & Task Force Management.
+
+Each domain module has a corresponding SHACL shapes module for validation.
+
 ## Features
 
 - **Automated Generation**: Documentation regenerates automatically on every push to the main ontology repository
-- **Comprehensive Coverage**: Documents all ontology modules, classes, properties, and SHACL shapes
+- **Comprehensive Coverage**: Documents all 35+ ontology modules, classes, properties, and SHACL shapes including the semantic spine and bridge modules
 - **CASE Ontology Style**: Matches the visual style and navigation structure of the CASE Ontology documentation
 - **GitHub Pages Hosting**: Automatically deployed to GitHub Pages with custom domain support
 - **IRI Resolution**: Namespace index pages ensure all ontology IRIs resolve to documentation
@@ -128,12 +138,12 @@ To configure the custom domain:
 |---------|---------|-------------------|
 | **ontospy** | Ontology documentation generator | >=2.1.1 |
 | **ontodocs** | Documentation templates | >=1.2.0 |
-| **Django** | Template engine (for ontodocs) | >=3.2, <4.0 |
+| **Django** | Template engine (for ontodocs) | >=3.2, <7.0 |
 | **rdflib** | RDF processing library | >=7.0.0 |
 | **robotframework** | Ontology processing | >=7.0.0 |
 | **requests** | HTTP utilities | >=2.31.0 |
 
-> **Note**: Django is constrained to <4.0 because ontodocs uses the `{% ifequal %}` template tag which was removed in Django 4.0.
+> **Note**: Django is constrained to <7.0 for compatibility with ontodocs template tags.
 
 See `requirements.txt` for the complete dependency list.
 

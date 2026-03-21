@@ -2,8 +2,7 @@
 ontospy>=2.1.1
 ontodocs>=1.2.0
 
-# Django 4.0 removed {% ifequal %} template tag which ontodocs uses
-# Keep Django < 4.0 for compatibility with ontodocs templates
+# Keep Django < 7.0 for compatibility with ontodocs templates
 Django>=3.2,<7.0
 
 # RDF Processing

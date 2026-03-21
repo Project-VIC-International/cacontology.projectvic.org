@@ -389,15 +389,18 @@ jobs:
         echo "Checking for expected namespaces..."
         expected_namespaces=(
           "abduction"
-          "ai-generated"
+          "ai-csam"
           "asset-forfeiture"
           "athletic"
           "case-management"
+          "core"
           "forensics"
           "grooming"
+          "hotlines"
+          "legal-outcomes"
           "soe"
-          "trafficking"
           "sextortion"
+          "trafficking"
         )
         
         missing_namespaces=0

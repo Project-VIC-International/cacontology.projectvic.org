@@ -40,6 +40,7 @@ SITE_BASE_NS = f"{SITE_BASE_URL}/"
 
 # Namespaces
 CACON = Namespace("https://cacontology.projectvic.org#")
+CACON_CORE = Namespace("https://cacontology.projectvic.org/core#")
 
 def clone_ontology_repo():
     """Clone or update the ontology repository."""
@@ -137,19 +138,35 @@ def merge_ontologies(ontology_files: List[Path], shapes_files: List[Path], outpu
     return merged_graph
 
 def get_ontology_version(graph: Graph) -> str:
-    """Extract version information from the ontology graph."""
-    # Try owl:versionInfo first
+    """Extract version information from the ontology graph.
+
+    Prefers the version declared on the root CAC Ontology (cacontology-core.ttl)
+    or the semantic spine, falling back to any owl:versionInfo found.
+    """
+    # Priority IRIs: root ontology, then spine
+    canonical_iris = [
+        URIRef(f"{SITE_BASE_URL}#"),
+        URIRef(SITE_BASE_URL),
+    ]
+
+    for canon in canonical_iris:
+        for _, _, o in graph.triples((canon, OWL.versionInfo, None)):
+            return str(o)
+
+    # Fallback: any ontology whose versionIRI starts with the site base
+    for s, p, o in graph.triples((None, OWL.versionIRI, None)):
+        iri = str(o)
+        if iri.startswith(SITE_BASE_URL):
+            version = _get_preferred_literal(graph, s, OWL.versionInfo)
+            if version:
+                return version
+            if "/" in iri:
+                return iri.rstrip("/").split("/")[-1]
+
+    # Last resort: any owl:versionInfo
     for s, p, o in graph.triples((None, OWL.versionInfo, None)):
         return str(o)
-        
-    # Try owl:versionIRI
-    for s, p, o in graph.triples((None, OWL.versionIRI, None)):
-        # Extract version from IRI (e.g. .../2.1.0)
-        iri = str(o)
-        if "/" in iri:
-            return iri.split("/")[-1]
-        return iri
-        
+
     return ""
 
 
@@ -1010,23 +1027,47 @@ def generate_llms_txt(output_dir: Path, version_info: str = "") -> None:
 Base URL: {SITE_BASE_URL}/
 
 ## What is the CAC Ontology?
-The Crimes Against Children (CAC) Ontology Family is a community-developed evolving 
-standard that provides a structured (ontology-based) specification for representing 
-information commonly analyzed and exchanged by people and systems during investigations 
+The Crimes Against Children (CAC) Ontology Family is a community-developed evolving
+standard that provides a structured (ontology-based) specification for representing
+information commonly analyzed and exchanged by people and systems during investigations
 involving digital evidence related to crimes against children.
 
-The power of CAC Ontology is that it provides a common language to support automated 
-normalization, combination and validation of varied information sources to facilitate 
-analysis and exploration of investigative questions (who, what, when, timeline, where, how, and why). 
-In addition to representing tool results, CAC Ontology ensures that analysis results 
-can be traced back to their source(s), keeping track of when, where and who used which 
+The power of CAC Ontology is that it provides a common language to support automated
+normalization, combination and validation of varied information sources to facilitate
+analysis and exploration of investigative questions (who, what, when, timeline, where, how, and why).
+In addition to representing tool results, CAC Ontology ensures that analysis results
+can be traced back to their source(s), keeping track of when, where and who used which
 tools to perform investigative actions on data sources.
 
-CAC Ontology extends the Unified Cyber Ontology (UCO), the Cyber-investigation Analysis 
-Standard Expression (CASE) Ontology, and the Unified Foundational Ontology (gUFO). 
-This powerful combination provides specialized modules for modeling child exploitation 
-investigations, operations, legal processes, reporting, offender tradecraft, victim and 
+CAC Ontology extends the Unified Cyber Ontology (UCO), the Cyber-investigation Analysis
+Standard Expression (CASE) Ontology, and the Unified Foundational Ontology (gUFO).
+This powerful combination provides specialized modules for modeling child exploitation
+investigations, operations, legal processes, reporting, offender tradecraft, victim and
 survivor related information, and digital forensics activities with high semantic precision.
+
+## Architecture (v3.0.0+)
+The ontology family uses a three-layer architecture:
+
+1. Semantic Spine (cac-core: namespace, https://cacontology.projectvic.org/core#):
+   A stable, top-level class hierarchy organized by ontological kind (Entity,
+   EnduringEntity, Event, Situation, Role, Phase). All domain modules anchor to
+   the spine rather than directly to external ontologies.
+
+2. Bridge Modules: Alignment layers that mediate between the spine and external
+   foundational ontologies:
+   - bridge/gufo - alignment to gUFO (Unified Foundational Ontology)
+   - bridge/case - alignment to CASE (Cyber-investigation Analysis Standard Expression)
+   - bridge/uco  - alignment to UCO (Unified Cyber Ontology)
+
+3. Domain Modules (35+): Specialized modules organized into six areas:
+   - Core Framework: core, hotlines, us-ncmec
+   - International: international, training, prevention, legal-harmonization
+   - Criminal Activities: production, custodial, grooming, sextortion, ai-csam, etc.
+   - Investigation: undercover, physical-evidence, tactical, multi-jurisdiction, etc.
+   - Technical: forensics, detection, platforms, street-recruitment, etc.
+   - Victim/Legal: victim-impact, taskforce, legal-outcomes, sex-offender-registry, etc.
+
+Each domain module has a corresponding SHACL shapes module for validation.
 
 ## How to find entity documentation
 Entity pages follow predictable URL patterns:
@@ -1046,7 +1087,7 @@ Example: The property `forensics#priorityClassification` has the URL:
 - Properties tree: {SITE_BASE_URL}/entities-tree-properties.html
 - Shapes tree: {SITE_BASE_URL}/entities-tree-shapes.html
 - Concepts tree: {SITE_BASE_URL}/entities-tree-concepts.html
-- Statistics: {SITE_BASE_URL}/stats.html
+- Statistics: {SITE_BASE_URL}/statistics.html
 
 ## Machine-friendly artifacts (recommended for bulk lookup)
 - Sitemap: {SITE_BASE_URL}/sitemap.xml
@@ -1061,6 +1102,11 @@ Each line is a JSON object with:
 - label: Human-readable label
 - comment: Description/definition
 - doc_url: Direct URL to the documentation page
+
+## Namespace structure
+- Base namespace: https://cacontology.projectvic.org# (prefix: cacontology:)
+- Spine namespace: https://cacontology.projectvic.org/core# (prefix: cac-core:)
+- Module namespaces: https://cacontology.projectvic.org/{{module-name}}#
 
 ## Notes
 - Canonical ontology IRIs use hash fragments (e.g., .../forensics#priorityClassification).
@@ -1400,7 +1446,7 @@ def generate_sitemap(output_dir: Path) -> None:
         "entities-tree-properties.html": "0.9",
         "entities-tree-shapes.html": "0.9",
         "entities-tree-concepts.html": "0.9",
-        "stats.html": "0.9",
+        "statistics.html": "0.9",
         "llms.txt": "0.8",
         "entities.jsonl": "0.8",
         "cacontology.ttl": "0.7",
