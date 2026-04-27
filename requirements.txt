@@ -6,7 +6,7 @@ ontodocs>=1.2.0
 Django>=3.2,<7.0
 
 # RDF Processing
-rdflib>=7.0.0
+rdflib>=7.6.0
 
 # Ontology Processing (optional, for advanced workflows)
 robotframework>=7.0.0
