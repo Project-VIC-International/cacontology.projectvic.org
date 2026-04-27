@@ -12,4 +12,4 @@ rdflib>=7.0.0
 robotframework>=7.0.0
 
 # HTTP utilities
-requests>=2.31.0
+requests>=2.33.1
