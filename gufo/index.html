@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gufo Module - CAC Ontology</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .entity-list { list-style: none; padding: 0; }
+        .entity-list li { margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+        .type-badge { 
+            display: inline-block; padding: 2px 8px; border-radius: 12px; 
+            font-size: 0.8em; font-weight: bold; margin-right: 10px; color: white;
+        }
+        .class-badge { background-color: #3498db; }
+        .prop-badge { background-color: #27ae60; }
+        .conc-badge { background-color: #e67e22; }
+        .shap-badge { background-color: #9b59b6; }
+        a { color: #2980b9; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .loading { text-align: center; margin-top: 50px; font-style: italic; color: #666; display: none; }
+        .back-link { display: inline-block; margin-bottom: 20px; font-size: 0.9em; }
+        .module-meta {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+        }
+        .module-meta p { margin: 6px 0; }
+        .module-meta .meta-label { font-weight: 600; }
+    </style>
+    <script>
+        // Redirect logic
+        var entityMap = {"forfeitureCompletionTime": "../prop-cacontology-gufoforfeiturecompletiontime.html", "generationDuration": "../prop-cacontology-gufogenerationduration.html", "practiceSessionBeginTime": "../prop-cacontology-gufopracticesessionbegintime.html", "exploitationBeginTime": "../prop-cacontology-gufoexploitationbegintime.html", "assignmentBeginTime": "../prop-cacontology-gufoassignmentbegintime.html", "penaltyImpositionTime": "../prop-cacontology-gufopenaltyimpositiontime.html", "reviewEndTime": "../prop-cacontology-guforeviewendtime.html", "closureBeginTime": "../prop-cacontology-gufoclosurebegintime.html", "phaseTransitionTime": "../prop-cacontology-gufophasetransitiontime.html", "exploitationFirstIncidentTimePoint": "../prop-cacontology-gufoexploitationfirstincidenttimepoint.html", "academicYearBeginTimePoint": "../prop-cacontology-gufoacademicyearbegintimepoint.html", "discoveryBeginTime": "../prop-cacontology-gufodiscoverybegintime.html", "exploitationDuration": "../prop-cacontology-gufoexploitationduration.html", "coercionEndTime": "../prop-cacontology-gufocoercionendtime.html", "analysisCompletionTimePoint": "../prop-cacontology-gufoanalysiscompletiontimepoint.html", "seizureTime": "../prop-cacontology-gufoseizuretime.html", "coercionBeginTime": "../prop-cacontology-gufocoercionbegintime.html", "reportingTime": "../prop-cacontology-guforeportingtime.html", "triageCompletionTime": "../prop-cacontology-gufotriagecompletiontime.html", "sentencingTime": "../prop-cacontology-gufosentencingtime.html", "dispositionBeginTime": "../prop-cacontology-gufodispositionbegintime.html", "practiceSessionEndTime": "../prop-cacontology-gufopracticesessionendtime.html", "escalationBeginTime": "../prop-cacontology-gufoescalationbegintime.html", "intakeBeginTime": "../prop-cacontology-gufointakebegintime.html", "escalationPeakTime": "../prop-cacontology-gufoescalationpeaktime.html", "employmentTerminationTimePoint": "../prop-cacontology-gufoemploymentterminationtimepoint.html", "prosecutionBeginTime": "../prop-cacontology-gufoprosecutionbegintime.html", "forfeitureEndTime": "../prop-cacontology-gufoforfeitureendtime.html", "exploitationEndTime": "../prop-cacontology-gufoexploitationendtime.html", "investigationBeginTime": "../prop-cacontology-gufoinvestigationbegintime.html", "trialBeginTime": "../prop-cacontology-gufotrialbegintime.html", "workflowBeginTime": "../prop-cacontology-gufoworkflowbegintime.html", "closureTime": "../prop-cacontology-gufoclosuretime.html", "workflowEndTime": "../prop-cacontology-gufoworkflowendtime.html", "restraintBeginTime": "../prop-cacontology-guforestraintbegintime.html", "coordinationBeginTime": "../prop-cacontology-gufocoordinationbegintime.html", "institutionalReportingTimePoint": "../prop-cacontology-gufoinstitutionalreportingtimepoint.html", "aiGenerationTimePoint": "../prop-cacontology-gufoaigenerationtimepoint.html", "detectionTimePoint": "../prop-cacontology-gufodetectiontimepoint.html", "reviewBeginTime": "../prop-cacontology-guforeviewbegintime.html", "forfeitureBeginTime": "../prop-cacontology-gufoforfeiturebegintime.html", "evidenceCollectionTime": "../prop-cacontology-gufoevidencecollectiontime.html", "assignmentEndTime": "../prop-cacontology-gufoassignmentendtime.html"};
+        
+        function checkRedirect() {
+            var hash = window.location.hash;
+            if (hash) {
+                var id = hash.substring(1); // Remove #
+                if (entityMap[id]) {
+                    document.getElementById('loading').style.display = 'block';
+                    document.getElementById('content').style.display = 'none';
+                    // Use replace to avoid adding to history
+                    window.location.replace(entityMap[id]);
+                } else {
+                     console.log("No redirect found for " + id);
+                }
+            }
+        }
+        
+        window.addEventListener('load', checkRedirect);
+        window.addEventListener('hashchange', checkRedirect);
+    </script>
+</head>
+<body>
+    <div id="loading" class="loading">
+        <p>Redirecting to documentation...</p>
+    </div>
+    <div id="content" class="container">
+        <a href="../index.html" class="back-link">← Back to Main Documentation</a>
+        <h1>Gufo Module</h1>
+        <div class="module-meta">
+            <p><span class="meta-label">Namespace:</span> <code>https://cacontology.projectvic.org/gufo#</code></p>
+            
+            
+        </div>
+        <p>This is the namespace index for the <code>gufo</code> module.</p>
+        <p>Select a class, property, concept, or shape to view its documentation:</p>
+        
+        <ul class="entity-list">
+            <li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoacademicyearbegintimepoint.html">academicYearBeginTimePoint</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoaigenerationtimepoint.html">aiGenerationTimePoint</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoanalysiscompletiontimepoint.html">analysisCompletionTimePoint</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoassignmentbegintime.html">assignmentBeginTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoassignmentendtime.html">assignmentEndTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoclosurebegintime.html">closureBeginTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoclosuretime.html">closureTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufocoercionbegintime.html">coercionBeginTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufocoercionendtime.html">coercionEndTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufocoordinationbegintime.html">coordinationBeginTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufodetectiontimepoint.html">detectionTimePoint</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufodiscoverybegintime.html">discoveryBeginTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufodispositionbegintime.html">dispositionBeginTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoemploymentterminationtimepoint.html">employmentTerminationTimePoint</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoescalationbegintime.html">escalationBeginTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoescalationpeaktime.html">escalationPeakTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoevidencecollectiontime.html">evidenceCollectionTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoexploitationbegintime.html">exploitationBeginTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoexploitationduration.html">exploitationDuration</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoexploitationendtime.html">exploitationEndTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoexploitationfirstincidenttimepoint.html">exploitationFirstIncidentTimePoint</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoforfeiturebegintime.html">forfeitureBeginTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoforfeiturecompletiontime.html">forfeitureCompletionTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoforfeitureendtime.html">forfeitureEndTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufogenerationduration.html">generationDuration</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoinstitutionalreportingtimepoint.html">institutionalReportingTimePoint</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufointakebegintime.html">intakeBeginTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoinvestigationbegintime.html">investigationBeginTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufopenaltyimpositiontime.html">penaltyImpositionTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufophasetransitiontime.html">phaseTransitionTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufopracticesessionbegintime.html">practiceSessionBeginTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufopracticesessionendtime.html">practiceSessionEndTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoprosecutionbegintime.html">prosecutionBeginTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-guforeportingtime.html">reportingTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-guforestraintbegintime.html">restraintBeginTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-guforeviewbegintime.html">reviewBeginTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-guforeviewendtime.html">reviewEndTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoseizuretime.html">seizureTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufosentencingtime.html">sentencingTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufotriagecompletiontime.html">triageCompletionTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufotrialbegintime.html">trialBeginTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoworkflowbegintime.html">workflowBeginTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-gufoworkflowendtime.html">workflowEndTime</a></li>
+        </ul>
+    </div>
+</body>
+</html>

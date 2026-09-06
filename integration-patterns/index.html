@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integration-Patterns Module - CAC Ontology</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .entity-list { list-style: none; padding: 0; }
+        .entity-list li { margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+        .type-badge { 
+            display: inline-block; padding: 2px 8px; border-radius: 12px; 
+            font-size: 0.8em; font-weight: bold; margin-right: 10px; color: white;
+        }
+        .class-badge { background-color: #3498db; }
+        .prop-badge { background-color: #27ae60; }
+        .conc-badge { background-color: #e67e22; }
+        .shap-badge { background-color: #9b59b6; }
+        a { color: #2980b9; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .loading { text-align: center; margin-top: 50px; font-style: italic; color: #666; display: none; }
+        .back-link { display: inline-block; margin-bottom: 20px; font-size: 0.9em; }
+        .module-meta {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+        }
+        .module-meta p { margin: 6px 0; }
+        .module-meta .meta-label { font-weight: 600; }
+    </style>
+    <script>
+        // Redirect logic
+        var entityMap = {"ValidationStrategy": "../class-cacontology-integrationvalidationstrategy.html", "requiresValidation": "../prop-cacontology-integrationrequiresvalidation.html", "hasIntegrationPattern": "../prop-cacontology-integrationhasintegrationpattern.html", "Phase3Wave2": "../class-cacontology-integrationphase3wave2.html", "CrossBorderPattern": "../class-cacontology-integrationcrossborderpattern.html", "JudicialPhasePattern": "../class-cacontology-integrationjudicialphasepattern.html", "Phase3Wave3": "../class-cacontology-integrationphase3wave3.html", "RoleConsistency": "../class-cacontology-integrationroleconsistency.html", "extendsPattern": "../prop-cacontology-integrationextendspattern.html", "LegalEventPattern": "../class-cacontology-integrationlegaleventpattern.html", "EducationalPattern": "../class-cacontology-integrationeducationalpattern.html", "AIGenerationPattern": "../class-cacontology-integrationaigenerationpattern.html", "TaskforceRolePattern": "../class-cacontology-integrationtaskforcerolepattern.html", "TreatyPattern": "../class-cacontology-integrationtreatypattern.html", "InstitutionalRolePattern": "../class-cacontology-integrationinstitutionalrolepattern.html", "SpecializedRolePattern": "../class-cacontology-integrationspecializedrolepattern.html", "CoordinationSituationPattern": "../class-cacontology-integrationcoordinationsituationpattern.html", "CriminalOrganizationPattern": "../class-cacontology-integrationcriminalorganizationpattern.html", "TotalPhase3Implementation": "../class-cacontology-integrationtotalphase3implementation.html", "ForensicsLifecyclePattern": "../class-cacontology-integrationforensicslifecyclepattern.html", "CapabilityPattern": "../class-cacontology-integrationcapabilitypattern.html", "hasIntegrationPriority": "../prop-cacontology-integrationhasintegrationpriority.html", "OrganizationalPattern": "../class-cacontology-integrationorganizationalpattern.html", "ModuleIntegrationStrategy": "../class-cacontology-integrationmoduleintegrationstrategy.html", "dependsOnPattern": "../prop-cacontology-integrationdependsonpattern.html", "RegistrationPattern": "../class-cacontology-integrationregistrationpattern.html", "CompliancePattern": "../class-cacontology-integrationcompliancepattern.html", "HighPriorityModule": "../class-cacontology-integrationhighprioritymodule.html", "EvidenceObjectPattern": "../class-cacontology-integrationevidenceobjectpattern.html", "OntologicalConsistency": "../class-cacontology-integrationontologicalconsistency.html", "MediumPriorityModule": "../class-cacontology-integrationmediumprioritymodule.html", "hasValidationRule": "../prop-cacontology-integrationhasvalidationrule.html", "hasIntegrationTimeline": "../prop-cacontology-integrationhasintegrationtimeline.html", "hasValidationQuery": "../prop-cacontology-integrationhasvalidationquery.html", "IdeologyPattern": "../class-cacontology-integrationideologypattern.html", "PhaseConsistency": "../class-cacontology-integrationphaseconsistency.html", "SyntheticArtifactPattern": "../class-cacontology-integrationsyntheticartifactpattern.html", "TemporalConsistency": "../class-cacontology-integrationtemporalconsistency.html", "Phase3Wave1": "../class-cacontology-integrationphase3wave1.html", "LowPriorityModule": "../class-cacontology-integrationlowprioritymodule.html", "PreventiveActionPattern": "../class-cacontology-integrationpreventiveactionpattern.html"};
+        
+        function checkRedirect() {
+            var hash = window.location.hash;
+            if (hash) {
+                var id = hash.substring(1); // Remove #
+                if (entityMap[id]) {
+                    document.getElementById('loading').style.display = 'block';
+                    document.getElementById('content').style.display = 'none';
+                    // Use replace to avoid adding to history
+                    window.location.replace(entityMap[id]);
+                } else {
+                     console.log("No redirect found for " + id);
+                }
+            }
+        }
+        
+        window.addEventListener('load', checkRedirect);
+        window.addEventListener('hashchange', checkRedirect);
+    </script>
+</head>
+<body>
+    <div id="loading" class="loading">
+        <p>Redirecting to documentation...</p>
+    </div>
+    <div id="content" class="container">
+        <a href="../index.html" class="back-link">← Back to Main Documentation</a>
+        <h1>CAC gUFO Integration Strategy - Phase 3</h1>
+        <div class="module-meta">
+            <p><span class="meta-label">Namespace:</span> <code>https://cacontology.projectvic.org/integration-patterns#</code></p>
+            <p><span class="meta-label">Definition:</span> Comprehensive strategy for Phase 3 full integration of gUFO across CAC ontology family, including validation patterns, module mapping, and integration guidelines.</p>
+            <p><a href="https://cacontology.projectvic.org/integration-patterns/3.1.0/">Ontology document (latest version)</a></p>
+        </div>
+        <p>This is the namespace index for the <code>integration-patterns</code> module.</p>
+        <p>Select a class, property, concept, or shape to view its documentation:</p>
+        
+        <ul class="entity-list">
+            <li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationaigenerationpattern.html">AIGenerationPattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationcapabilitypattern.html">CapabilityPattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationcompliancepattern.html">CompliancePattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationcoordinationsituationpattern.html">CoordinationSituationPattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationcriminalorganizationpattern.html">CriminalOrganizationPattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationcrossborderpattern.html">CrossBorderPattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationeducationalpattern.html">EducationalPattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationevidenceobjectpattern.html">EvidenceObjectPattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationforensicslifecyclepattern.html">ForensicsLifecyclePattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationhighprioritymodule.html">HighPriorityModule</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationideologypattern.html">IdeologyPattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationinstitutionalrolepattern.html">InstitutionalRolePattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationjudicialphasepattern.html">JudicialPhasePattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationlegaleventpattern.html">LegalEventPattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationlowprioritymodule.html">LowPriorityModule</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationmediumprioritymodule.html">MediumPriorityModule</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationmoduleintegrationstrategy.html">ModuleIntegrationStrategy</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationontologicalconsistency.html">OntologicalConsistency</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationorganizationalpattern.html">OrganizationalPattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationphase3wave1.html">Phase3Wave1</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationphase3wave2.html">Phase3Wave2</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationphase3wave3.html">Phase3Wave3</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationphaseconsistency.html">PhaseConsistency</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationpreventiveactionpattern.html">PreventiveActionPattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationregistrationpattern.html">RegistrationPattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationroleconsistency.html">RoleConsistency</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationspecializedrolepattern.html">SpecializedRolePattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationsyntheticartifactpattern.html">SyntheticArtifactPattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationtaskforcerolepattern.html">TaskforceRolePattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationtemporalconsistency.html">TemporalConsistency</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationtotalphase3implementation.html">TotalPhase3Implementation</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationtreatypattern.html">TreatyPattern</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-integrationvalidationstrategy.html">ValidationStrategy</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-integrationdependsonpattern.html">dependsOnPattern</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-integrationextendspattern.html">extendsPattern</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-integrationhasintegrationpattern.html">hasIntegrationPattern</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-integrationhasintegrationpriority.html">hasIntegrationPriority</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-integrationhasintegrationtimeline.html">hasIntegrationTimeline</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-integrationhasvalidationquery.html">hasValidationQuery</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-integrationhasvalidationrule.html">hasValidationRule</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-integrationrequiresvalidation.html">requiresValidation</a></li>
+        </ul>
+    </div>
+</body>
+</html>

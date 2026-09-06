@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usa-Legislative Module - CAC Ontology</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .entity-list { list-style: none; padding: 0; }
+        .entity-list li { margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+        .type-badge { 
+            display: inline-block; padding: 2px 8px; border-radius: 12px; 
+            font-size: 0.8em; font-weight: bold; margin-right: 10px; color: white;
+        }
+        .class-badge { background-color: #3498db; }
+        .prop-badge { background-color: #27ae60; }
+        .conc-badge { background-color: #e67e22; }
+        .shap-badge { background-color: #9b59b6; }
+        a { color: #2980b9; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .loading { text-align: center; margin-top: 50px; font-style: italic; color: #666; display: none; }
+        .back-link { display: inline-block; margin-bottom: 20px; font-size: 0.9em; }
+        .module-meta {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+        }
+        .module-meta p { margin: 6px 0; }
+        .module-meta .meta-label { font-weight: 600; }
+    </style>
+    <script>
+        // Redirect logic
+        var entityMap = {"USStateLegislature": "../class-cacontology-usa-legusstatelegislature.html", "hasSubAgency": "../prop-cacontology-usa-leghassubagency.html", "USSubCabinetAgency": "../class-cacontology-usa-legussubcabinetagency.html", "USStateICACtaskForce": "../class-cacontology-usa-legusstateicactaskforce.html", "isFinal": "../prop-cacontology-usa-legisfinal.html", "USCabinetAgency": "../class-cacontology-usa-leguscabinetagency.html", "addressedBy": "../prop-cacontology-usa-legaddressedby.html", "chamber": "../prop-cacontology-usa-legchamber.html", "LegislativeStage": "../class-cacontology-usa-leglegislativestage.html", "stageOrder": "../prop-cacontology-usa-legstageorder.html", "Outcome": "../class-cacontology-usa-legoutcome.html", "USCongressionalCommittee": "../class-cacontology-usa-leguscongressionalcommittee.html", "USRulemakingProcess": "../class-cacontology-usa-legusrulemakingprocess.html", "requestedAmount": "../prop-cacontology-usa-legrequestedamount.html", "USConferenceCommittee": "../class-cacontology-usa-legusconferencecommittee.html", "isPositive": "../prop-cacontology-usa-legispositive.html", "USStateAgency": "../class-cacontology-usa-legusstateagency.html", "needDescription": "../prop-cacontology-usa-legneeddescription.html", "USFederalDirectorate": "../class-cacontology-usa-legusfederaldirectorate.html", "USExecutiveAction": "../class-cacontology-usa-legusexecutiveaction.html", "parentAgency": "../prop-cacontology-usa-legparentagency.html", "AppropriationType": "../class-cacontology-usa-legappropriationtype.html", "FundingNeed": "../class-cacontology-usa-legfundingneed.html", "priorityLevel": "../prop-cacontology-usa-legprioritylevel.html", "expressesFundingNeed": "../prop-cacontology-usa-legexpressesfundingneed.html", "alignedWithFederalLaw": "../prop-cacontology-usa-legalignedwithfederallaw.html", "FundingStream": "../class-cacontology-usa-legfundingstream.html", "acronym": "../prop-cacontology-usa-legacronym.html", "servesOn": "../prop-cacontology-usa-legserveson.html", "USStateAttorneyGeneral": "../class-cacontology-usa-legusstateattorneygeneral.html", "USReconciliation": "../class-cacontology-usa-legusreconciliation.html", "USFederalAgencyOffice": "../class-cacontology-usa-legusfederalagencyoffice.html", "usStateFederalHarmonization": "../prop-cacontology-usa-legusstatefederalharmonization.html", "organizationType": "../prop-cacontology-usa-legorganizationtype.html", "implementsUSModelLaw": "../prop-cacontology-usa-legimplementsusmodellaw.html"};
+        
+        function checkRedirect() {
+            var hash = window.location.hash;
+            if (hash) {
+                var id = hash.substring(1); // Remove #
+                if (entityMap[id]) {
+                    document.getElementById('loading').style.display = 'block';
+                    document.getElementById('content').style.display = 'none';
+                    // Use replace to avoid adding to history
+                    window.location.replace(entityMap[id]);
+                } else {
+                     console.log("No redirect found for " + id);
+                }
+            }
+        }
+        
+        window.addEventListener('load', checkRedirect);
+        window.addEventListener('hashchange', checkRedirect);
+    </script>
+</head>
+<body>
+    <div id="loading" class="loading">
+        <p>Redirecting to documentation...</p>
+    </div>
+    <div id="content" class="container">
+        <a href="../index.html" class="back-link">← Back to Main Documentation</a>
+        <h1>CAC USA Legislative Framework Ontology</h1>
+        <div class="module-meta">
+            <p><span class="meta-label">Namespace:</span> <code>https://cacontology.projectvic.org/usa-legislative#</code></p>
+            <p><span class="meta-label">Definition:</span> USA-specific legislative framework ontology for modeling U.S. federal agencies, congressional committees, state organizations, legislative stages, and funding mechanisms. Extends CAC Legal Harmonization with gUFO integration.</p>
+            <p><a href="https://cacontology.projectvic.org/usa-legislative/3.1.0/">Ontology document (latest version)</a> | <a href="../usa-legislative/shapes/">SHACL shapes module</a></p>
+        </div>
+        <p>This is the namespace index for the <code>usa-legislative</code> module.</p>
+        <p>Select a class, property, concept, or shape to view its documentation:</p>
+        
+        <ul class="entity-list">
+            <li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-usa-legappropriationtype.html">AppropriationType</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-usa-legfundingneed.html">FundingNeed</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-usa-legfundingstream.html">FundingStream</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-usa-leglegislativestage.html">LegislativeStage</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-usa-legoutcome.html">Outcome</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-usa-leguscabinetagency.html">USCabinetAgency</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-usa-legusconferencecommittee.html">USConferenceCommittee</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-usa-leguscongressionalcommittee.html">USCongressionalCommittee</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-usa-legusexecutiveaction.html">USExecutiveAction</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-usa-legusfederalagencyoffice.html">USFederalAgencyOffice</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-usa-legusfederaldirectorate.html">USFederalDirectorate</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-usa-legusreconciliation.html">USReconciliation</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-usa-legusrulemakingprocess.html">USRulemakingProcess</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-usa-legusstateagency.html">USStateAgency</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-usa-legusstateattorneygeneral.html">USStateAttorneyGeneral</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-usa-legusstateicactaskforce.html">USStateICACtaskForce</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-usa-legusstatelegislature.html">USStateLegislature</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-usa-legussubcabinetagency.html">USSubCabinetAgency</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-usa-legacronym.html">acronym</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-usa-legaddressedby.html">addressedBy</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-usa-legalignedwithfederallaw.html">alignedWithFederalLaw</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-usa-legchamber.html">chamber</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-usa-legexpressesfundingneed.html">expressesFundingNeed</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-usa-leghassubagency.html">hasSubAgency</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-usa-legimplementsusmodellaw.html">implementsUSModelLaw</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-usa-legisfinal.html">isFinal</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-usa-legispositive.html">isPositive</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-usa-legneeddescription.html">needDescription</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-usa-legorganizationtype.html">organizationType</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-usa-legparentagency.html">parentAgency</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-usa-legprioritylevel.html">priorityLevel</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-usa-legrequestedamount.html">requestedAmount</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-usa-legserveson.html">servesOn</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-usa-legstageorder.html">stageOrder</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-usa-legusstatefederalharmonization.html">usStateFederalHarmonization</a></li>
+        </ul>
+    </div>
+</body>
+</html>

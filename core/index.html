@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Core Module - CAC Ontology</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .entity-list { list-style: none; padding: 0; }
+        .entity-list li { margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+        .type-badge { 
+            display: inline-block; padding: 2px 8px; border-radius: 12px; 
+            font-size: 0.8em; font-weight: bold; margin-right: 10px; color: white;
+        }
+        .class-badge { background-color: #3498db; }
+        .prop-badge { background-color: #27ae60; }
+        .conc-badge { background-color: #e67e22; }
+        .shap-badge { background-color: #9b59b6; }
+        a { color: #2980b9; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .loading { text-align: center; margin-top: 50px; font-style: italic; color: #666; display: none; }
+        .back-link { display: inline-block; margin-bottom: 20px; font-size: 0.9em; }
+        .module-meta {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+        }
+        .module-meta p { margin: 6px 0; }
+        .module-meta .meta-label { font-weight: 600; }
+    </style>
+    <script>
+        // Redirect logic
+        var entityMap = {"assesses": "../prop-cac-coreassesses.html", "OrganizationLikeEntity": "../class-cac-coreorganizationlikeentity.html", "DetectionEvent": "../class-cac-coredetectionevent.html", "hasPhase": "../prop-cac-corehasphase.html", "generatedBy": "../prop-cac-coregeneratedby.html", "issuedAtTime": "../prop-cac-coreissuedattime.html", "usesMethod": "../prop-cac-coreusesmethod.html", "Occurrent": "../class-cac-coreoccurrent.html", "Situation": "../class-cac-coresituation.html", "Phase": "../class-cac-corephase.html", "LegalEvent": "../class-cac-corelegalevent.html", "Artifact": "../class-cac-coreartifact.html", "ExploitationEvent": "../class-cac-coreexploitationevent.html", "InvestigativeAction": "../class-cac-coreinvestigativeaction.html", "DigitalSystemEntity": "../class-cac-coredigitalsystementity.html", "hasConfidence": "../prop-cac-corehasconfidence.html", "SupportEvent": "../class-cac-coresupportevent.html", "CoordinationEvent": "../class-cac-corecoordinationevent.html", "Entity": "../class-cac-coreentity.html", "PlaceLikeEntity": "../class-cac-coreplacelikeentity.html", "AssessmentResult": "../class-cac-coreassessmentresult.html", "precedes": "../prop-cac-coreprecedes.html", "ConditioningPhase": "../class-cac-coreconditioningphase.html", "EnduringEntity": "../class-cac-coreenduringentity.html", "conditioningMode": "../prop-cac-coreconditioningmode.html", "Role": "../class-cac-corerole.html", "PersonLikeEntity": "../class-cac-corepersonlikeentity.html", "Event": "../class-cac-coreevent.html", "isPhaseOf": "../prop-cac-coreisphaseof.html"};
+        
+        function checkRedirect() {
+            var hash = window.location.hash;
+            if (hash) {
+                var id = hash.substring(1); // Remove #
+                if (entityMap[id]) {
+                    document.getElementById('loading').style.display = 'block';
+                    document.getElementById('content').style.display = 'none';
+                    // Use replace to avoid adding to history
+                    window.location.replace(entityMap[id]);
+                } else {
+                     console.log("No redirect found for " + id);
+                }
+            }
+        }
+        
+        window.addEventListener('load', checkRedirect);
+        window.addEventListener('hashchange', checkRedirect);
+    </script>
+</head>
+<body>
+    <div id="loading" class="loading">
+        <p>Redirecting to documentation...</p>
+    </div>
+    <div id="content" class="container">
+        <a href="../index.html" class="back-link">← Back to Main Documentation</a>
+        <h1>CAC Ontology Semantic Spine</h1>
+        <div class="module-meta">
+            <p><span class="meta-label">Namespace:</span> <code>https://cacontology.projectvic.org/core#</code></p>
+            <p><span class="meta-label">Definition:</span> The semantic spine is the stable, top-level CAC-facing class hierarchy that all CAC Ontology modules should anchor to. It is organized by ontological kind rather than by stakeholder workflow or module-local convenience. Every class in the CAC family should have one clear ontological home, one clear identity story, and one intended modeling pattern.</p>
+            <p><a href="https://cacontology.projectvic.org/core/3.1.0/">Ontology document (latest version)</a> | <a href="../core/shapes/">SHACL shapes module</a></p>
+        </div>
+        <p>This is the namespace index for the <code>core</code> module.</p>
+        <p>Select a class, property, concept, or shape to view its documentation:</p>
+        
+        <ul class="entity-list">
+            <li><span class="type-badge clas-badge">Class</span><a href="../class-cac-coreartifact.html">Artifact</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cac-coreassessmentresult.html">AssessmentResult</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cac-coreconditioningphase.html">ConditioningPhase</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cac-corecoordinationevent.html">CoordinationEvent</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cac-coredetectionevent.html">DetectionEvent</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cac-coredigitalsystementity.html">DigitalSystemEntity</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cac-coreenduringentity.html">EnduringEntity</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cac-coreentity.html">Entity</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cac-coreevent.html">Event</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cac-coreexploitationevent.html">ExploitationEvent</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cac-coreinvestigativeaction.html">InvestigativeAction</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cac-corelegalevent.html">LegalEvent</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cac-coreoccurrent.html">Occurrent</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cac-coreorganizationlikeentity.html">OrganizationLikeEntity</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cac-corepersonlikeentity.html">PersonLikeEntity</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cac-corephase.html">Phase</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cac-coreplacelikeentity.html">PlaceLikeEntity</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cac-corerole.html">Role</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cac-coresituation.html">Situation</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cac-coresupportevent.html">SupportEvent</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cac-coreassesses.html">assesses</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cac-coreconditioningmode.html">conditioningMode</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cac-coregeneratedby.html">generatedBy</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cac-corehasconfidence.html">hasConfidence</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cac-corehasphase.html">hasPhase</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cac-coreisphaseof.html">isPhaseOf</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cac-coreissuedattime.html">issuedAtTime</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cac-coreprecedes.html">precedes</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cac-coreusesmethod.html">usesMethod</a></li>
+        </ul>
+    </div>
+</body>
+</html>

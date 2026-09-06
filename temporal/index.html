@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temporal Module - CAC Ontology</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .entity-list { list-style: none; padding: 0; }
+        .entity-list li { margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+        .type-badge { 
+            display: inline-block; padding: 2px 8px; border-radius: 12px; 
+            font-size: 0.8em; font-weight: bold; margin-right: 10px; color: white;
+        }
+        .class-badge { background-color: #3498db; }
+        .prop-badge { background-color: #27ae60; }
+        .conc-badge { background-color: #e67e22; }
+        .shap-badge { background-color: #9b59b6; }
+        a { color: #2980b9; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .loading { text-align: center; margin-top: 50px; font-style: italic; color: #666; display: none; }
+        .back-link { display: inline-block; margin-bottom: 20px; font-size: 0.9em; }
+        .module-meta {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+        }
+        .module-meta p { margin: 6px 0; }
+        .module-meta .meta-label { font-weight: 600; }
+    </style>
+    <script>
+        // Redirect logic
+        var entityMap = {"hasMaximumDuration": "../prop-cacontology-temporalhasmaximumduration.html", "hasConsequentEvent": "../prop-cacontology-temporalhasconsequentevent.html", "hasSuspendedDuration": "../prop-cacontology-temporalhassuspendedduration.html", "terminatesSuspension": "../prop-cacontology-temporalterminatessuspension.html", "SuspendedSituation": "../class-cacontology-temporalsuspendedsituation.html", "RoleReassignment": "../class-cacontology-temporalrolereassignment.html", "ConcurrentInvestigationSituation": "../class-cacontology-temporalconcurrentinvestigationsituation.html", "MultiJurisdictionCoordinationSituation": "../class-cacontology-temporalmultijurisdictioncoordinationsituation.html", "triggersTransition": "../prop-cacontology-temporaltriggerstransition.html", "AnalysisTransitionEvent": "../class-cacontology-temporalanalysistransitionevent.html", "Age": "../class-cacontology-temporalage.html", "EventSequence": "../class-cacontology-temporaleventsequence.html", "hasTimeToResolution": "../prop-cacontology-temporalhastimetoresolution.html", "RoleEscalation": "../class-cacontology-temporalroleescalation.html", "ResumptionEvent": "../class-cacontology-temporalresumptionevent.html", "RoleConflictSituation": "../class-cacontology-temporalroleconflictsituation.html", "InitiationEvent": "../class-cacontology-temporalinitiationevent.html", "evidencePreservationDeadline": "../prop-cacontology-temporalevidencepreservationdeadline.html", "hasPrerequisiteEvent": "../prop-cacontology-temporalhasprerequisiteevent.html", "resumes": "../prop-cacontology-temporalresumes.html", "urgencyLevel": "../prop-cacontology-temporalurgencylevel.html", "temporallyPrecedes": "../prop-cacontology-temporaltemporallyprecedes.html", "warrantExpirationDate": "../prop-cacontology-temporalwarrantexpirationdate.html", "UrgentRescueLifecycle": "../class-cacontology-temporalurgentrescuelifecycle.html", "PhaseTransitionEvent": "../class-cacontology-temporalphasetransitionevent.html", "SimultaneousRoleSituation": "../class-cacontology-temporalsimultaneousrolesituation.html", "hasParallelEvent": "../prop-cacontology-temporalhasparallelevent.html", "ClosureEvent": "../class-cacontology-temporalclosureevent.html", "ResolutionPhase": "../class-cacontology-temporalresolutionphase.html", "createsSuspension": "../prop-cacontology-temporalcreatessuspension.html", "hasTypicalDuration": "../prop-cacontology-temporalhastypicalduration.html", "hasTimeToFirstAction": "../prop-cacontology-temporalhastimetofirstaction.html", "transitionsFrom": "../prop-cacontology-temporaltransitionsfrom.html", "RoleTransition": "../class-cacontology-temporalroletransition.html", "concernsAgeQuality": "../prop-cacontology-temporalconcernsagequality.html", "phaseEfficiency": "../prop-cacontology-temporalphaseefficiency.html", "hasMinimumDuration": "../prop-cacontology-temporalhasminimumduration.html", "EvidenceTransitionEvent": "../class-cacontology-temporalevidencetransitionevent.html", "temporallyOverlapsWith": "../prop-cacontology-temporaltemporallyoverlapswith.html", "SuspensionEvent": "../class-cacontology-temporalsuspensionevent.html", "ResolutionTransitionEvent": "../class-cacontology-temporalresolutiontransitionevent.html", "InvestigationLifecycle": "../class-cacontology-temporalinvestigationlifecycle.html", "temporallyContains": "../prop-cacontology-temporaltemporallycontains.html", "hasActiveDuration": "../prop-cacontology-temporalhasactiveduration.html", "hasAgeInYears": "../prop-cacontology-temporalhasageinyears.html", "phaseCompletionRate": "../prop-cacontology-temporalphasecompletionrate.html", "suspends": "../prop-cacontology-temporalsuspends.html", "ParallelEvidenceCollectionSituation": "../class-cacontology-temporalparallelevidencecollectionsituation.html", "transitionsTo": "../prop-cacontology-temporaltransitionsto.html", "LegalProcessTransitionEvent": "../class-cacontology-temporallegalprocesstransitionevent.html", "AgeAtTimeSituation": "../class-cacontology-temporalageattimesituation.html", "hasLegalDeadline": "../prop-cacontology-temporalhaslegaldeadline.html", "ageSubject": "../prop-cacontology-temporalagesubject.html", "statuteOfLimitationsDeadline": "../prop-cacontology-temporalstatuteoflimitationsdeadline.html", "ParallelEventCluster": "../class-cacontology-temporalparalleleventcluster.html", "CompletedPhase": "../class-cacontology-temporalcompletedphase.html"};
+        
+        function checkRedirect() {
+            var hash = window.location.hash;
+            if (hash) {
+                var id = hash.substring(1); // Remove #
+                if (entityMap[id]) {
+                    document.getElementById('loading').style.display = 'block';
+                    document.getElementById('content').style.display = 'none';
+                    // Use replace to avoid adding to history
+                    window.location.replace(entityMap[id]);
+                } else {
+                     console.log("No redirect found for " + id);
+                }
+            }
+        }
+        
+        window.addEventListener('load', checkRedirect);
+        window.addEventListener('hashchange', checkRedirect);
+    </script>
+</head>
+<body>
+    <div id="loading" class="loading">
+        <p>Redirecting to documentation...</p>
+    </div>
+    <div id="content" class="container">
+        <a href="../index.html" class="back-link">← Back to Main Documentation</a>
+        <h1>CAC Temporal Framework with gUFO Integration - Phase 2</h1>
+        <div class="module-meta">
+            <p><span class="meta-label">Namespace:</span> <code>https://cacontology.projectvic.org/temporal#</code></p>
+            <p><span class="meta-label">Definition:</span> Phase 2 temporal enhancement framework integrating gUFO temporal concepts with UCO action modeling and CAC investigation lifecycle patterns.</p>
+            <p><a href="https://cacontology.projectvic.org/temporal/3.1.0/">Ontology document (latest version)</a> | <a href="../temporal/shapes/">SHACL shapes module</a></p>
+        </div>
+        <p>This is the namespace index for the <code>temporal</code> module.</p>
+        <p>Select a class, property, concept, or shape to view its documentation:</p>
+        
+        <ul class="entity-list">
+            <li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalage.html">Age</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalageattimesituation.html">AgeAtTimeSituation</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalanalysistransitionevent.html">AnalysisTransitionEvent</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalclosureevent.html">ClosureEvent</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalcompletedphase.html">CompletedPhase</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalconcurrentinvestigationsituation.html">ConcurrentInvestigationSituation</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporaleventsequence.html">EventSequence</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalevidencetransitionevent.html">EvidenceTransitionEvent</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalinitiationevent.html">InitiationEvent</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalinvestigationlifecycle.html">InvestigationLifecycle</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporallegalprocesstransitionevent.html">LegalProcessTransitionEvent</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalmultijurisdictioncoordinationsituation.html">MultiJurisdictionCoordinationSituation</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalparalleleventcluster.html">ParallelEventCluster</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalparallelevidencecollectionsituation.html">ParallelEvidenceCollectionSituation</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalphasetransitionevent.html">PhaseTransitionEvent</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalresolutionphase.html">ResolutionPhase</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalresolutiontransitionevent.html">ResolutionTransitionEvent</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalresumptionevent.html">ResumptionEvent</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalroleconflictsituation.html">RoleConflictSituation</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalroleescalation.html">RoleEscalation</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalrolereassignment.html">RoleReassignment</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalroletransition.html">RoleTransition</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalsimultaneousrolesituation.html">SimultaneousRoleSituation</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalsuspendedsituation.html">SuspendedSituation</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalsuspensionevent.html">SuspensionEvent</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-temporalurgentrescuelifecycle.html">UrgentRescueLifecycle</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalagesubject.html">ageSubject</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalconcernsagequality.html">concernsAgeQuality</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalcreatessuspension.html">createsSuspension</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalevidencepreservationdeadline.html">evidencePreservationDeadline</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalhasactiveduration.html">hasActiveDuration</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalhasageinyears.html">hasAgeInYears</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalhasconsequentevent.html">hasConsequentEvent</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalhaslegaldeadline.html">hasLegalDeadline</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalhasmaximumduration.html">hasMaximumDuration</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalhasminimumduration.html">hasMinimumDuration</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalhasparallelevent.html">hasParallelEvent</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalhasprerequisiteevent.html">hasPrerequisiteEvent</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalhassuspendedduration.html">hasSuspendedDuration</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalhastimetofirstaction.html">hasTimeToFirstAction</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalhastimetoresolution.html">hasTimeToResolution</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalhastypicalduration.html">hasTypicalDuration</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalphasecompletionrate.html">phaseCompletionRate</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalphaseefficiency.html">phaseEfficiency</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalresumes.html">resumes</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalstatuteoflimitationsdeadline.html">statuteOfLimitationsDeadline</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalsuspends.html">suspends</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporaltemporallycontains.html">temporallyContains</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporaltemporallyoverlapswith.html">temporallyOverlapsWith</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporaltemporallyprecedes.html">temporallyPrecedes</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalterminatessuspension.html">terminatesSuspension</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporaltransitionsfrom.html">transitionsFrom</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporaltransitionsto.html">transitionsTo</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporaltriggerstransition.html">triggersTransition</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalurgencylevel.html">urgencyLevel</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-temporalwarrantexpirationdate.html">warrantExpirationDate</a></li>
+        </ul>
+    </div>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synthesis Module - CAC Ontology</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .entity-list { list-style: none; padding: 0; }
+        .entity-list li { margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+        .type-badge { 
+            display: inline-block; padding: 2px 8px; border-radius: 12px; 
+            font-size: 0.8em; font-weight: bold; margin-right: 10px; color: white;
+        }
+        .class-badge { background-color: #3498db; }
+        .prop-badge { background-color: #27ae60; }
+        .conc-badge { background-color: #e67e22; }
+        .shap-badge { background-color: #9b59b6; }
+        a { color: #2980b9; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .loading { text-align: center; margin-top: 50px; font-style: italic; color: #666; display: none; }
+        .back-link { display: inline-block; margin-bottom: 20px; font-size: 0.9em; }
+        .module-meta {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+        }
+        .module-meta p { margin: 6px 0; }
+        .module-meta .meta-label { font-weight: 600; }
+    </style>
+    <script>
+        // Redirect logic
+        var entityMap = {"KeyFinding": "../class-cacontology-synthesiskeyfinding.html", "hasClaim": "../prop-cacontology-synthesishasclaim.html", "realizedIn": "../prop-cacontology-synthesisrealizedin.html", "ResearchQuestion": "../class-cacontology-synthesisresearchquestion.html", "hasSection": "../prop-cacontology-synthesishassection.html", "EvidenceGap": "../class-cacontology-synthesisevidencegap.html", "derivedFromFigure": "../prop-cacontology-synthesisderivedfromfigure.html", "findingNumber": "../prop-cacontology-synthesisfindingnumber.html", "lineNumberStart": "../prop-cacontology-synthesislinenumberstart.html", "hasObservation": "../prop-cacontology-synthesishasobservation.html", "InterventionLocus": "../class-cacontology-synthesisinterventionlocus.html", "assertedInSection": "../prop-cacontology-synthesisassertedinsection.html", "TextEvidencePointer": "../class-cacontology-synthesistextevidencepointer.html", "OffendingChainStage": "../class-cacontology-synthesisoffendingchainstage.html", "count": "../prop-cacontology-synthesiscount.html", "ScopeConstraint": "../class-cacontology-synthesisscopeconstraint.html", "denominator": "../prop-cacontology-synthesisdenominator.html", "rank": "../prop-cacontology-synthesisrank.html", "MethodologyStatement": "../class-cacontology-synthesismethodologystatement.html", "hasFigure": "../prop-cacontology-synthesishasfigure.html", "InterventionType": "../class-cacontology-synthesisinterventiontype.html", "mentionsOrganization": "../prop-cacontology-synthesismentionsorganization.html", "referencesArtifact": "../prop-cacontology-synthesisreferencesartifact.html", "inReport": "../prop-cacontology-synthesisinreport.html", "hasStage": "../prop-cacontology-synthesishasstage.html", "pageStart": "../prop-cacontology-synthesispagestart.html", "about": "../prop-cacontology-synthesisabout.html", "pageEnd": "../prop-cacontology-synthesispageend.html", "hashScope": "../prop-cacontology-synthesishashscope.html", "ReportSection": "../class-cacontology-synthesisreportsection.html", "Recommendation": "../class-cacontology-synthesisrecommendation.html", "OffendingChain": "../class-cacontology-synthesisoffendingchain.html", "supportedByEvidencePointer": "../prop-cacontology-synthesissupportedbyevidencepointer.html", "lineEnd": "../prop-cacontology-synthesislineend.html", "lineNumbering": "../prop-cacontology-synthesislinenumbering.html", "doi": "../prop-cacontology-synthesisdoi.html", "ReportFigure": "../class-cacontology-synthesisreportfigure.html", "InterventionObjective": "../class-cacontology-synthesisinterventionobjective.html", "Claim": "../class-cacontology-synthesisclaim.html", "stageOrder": "../prop-cacontology-synthesisstageorder.html", "Report": "../class-cacontology-synthesisreport.html", "ReportArtifact": "../class-cacontology-synthesisreportartifact.html", "quoteHashSha256": "../prop-cacontology-synthesisquotehashsha256.html", "category": "../prop-cacontology-synthesiscategory.html", "DistributionObservation": "../class-cacontology-synthesisdistributionobservation.html", "nextStage": "../prop-cacontology-synthesisnextstage.html", "InterventionOperation": "../class-cacontology-synthesisinterventionoperation.html", "influencedJurisdiction": "../prop-cacontology-synthesisinfluencedjurisdiction.html", "lineStart": "../prop-cacontology-synthesislinestart.html", "exactQuote": "../prop-cacontology-synthesisexactquote.html", "hasOffendingChain": "../prop-cacontology-synthesishasoffendingchain.html", "recommendationNumber": "../prop-cacontology-synthesisrecommendationnumber.html"};
+        
+        function checkRedirect() {
+            var hash = window.location.hash;
+            if (hash) {
+                var id = hash.substring(1); // Remove #
+                if (entityMap[id]) {
+                    document.getElementById('loading').style.display = 'block';
+                    document.getElementById('content').style.display = 'none';
+                    // Use replace to avoid adding to history
+                    window.location.replace(entityMap[id]);
+                } else {
+                     console.log("No redirect found for " + id);
+                }
+            }
+        }
+        
+        window.addEventListener('load', checkRedirect);
+        window.addEventListener('hashchange', checkRedirect);
+    </script>
+</head>
+<body>
+    <div id="loading" class="loading">
+        <p>Redirecting to documentation...</p>
+    </div>
+    <div id="content" class="container">
+        <a href="../index.html" class="back-link">← Back to Main Documentation</a>
+        <h1>CAC Knowledge Synthesis Ontology</h1>
+        <div class="module-meta">
+            <p><span class="meta-label">Namespace:</span> <code>https://cacontology.projectvic.org/synthesis#</code></p>
+            <p><span class="meta-label">Definition:</span> An ontology for representing structured knowledge extracted from research reports (sections, figures, claims, distributions, and evidence pointers) to support queryable synthesis across CAC-related sources.</p>
+            <p><a href="https://cacontology.projectvic.org/synthesis/3.1.0/">Ontology document (latest version)</a> | <a href="../synthesis/shapes/">SHACL shapes module</a></p>
+        </div>
+        <p>This is the namespace index for the <code>synthesis</code> module.</p>
+        <p>Select a class, property, concept, or shape to view its documentation:</p>
+        
+        <ul class="entity-list">
+            <li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-synthesisclaim.html">Claim</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-synthesisdistributionobservation.html">DistributionObservation</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-synthesisevidencegap.html">EvidenceGap</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-synthesisinterventionlocus.html">InterventionLocus</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-synthesisinterventionobjective.html">InterventionObjective</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-synthesisinterventionoperation.html">InterventionOperation</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-synthesisinterventiontype.html">InterventionType</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-synthesiskeyfinding.html">KeyFinding</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-synthesismethodologystatement.html">MethodologyStatement</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-synthesisoffendingchain.html">OffendingChain</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-synthesisoffendingchainstage.html">OffendingChainStage</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-synthesisrecommendation.html">Recommendation</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-synthesisreport.html">Report</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-synthesisreportartifact.html">ReportArtifact</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-synthesisreportfigure.html">ReportFigure</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-synthesisreportsection.html">ReportSection</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-synthesisresearchquestion.html">ResearchQuestion</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-synthesisscopeconstraint.html">ScopeConstraint</a></li><li><span class="type-badge clas-badge">Class</span><a href="../class-cacontology-synthesistextevidencepointer.html">TextEvidencePointer</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesisabout.html">about</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesisassertedinsection.html">assertedInSection</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesiscategory.html">category</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesiscount.html">count</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesisdenominator.html">denominator</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesisderivedfromfigure.html">derivedFromFigure</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesisdoi.html">doi</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesisexactquote.html">exactQuote</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesisfindingnumber.html">findingNumber</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesishasclaim.html">hasClaim</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesishasfigure.html">hasFigure</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesishasobservation.html">hasObservation</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesishasoffendingchain.html">hasOffendingChain</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesishassection.html">hasSection</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesishasstage.html">hasStage</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesishashscope.html">hashScope</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesisinreport.html">inReport</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesisinfluencedjurisdiction.html">influencedJurisdiction</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesislineend.html">lineEnd</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesislinenumberstart.html">lineNumberStart</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesislinenumbering.html">lineNumbering</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesislinestart.html">lineStart</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesismentionsorganization.html">mentionsOrganization</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesisnextstage.html">nextStage</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesispageend.html">pageEnd</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesispagestart.html">pageStart</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesisquotehashsha256.html">quoteHashSha256</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesisrank.html">rank</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesisrealizedin.html">realizedIn</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesisrecommendationnumber.html">recommendationNumber</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesisreferencesartifact.html">referencesArtifact</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesisstageorder.html">stageOrder</a></li><li><span class="type-badge prop-badge">Property</span><a href="../prop-cacontology-synthesissupportedbyevidencepointer.html">supportedByEvidencePointer</a></li>
+        </ul>
+    </div>
+</body>
+</html>

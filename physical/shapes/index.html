@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physical/Shapes Module - CAC Ontology</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .entity-list { list-style: none; padding: 0; }
+        .entity-list li { margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+        .type-badge { 
+            display: inline-block; padding: 2px 8px; border-radius: 12px; 
+            font-size: 0.8em; font-weight: bold; margin-right: 10px; color: white;
+        }
+        .class-badge { background-color: #3498db; }
+        .prop-badge { background-color: #27ae60; }
+        .conc-badge { background-color: #e67e22; }
+        .shap-badge { background-color: #9b59b6; }
+        a { color: #2980b9; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .loading { text-align: center; margin-top: 50px; font-style: italic; color: #666; display: none; }
+        .back-link { display: inline-block; margin-bottom: 20px; font-size: 0.9em; }
+        .module-meta {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+        }
+        .module-meta p { margin: 6px 0; }
+        .module-meta .meta-label { font-weight: 600; }
+    </style>
+    <script>
+        // Redirect logic
+        var entityMap = {"SecureCustodyRule": "../shape-cacontology-physical-shapessecurecustodyrule.html", "EvidencePhaseTemporalShape": "../shape-cacontology-physical-shapesevidencephasetemporalshape.html", "BodycamFootageShape": "../shape-cacontology-physical-shapesbodycamfootageshape.html", "PhysicalSearchShape": "../shape-cacontology-physical-shapesphysicalsearchshape.html", "ComputerEquipmentShape": "../shape-cacontology-physical-shapescomputerequipmentshape.html", "EvidenceCustodianRoleShape": "../shape-cacontology-physical-shapesevidencecustodianroleshape.html", "ForensicAnalystRoleShape": "../shape-cacontology-physical-shapesforensicanalystroleshape.html", "SuspectVehicleShape": "../shape-cacontology-physical-shapessuspectvehicleshape.html", "CondomsShape": "../shape-cacontology-physical-shapescondomsshape.html", "SearchEventTemporalShape": "../shape-cacontology-physical-shapessearcheventtemporalshape.html", "ForensicRoleTemporalShape": "../shape-cacontology-physical-shapesforensicroletemporalshape.html", "CriminalProcurementShape": "../shape-cacontology-physical-shapescriminalprocurementshape.html", "SearchParticipationShape": "../shape-cacontology-physical-shapessearchparticipationshape.html", "ForensicRoleParticipationShape": "../shape-cacontology-physical-shapesforensicroleparticipationshape.html", "SuspiciousProcurementRule": "../shape-cacontology-physical-shapessuspiciousprocurementrule.html", "PhysicalEvidenceShape": "../shape-cacontology-physical-shapesphysicalevidenceshape.html", "ConsentToSearchAuthorizationShape": "../shape-cacontology-physical-shapesconsenttosearchauthorizationshape.html", "CustodyIntegrityShape": "../shape-cacontology-physical-shapescustodyintegrityshape.html", "EvidenceCompositionShape": "../shape-cacontology-physical-shapesevidencecompositionshape.html", "EvidenceParticipationShape": "../shape-cacontology-physical-shapesevidenceparticipationshape.html", "ComputerEquipmentCompositionShape": "../shape-cacontology-physical-shapescomputerequipmentcompositionshape.html", "ForensicRoleTypeValidationShape": "../shape-cacontology-physical-shapesforensicroletypevalidationshape.html", "PhysicalEvidenceObjectTypeValidationShape": "../shape-cacontology-physical-shapesphysicalevidenceobjecttypevalidationshape.html", "SearchEventTypeValidationShape": "../shape-cacontology-physical-shapessearcheventtypevalidationshape.html", "DeviceConsentSearchShape": "../shape-cacontology-physical-shapesdeviceconsentsearchshape.html", "EvidencePhaseTypeValidationShape": "../shape-cacontology-physical-shapesevidencephasetypevalidationshape.html", "ThoroughSearchRule": "../shape-cacontology-physical-shapesthoroughsearchrule.html", "EvidenceSituationTypeValidationShape": "../shape-cacontology-physical-shapesevidencesituationtypevalidationshape.html", "ProcurementEventTemporalShape": "../shape-cacontology-physical-shapesprocurementeventtemporalshape.html", "ReliableAnalysisRule": "../shape-cacontology-physical-shapesreliableanalysisrule.html", "EvidenceCrossReferenceShape": "../shape-cacontology-physical-shapesevidencecrossreferenceshape.html", "VapeDeviceShape": "../shape-cacontology-physical-shapesvapedeviceshape.html", "EvidenceLifecycleTimingShape": "../shape-cacontology-physical-shapesevidencelifecycletimingshape.html", "EvidenceDataQualityShape": "../shape-cacontology-physical-shapesevidencedataqualityshape.html", "ContaminationPreventionRule": "../shape-cacontology-physical-shapescontaminationpreventionrule.html", "HighValueEvidenceRule": "../shape-cacontology-physical-shapeshighvalueevidencerule.html", "ProcurementEventTypeValidationShape": "../shape-cacontology-physical-shapesprocurementeventtypevalidationshape.html", "VehicleConsentSearchShape": "../shape-cacontology-physical-shapesvehicleconsentsearchshape.html", "SearchEventTimingShape": "../shape-cacontology-physical-shapessearcheventtimingshape.html", "EvidenceTemporalShape": "../shape-cacontology-physical-shapesevidencetemporalshape.html"};
+        
+        function checkRedirect() {
+            var hash = window.location.hash;
+            if (hash) {
+                var id = hash.substring(1); // Remove #
+                if (entityMap[id]) {
+                    document.getElementById('loading').style.display = 'block';
+                    document.getElementById('content').style.display = 'none';
+                    // Use replace to avoid adding to history
+                    window.location.replace(entityMap[id]);
+                } else {
+                     console.log("No redirect found for " + id);
+                }
+            }
+        }
+        
+        window.addEventListener('load', checkRedirect);
+        window.addEventListener('hashchange', checkRedirect);
+    </script>
+</head>
+<body>
+    <div id="loading" class="loading">
+        <p>Redirecting to documentation...</p>
+    </div>
+    <div id="content" class="container">
+        <a href="../index.html" class="back-link">← Back to Main Documentation</a>
+        <h1>CAC Physical Evidence SHACL Shapes with gUFO Integration</h1>
+        <div class="module-meta">
+            <p><span class="meta-label">Namespace:</span> <code>https://cacontology.projectvic.org/physical/shapes#</code></p>
+            <p><span class="meta-label">Definition:</span> SHACL shapes for validating physical evidence in CAC investigations with comprehensive gUFO foundational ontology integration for enhanced semantic precision and validation capabilities.</p>
+            <p><a href="https://cacontology.projectvic.org/physical/shapes/3.1.0/">Ontology document (latest version)</a></p>
+        </div>
+        <p>This is the namespace index for the <code>physical/shapes</code> module.</p>
+        <p>Select a class, property, concept, or shape to view its documentation:</p>
+        
+        <ul class="entity-list">
+            <li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesbodycamfootageshape.html">BodycamFootageShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapescomputerequipmentcompositionshape.html">ComputerEquipmentCompositionShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapescomputerequipmentshape.html">ComputerEquipmentShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapescondomsshape.html">CondomsShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesconsenttosearchauthorizationshape.html">ConsentToSearchAuthorizationShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapescontaminationpreventionrule.html">ContaminationPreventionRule</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapescriminalprocurementshape.html">CriminalProcurementShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapescustodyintegrityshape.html">CustodyIntegrityShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesdeviceconsentsearchshape.html">DeviceConsentSearchShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesevidencecompositionshape.html">EvidenceCompositionShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesevidencecrossreferenceshape.html">EvidenceCrossReferenceShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesevidencecustodianroleshape.html">EvidenceCustodianRoleShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesevidencedataqualityshape.html">EvidenceDataQualityShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesevidencelifecycletimingshape.html">EvidenceLifecycleTimingShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesevidenceparticipationshape.html">EvidenceParticipationShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesevidencephasetemporalshape.html">EvidencePhaseTemporalShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesevidencephasetypevalidationshape.html">EvidencePhaseTypeValidationShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesevidencesituationtypevalidationshape.html">EvidenceSituationTypeValidationShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesevidencetemporalshape.html">EvidenceTemporalShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesforensicanalystroleshape.html">ForensicAnalystRoleShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesforensicroleparticipationshape.html">ForensicRoleParticipationShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesforensicroletemporalshape.html">ForensicRoleTemporalShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesforensicroletypevalidationshape.html">ForensicRoleTypeValidationShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapeshighvalueevidencerule.html">HighValueEvidenceRule</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesphysicalevidenceobjecttypevalidationshape.html">PhysicalEvidenceObjectTypeValidationShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesphysicalevidenceshape.html">PhysicalEvidenceShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesphysicalsearchshape.html">PhysicalSearchShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesprocurementeventtemporalshape.html">ProcurementEventTemporalShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesprocurementeventtypevalidationshape.html">ProcurementEventTypeValidationShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesreliableanalysisrule.html">ReliableAnalysisRule</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapessearcheventtemporalshape.html">SearchEventTemporalShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapessearcheventtimingshape.html">SearchEventTimingShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapessearcheventtypevalidationshape.html">SearchEventTypeValidationShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapessearchparticipationshape.html">SearchParticipationShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapessecurecustodyrule.html">SecureCustodyRule</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapessuspectvehicleshape.html">SuspectVehicleShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapessuspiciousprocurementrule.html">SuspiciousProcurementRule</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesthoroughsearchrule.html">ThoroughSearchRule</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesvapedeviceshape.html">VapeDeviceShape</a></li><li><span class="type-badge shap-badge">Shape</span><a href="../shape-cacontology-physical-shapesvehicleconsentsearchshape.html">VehicleConsentSearchShape</a></li>
+        </ul>
+    </div>
+</body>
+</html>
