@@ -106,6 +106,20 @@ This ensures that software using the CAC Ontology can link directly to entity do
    python -m http.server 8000 -d docs
    ```
 
+### Namespace link regression checks
+
+Run the focused offline checks without cloning ontology sources or deploying the site:
+
+```bash
+python -m unittest discover -s tests -p test_namespace_links.py -v
+```
+
+These checks use RDFLib and synthetic namespaces at several directory depths. They
+resolve generated entity links, fragment redirect targets, main-page links and
+shapes-module links as browser URLs. They also ensure the internal link validator
+reports a missing nested resource even when a similarly named root file exists.
+The full Ontospy generation and deployment checks remain separate.
+
 ## Repository Structure
 
 ```
@@ -177,3 +191,4 @@ If you find broken links or IRIs that don't resolve:
 ## License
 
 This documentation automation is part of the CAC Ontology project. See the main [CAC-Ontology repository](https://github.com/Project-VIC-International/CAC-Ontology) for license information.
+
