@@ -21,14 +21,6 @@ except ImportError:
     print("Error: rdflib is not installed. Please run 'pip install rdflib'")
     sys.exit(1)
 
-# Check if ontospy is installed
-try:
-    import ontospy
-    from ontospy.gendocs.viz.viz_html_multi import KompleteViz as HTMLVisualizer
-except ImportError:
-    print("Error: ontospy is not installed. Please run 'pip install ontospy'")
-    sys.exit(1)
-
 # Configuration
 REPO_ROOT = Path(__file__).parent.parent
 OUTPUT_DIR = "docs"
@@ -289,6 +281,14 @@ def build_module_registry(repo_path: Path) -> Dict[str, Dict[str, str]]:
 
 def generate_documentation(ontology_file: Path, output_dir: Path):
     """Generate HTML documentation using Ontospy."""
+    # Other build helpers can be tested without loading the visualization stack.
+    try:
+        import ontospy
+        from ontospy.gendocs.viz.viz_html_multi import KompleteViz as HTMLVisualizer
+    except ImportError:
+        print("Error: ontospy is not installed. Please run 'pip install ontospy'")
+        sys.exit(1)
+
     print(f"Generating documentation for {ontology_file}...")
     
     # Load the ontology with Ontospy
@@ -870,9 +870,12 @@ def generate_namespace_indices(
         # Create directory
         target_dir = output_dir / module_path
         target_dir.mkdir(parents=True, exist_ok=True)
+
+        # Entity pages live at the build root, even for nested namespaces.
+        root_prefix = "../" * len(module_path.split("/"))
         
         # Create mapping for JS redirect
-        redirect_map = {e["id"]: f"../{e['file']}" for e in entities}
+        redirect_map = {e["id"]: f"{root_prefix}{e['file']}" for e in entities}
         
         # Sort entities by name
         entities.sort(key=lambda x: x["name"])
@@ -894,7 +897,7 @@ def generate_namespace_indices(
                 f'<a href="{html.escape(module_doc_url)}">Ontology document (latest version)</a>'
             )
         if has_shapes_module:
-            links_html.append(f'<a href="../{shapes_path}/">SHACL shapes module</a>')
+            links_html.append(f'<a href="{root_prefix}{shapes_path}/">SHACL shapes module</a>')
         module_links_html = " | ".join(links_html)
         definition_line_html = (
             f'<p><span class="meta-label">Definition:</span> {module_definition_html}</p>'
@@ -971,7 +974,7 @@ def generate_namespace_indices(
         <p>Redirecting to documentation...</p>
     </div>
     <div id="content" class="container">
-        <a href="../index.html" class="back-link">← Back to Main Documentation</a>
+        <a href="{root_prefix}index.html" class="back-link">← Back to Main Documentation</a>
         <h1>{module_label_html}</h1>
         <div class="module-meta">
             <p><span class="meta-label">Namespace:</span> <code>{module_namespace_html}</code></p>
@@ -982,7 +985,7 @@ def generate_namespace_indices(
         <p>Select a class, property, concept, or shape to view its documentation:</p>
         
         <ul class="entity-list">
-            {''.join(f'<li><span class="type-badge {e["type"].lower()[:4]}-badge">{e["type"]}</span><a href="../{e["file"]}">{e["name"]}</a></li>' for e in entities)}
+            {''.join(f'<li><span class="type-badge {e["type"].lower()[:4]}-badge">{e["type"]}</span><a href="{root_prefix}{e["file"]}">{e["name"]}</a></li>' for e in entities)}
         </ul>
     </div>
 </body>
@@ -1691,12 +1694,10 @@ def validate_iri_resolution(graph: Graph, output_dir: Path) -> Dict[str, List[st
                 if link.startswith("http://") or link.startswith("https://"):
                     continue
                 
-                # Resolve relative path
-                if link.startswith("../"):
-                    # Relative to parent
-                    target_path = html_file.parent.parent / link[3:]
-                elif link.startswith("./"):
-                    target_path = html_file.parent / link[2:]
+                # Match browser resolution; a root file cannot rescue a link
+                # that points to a different (missing) nested resource.
+                if link.startswith("/"):
+                    target_path = output_dir / link.lstrip("/")
                 else:
                     target_path = html_file.parent / link
                 
@@ -1704,12 +1705,9 @@ def validate_iri_resolution(graph: Graph, output_dir: Path) -> Dict[str, List[st
                 try:
                     target_path = target_path.resolve()
                     if not target_path.exists():
-                        # Check if it might be in output_dir root
-                        alt_path = output_dir / link.replace("../", "")
-                        if not alt_path.exists():
-                            results["broken_links"].append(
-                                f"{html_file.relative_to(output_dir)} -> {link}"
-                            )
+                        results["broken_links"].append(
+                            f"{html_file.relative_to(output_dir)} -> {link}"
+                        )
                 except Exception:
                     pass
                     
@@ -1851,3 +1849,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
