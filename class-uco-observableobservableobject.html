@@ -1,0 +1,317 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="static/custom/favicon.ico">
+		<title>Ontospy > RDF knowledge graph (97 ontologies)</title>
+    <link href="static/libs/bootswatch3_2/simplex/bootstrap.min.css" rel="stylesheet">
+    <link href="static/custom/css/simple-sidebar.css" rel="stylesheet">
+    <link href="static/custom/css/familytree.css" rel="stylesheet">
+    <link href="static/custom/css/tabletree.css" rel="stylesheet">
+    <link href="static/libs/bootstrap-3_3_7-dist/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+    <link href="static/custom/css/sticky-footer-navbar.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+<link rel="stylesheet" href="static/shared/common.css">
+  </head>
+  <body>
+                <div style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; padding: 8px 20px; font-size: 14px; color: #6c757d; text-align: right;">
+                    Ontology Version: <strong>3.1.0</strong>
+                </div>
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" id="menu-toggle" title="Toggle sidebar">
+        <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+      </a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li ><a href="index.html"><code style="font-size: 115%;">RDF knowledge graph (97 ontologies)</code></a></li>
+        <li  ><a href="entities-az.html">Entities A-Z</a></li>
+        <li ><a href="entities-tree-classes.html">Classes</a></li>
+        <li ><a href="entities-tree-properties.html">Properties</a></li>
+        <li ><a href="entities-tree-concepts.html">SKOS</a></li>
+        <li ><a href="entities-tree-shapes.html">Shapes</a></li>
+        <li  ><a href="statistics.html">Statistics</a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+<div id="wrapper" class="toggled">
+<div id="sidebar-wrapper">
+    <ul class="sidebar-nav" id="sidebar-list" data-thispage="uco-observable:ObservableObject">
+        <li>
+          <input style="margin-top: 30px;  margin-bottom: 20px;" type="text" id="search-input-sidebar" name="" value="" placeholder="Type to search">
+        </li>
+          <li class="-second-level sidebar-section" id="sd_classes" data-section="classes"><a href="entities-tree-classes.html">Classes (2209)</a>
+          </li>
+          <li class="-second-level sidebar-section" id="sd_properties" data-section="properties"><a href="entities-tree-properties.html">Properties (2527)</a>
+          </li>
+          <li class="-second-level sidebar-section" id="sd_concepts" data-section="concepts"><a href="entities-tree-concepts.html">Concepts (21)</a>
+          </li>
+        <li style="height: 140px;"></li>
+    </ul>
+</div>
+<script src="sidebar.js"></script>
+<script type="text/javascript">
+  // build the entries of each section from SIDEBAR (sidebar.js): [id, title, page, qname],
+  // the qname left out when it is the title; the entry of this page is highlighted
+  (function() {
+    var data = window.SIDEBAR;
+    var list = document.getElementById("sidebar-list");
+    if (!data || !list) return;
+    var thispage = list.getAttribute("data-thispage");
+    var escape = function(s) {
+      return String(s).replace(/[&<>"']/g, function(c) {
+        return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c];
+      });
+    };
+    list.querySelectorAll("li.sidebar-section").forEach(function(header) {
+      var items = data[header.getAttribute("data-section")] || [];
+      var html = items.map(function(e) {
+        var active = (e[3] || e[1]) === thispage;
+        return '<li class="second-level" style="line-height: 20px;" id="sd_' + e[0] + '">' +
+          '<a ' + (active ? 'class="active" ' : '') + 'href="' + e[2] + '.html">' + escape(e[1]) + '</a></li>';
+      }).join("");
+      header.insertAdjacentHTML("afterend", html);
+    });
+    // scroll the sidebar to the entry of this page, or to the section of a tree page
+    var active = list.querySelector("li.second-level a.active") || list.querySelector("li.sidebar-section a.active");
+    var wrapper = document.getElementById("sidebar-wrapper");
+    if (active && wrapper) {
+      wrapper.scrollTop = active.parentNode.offsetTop - 100;
+    }
+  })();
+</script>
+    <div class="container" id="page-content-wrapper">
+  <ol class="breadcrumb">
+    <li>
+      <a href="index.html">Home</a>
+    </li>
+    <li>
+          <a href="entities-az.html">Entities</a>
+    </li>
+    <li>
+          <a href="entities-tree-classes.html">Classes</a>
+    </li>
+      <li class="active">
+            uco-observable:ObservableObject
+        </li>
+  </ol>
+    <h1>
+      uco-observable:ObservableObject
+    </h1>
+    <hr>
+    <div class="tree-container">
+      <div class="tree">
+        <ul>
+            <li><a href="entities-tree-classes.html">owl:Thing</a>
+              <ul>
+                <li><a style="font-weight: bold;" title="'ObservableObject'">uco-observable:ObservableObject</a>
+                    <ul>
+                        <li><a href="class-cacontologymultidefendantindictment.html" title="'Multi-Defendant Indictment' - Legal indictment involving multiple defendants in coordinated criminal enterprise (e.g., 19-count superseding indictment).">cacontology:MultiDefendantIndictment</a></li>
+                        <li><a href="class-cacontology-abductionabductionsceneevidence.html" title="'Abduction Scene Evidence' - Physical evidence collected from abduction scene.">cacontology-abduction:AbductionSceneEvidence</a></li>
+                        <li><a href="class-cacontology-abductionexploitationsceneevidence.html" title="'Exploitation Scene Evidence' - Physical evidence collected from exploitation location.">cacontology-abduction:ExploitationSceneEvidence</a></li>
+                        <li><a href="class-cacontology-abductionsurveillanceevidence.html" title="'Surveillance Evidence' - Video or photographic surveillance evidence of abduction or related activity.">cacontology-abduction:SurveillanceEvidence</a></li>
+                        <li><a href="class-cacontology-abductionwitnessevidence.html" title="'Witness Evidence' - Witness testimony regarding abduction or suspicious activity.">cacontology-abduction:WitnessEvidence</a></li>
+                        <li><a href="class-cacontology-asset-forfeiturefinancialaccount.html" title="'Financial Account' - Bank account or financial instrument subject to restraint or forfeiture. Enhanced as gUFO Object for financial asset modeling.">cacontology-asset-forfeiture:FinancialAccount</a></li>
+                        <li><a href="class-cacontology-asset-forfeitureforfeitureoutcome.html" title="'Forfeiture Outcome' - Result of asset forfeiture proceedings. Enhanced as gUFO Object for outcome modeling.">cacontology-asset-forfeiture:ForfeitureOutcome</a></li>
+                        <li><a href="class-cacontology-asset-forfeiturehouseholditems.html" title="'Household Items' - High-value household items including electronics, furniture, and appliances subject to forfeiture. Enhanced as gUFO Object for personal property modeling.">cacontology-asset-forfeiture:HouseholdItems</a></li>
+                        <li><a href="class-cacontology-asset-forfeitureinstrumentofoffense.html" title="'Instrument of Offense' - Assets used as instruments in the commission of child exploitation offenses. Enhanced as gUFO Object.">cacontology-asset-forfeiture:InstrumentOfOffense</a></li>
+                        <li><a href="class-cacontology-asset-forfeitureproceedsofcrime.html" title="'Proceeds of Crime' - Assets that are proceeds or benefits derived from child exploitation offenses. Enhanced as gUFO Object.">cacontology-asset-forfeiture:ProceedsOfCrime</a></li>
+                        <li><a href="class-cacontology-asset-forfeitureresidentialproperty.html" title="'Residential Property' - Residential home subject to restraint or forfeiture in child exploitation cases. Enhanced as gUFO Object for comprehensive property modeling.">cacontology-asset-forfeiture:ResidentialProperty</a></li>
+                        <li><a href="class-cacontology-asset-forfeituretechnicalequipment.html" title="'Technical Equipment' - Technical equipment used in child exploitation offenses (cameras, computers, drones, etc.). Enhanced as gUFO Object for equipment modeling.">cacontology-asset-forfeiture:TechnicalEquipment</a></li>
+                        <li><a href="class-cacontology-asset-forfeiturevehicle.html" title="'Vehicle' - Vehicle used in or purchased with proceeds from child exploitation offenses. Enhanced as gUFO Object for vehicle asset modeling.">cacontology-asset-forfeiture:Vehicle</a></li>
+                        <li><a href="class-cac-coreartifact.html" title="'Artifact' - An enduring entity that is inspectable, storable, transferable, or evidentiary. Aligned to UCO ObservableObject for digital evidence interoperability.">cac-core:Artifact</a></li>
+                        <li><a href="class-cacontology-custodialbackgroundcheck.html" title="'Background Check' - Background verification conducted for custodial or care position. Modeled as gUFO Object with verification results.">cacontology-custodial:BackgroundCheck</a></li>
+                        <li><a href="class-cacontology-custodialcustodialauthorization.html" title="'Custodial Authorization' - Official authorization granting custodial rights or responsibilities. Modeled as gUFO Object with legal authority.">cacontology-custodial:CustodialAuthorization</a></li>
+                        <li><a href="class-cacontology-custodialcustodyarrangement.html" title="'Custody Arrangement' - Formal or informal arrangement for child custody or care. Modeled as gUFO Object with temporal arrangement characteristics.">cacontology-custodial:CustodyArrangement</a></li>
+                        <li><a href="class-cacontology-custodialparentalconsent.html" title="'Parental Consent' - Consent given by parent or guardian for custodial arrangement. Modeled as gUFO Object with authorization characteristics.">cacontology-custodial:ParentalConsent</a></li>
+                        <li><a href="class-cacontology-enterprisesencryptedchannelnetwork.html" title="'Encrypted Channel Network' - Network of encrypted messaging channels used for enterprise coordination and content sharing.">cacontology-enterprises:EncryptedChannelNetwork</a></li>
+                        <li><a href="class-cacontology-enterpriseslorebook.html" title="'Lorebook' - Edited compilation of victim content including images, videos, and personal information organized by enterprise members.">cacontology-enterprises:Lorebook</a></li>
+                        <li><a href="class-cacontology-forensicsattributionassessment.html" title="'Attribution Assessment' - Analytic conclusion that two or more observables (accounts, IP addresses, devices) are controlled by the same subject, with stated confidence..">cacontology-forensics:AttributionAssessment</a></li>
+                        <li><a href="class-cacontology-forensicscorrelationevidence.html" title="'Correlation Evidence' - Structured evidence that observables are linked by overlapping usage, records, or artifacts. Superclass for typed correlation evidence supporting attribution assessments.">cacontology-forensics:CorrelationEvidence</a></li>
+                        <li><a href="class-cacontology-forensicscustodydocument.html" title="'Custody Document' - Documentation recording the handling and transfer of evidence maintaining chain of custody.">cacontology-forensics:CustodyDocument</a></li>
+                        <li><a href="class-cacontology-forensicsmemorydump.html" title="'Memory Dump' - A snapshot of volatile system memory captured for forensic analysis.">cacontology-forensics:MemoryDump</a></li>
+                        <li><a href="class-cacontology-forensicsnetworkcapture.html" title="'Network Capture' - A capture of network traffic packets for forensic analysis.">cacontology-forensics:NetworkCapture</a></li>
+                        <li><a href="class-cacontology-groominginappropriategift.html" title="'Inappropriate Gift' - Offer or provision of gifts, money, or favors as part of grooming process.">cacontology-grooming:InappropriateGift</a></li>
+                        <li><a href="class-cacontology-infrastructurepaymentprocessing.html" title="'Payment Processing' - Financial processing systems enabling platform monetization through subscription fees, content purchases, or cryptocurrency transactions (gUFO FunctionalComplex).">cacontology-infrastructure:PaymentProcessing</a></li>
+                        <li><a href="class-cacontology-infrastructureplatforminfrastructure.html" title="'Platform Infrastructure' - Technical infrastructure supporting child exploitation platforms, including servers, networks, and supporting systems (gUFO Object).">cacontology-infrastructure:PlatformInfrastructure</a></li>
+                        <li><a href="class-cacontology-institutionalforeigncommerceoffense.html" title="'Foreign Commerce Offense' - Criminal offense involving travel in foreign commerce for illicit sexual conduct.">cacontology-institutional:ForeignCommerceOffense</a></li>
+                        <li><a href="class-cacontology-institutionalinstitutionalabuseevidence.html" title="'Institutional Abuse Evidence' - Evidence documenting patterns of abuse within institutional setting.">cacontology-institutional:InstitutionalAbuseEvidence</a></li>
+                        <li><a href="class-cacontology-institutionalmultiplevictimtestimony.html" title="'Multiple Victim Testimony' - Coordination of testimony from multiple victims in institutional exploitation case.">cacontology-institutional:MultipleVictimTestimony</a></li>
+                        <li><a href="class-cacontology-internationalinternationalevidence.html" title="'International Evidence' - Evidence collected from international operations requiring coordination across multiple jurisdictions.">cacontology-international:InternationalEvidence</a></li>
+                        <li><a href="class-cacontology-legal-outcomesappellatedisposition.html" title="'Appellate Disposition' - Outcome of an appellate issue or appeal (e.g., affirmed, reversed, vacated, remanded). Modeled as gUFO Object.">cacontology-legal-outcomes:AppellateDisposition</a></li>
+                        <li><a href="class-cacontology-legal-outcomesappellateissue.html" title="'Appellate Issue' - Issue raised on appeal to challenge a conviction or sentence (e.g., evidentiary admission, sufficiency of evidence, sentencing reasonableness). Modeled as..">cacontology-legal-outcomes:AppellateIssue</a></li>
+                        <li><a href="class-cacontology-legal-outcomescharginginstrument.html" title="'Charging Instrument' - Abstract superclass for formal charging documents: criminal complaint, indictment, criminal information, and superseding instruments. Modeled as gUFO Object.">cacontology-legal-outcomes:ChargingInstrument</a></li>
+                        <li><a href="class-cacontology-legal-outcomesconvictionrecord.html" title="'Conviction Record' - A durable record that a person was convicted of one or more criminal charges (e.g., by jury verdict, bench trial,..">cacontology-legal-outcomes:ConvictionRecord</a></li>
+                        <li><a href="class-cacontology-legal-outcomescriminalcharge.html" title="'Criminal Charge' - Formal accusation of criminal activity in CAC cases. Modeled as gUFO Object.">cacontology-legal-outcomes:CriminalCharge</a></li>
+                        <li><a href="class-cacontology-legal-outcomescriminalsentence.html" title="'Criminal Sentence' - Punishment imposed by court for criminal conviction. Modeled as gUFO Object.">cacontology-legal-outcomes:CriminalSentence</a></li>
+                        <li><a href="class-cacontology-legal-outcomesevidencerule.html" title="'Evidence Rule' - A rule of evidence cited in an appellate issue or opinion (e.g., Federal Rule of Evidence 403, 404(b), 414). Modeled..">cacontology-legal-outcomes:EvidenceRule</a></li>
+                        <li><a href="class-cacontology-legal-outcomespaymentschedule.html" title="'Payment Schedule' - Schedule of criminal monetary payments imposed in a judgment (AO 245B Schedule of Payments). Modeled as gUFO Object.">cacontology-legal-outcomes:PaymentSchedule</a></li>
+                        <li><a href="class-cacontology-legal-outcomesprofessionallicensesurrendercondition.html" title="'Professional License Surrender Condition' - Condition associated with a plea agreement or sentencing outcome requiring the defendant to surrender a professional license (e.g., a nursing..">cacontology-legal-outcomes:ProfessionalLicenseSurrenderCondition</a></li>
+                        <li><a href="class-cacontology-legal-outcomesstandardofreview.html" title="'Standard of Review' - Appellate standard of review applied to an appellate issue (e.g., de novo, abuse of discretion, plain error). Modeled as gUFO..">cacontology-legal-outcomes:StandardOfReview</a></li>
+                        <li><a href="class-cacontology-legal-outcomessupervisedreleasecondition.html" title="'Supervised Release Condition' - A special condition of supervised release or probation imposed in a criminal judgment. Modeled as gUFO Object.">cacontology-legal-outcomes:SupervisedReleaseCondition</a></li>
+                        <li><a href="class-cacontology-multiextraditionrequest.html" title="'Extradition Request' - Legal request to transfer suspect between jurisdictions.">cacontology-multi:ExtraditionRequest</a></li>
+                        <li><a href="class-cacontology-multiinformationsharingagreement.html" title="'Information Sharing Agreement' - Agreement governing sharing of sensitive information between agencies.">cacontology-multi:InformationSharingAgreement</a></li>
+                        <li><a href="class-cacontology-multiinteragencyagreement.html" title="'Interagency Agreement' - Formal agreement between agencies for cooperation and resource sharing.">cacontology-multi:InteragencyAgreement</a></li>
+                        <li><a href="class-cacontology-multijurisdictionalwarrant.html" title="'Jurisdictional Warrant' - Legal authorization that specifies jurisdictional authority.">cacontology-multi:JurisdictionalWarrant</a></li>
+                        <li><a href="class-cacontology-multimutualaidrequest.html" title="'Mutual Aid Request' - Formal request for assistance from another jurisdiction.">cacontology-multi:MutualAidRequest</a></li>
+                        <li><a href="class-cacontology-partnershipspublictip.html" title="'Public Tip' - Information provided by members of the public in response to crowdsourcing requests. Modeled as gUFO Object.">cacontology-partnerships:PublicTip</a></li>
+                        <li><a href="class-cacontology-physicalbodycamfootage.html" title="'Bodycam Footage' - Body camera footage from law enforcement officers. Used for suspect identification and evidence. IS a digital observable as it is..">cacontology-physical:BodycamFootage</a></li>
+                        <li><a href="class-cacontology-physicalphysicalevidence.html" title="'Physical Evidence' - Tangible items collected as evidence in CAC investigations (gUFO Object).">cacontology-physical:PhysicalEvidence</a></li>
+                        <li><a href="class-cacontology-physicalsurveillancerecording.html" title="'Surveillance Recording' - Recording from surveillance or security cameras. Digital observable.">cacontology-physical:SurveillanceRecording</a></li>
+                        <li><a href="class-cacontology-platformscryptocurrencyservice.html" title="'Cryptocurrency Service' - A service for cryptocurrency transactions and exchanges (e.g., Bitcoin, Coinbase, Binance). Modeled as gUFO Object.">cacontology-platforms:CryptocurrencyService</a></li>
+                        <li><a href="class-cacontology-platformsdarkwebservice.html" title="'Dark Web Service' - A service accessible through anonymizing networks like Tor, often used for illegal activities. Modeled as gUFO Object.">cacontology-platforms:DarkWebService</a></li>
+                        <li><a href="class-cacontology-platformselectronicdeviceevidence.html" title="'Electronic Device Evidence' - Digital evidence found on electronic devices including computers, phones, and storage media.">cacontology-platforms:ElectronicDeviceEvidence</a></li>
+                        <li><a href="class-cacontology-platformsfilehostingservice.html" title="'File Hosting Service' - A service for storing and sharing files online (e.g., Google Drive, Dropbox, OneDrive, MEGA). Modeled as gUFO Object.">cacontology-platforms:FileHostingService</a></li>
+                        <li><a href="class-cacontology-platformsgameplatform.html" title="'Game Platform' - A digital platform for gaming with communication features (e.g., Xbox Live, PlayStation Network, Steam, Roblox, Minecraft). Modeled as gUFO Object.">cacontology-platforms:GamePlatform</a></li>
+                        <li><a href="class-cacontology-platformsmassuserdatabase.html" title="'Mass User Database' - User database analysis for platforms with massive user bases requiring specialized processing techniques and automated analysis tools. Modeled as gUFO..">cacontology-platforms:MassUserDatabase</a></li>
+                        <li><a href="class-cacontology-platformsmessagingservice.html" title="'Messaging Service' - A digital service for real-time communication and messaging (e.g., WhatsApp, Telegram, Signal, Discord, Kik). Modeled as gUFO Object.">cacontology-platforms:MessagingService</a></li>
+                        <li><a href="class-cacontology-platformsonlinedatingplatform.html" title="'Online Dating Platform' - A platform for meeting and dating online (e.g., Tinder, Bumble, Grindr, dating websites). Modeled as gUFO Object.">cacontology-platforms:OnlineDatingPlatform</a></li>
+                        <li><a href="class-cacontology-platformssocialmediaevidence.html" title="'Social Media Evidence' - Digital evidence collected from social media platforms, including posts, messages, and account information.">cacontology-platforms:SocialMediaEvidence</a></li>
+                        <li><a href="class-cacontology-platformssocialmediaplatform.html" title="'Social Media Platform' - A digital platform for social networking and content sharing (e.g., Facebook, Instagram, TikTok, Twitter, LinkedIn). Modeled as gUFO Object.">cacontology-platforms:SocialMediaPlatform</a></li>
+                        <li><a href="class-cacontology-platformsvideostreamingplatform.html" title="'Video Streaming Platform' - A platform for video content streaming and sharing (e.g., YouTube, Twitch, OnlyFans, Periscope). Modeled as gUFO Object.">cacontology-platforms:VideoStreamingPlatform</a></li>
+                        <li><a href="class-cacontology-productionconcealmentcontainer.html" title="'Concealment Container' - Object used to hide recording equipment such as backpacks, furniture, or everyday items with modifications.">cacontology-production:ConcealmentContainer</a></li>
+                        <li><a href="class-cacontology-productionextendedproductionperiod.html" title="'Extended Production Period' - Ongoing pattern of production over an extended time period.">cacontology-production:ExtendedProductionPeriod</a></li>
+                        <li><a href="class-cacontology-productionproductionequipment.html" title="'Production Equipment' - Devices and equipment used to produce child sexual abuse material.">cacontology-production:ProductionEquipment</a></li>
+                        <li><a href="class-cacontology-productionproductionsession.html" title="'Production Session' - Individual instance or session of producing child sexual abuse material.">cacontology-production:ProductionSession</a></li>
+                        <li><a href="class-cacontology-registrycourtorder.html" title="'Court Order' - Court order mandating sex offender registration.">cacontology-registry:CourtOrder</a></li>
+                        <li><a href="class-cacontology-registrymultimodaldigitalevidence.html" title="'Multi Modal Digital Evidence' - Digital evidence containing multiple content types (text, images, audio, video) in single exploitation case.">cacontology-registry:MultiModalDigitalEvidence</a></li>
+                        <li><a href="class-cacontology-registryoffenderdevicesearchwarrant.html" title="'Offender Device Search Warrant' - Search warrant executed on registered sex offender&#39;s residence and devices for digital evidence recovery.">cacontology-registry:OffenderDeviceSearchWarrant</a></li>
+                        <li><a href="class-cacontology-registryphotograph.html" title="'Photograph' - Official photograph of registered sex offender.">cacontology-registry:Photograph</a></li>
+                        <li><a href="class-cacontology-registryprofessionallicense.html" title="'Professional License' - Professional license held by registered sex offender.">cacontology-registry:ProfessionalLicense</a></li>
+                        <li><a href="class-cacontology-registrypublicwebsite.html" title="'Public Website' - Public website for searching sex offender registry information.">cacontology-registry:PublicWebsite</a></li>
+                        <li><a href="class-cacontology-registryvehicleinformation.html" title="'Vehicle Information' - Information about vehicles owned or operated by registered sex offender.">cacontology-registry:VehicleInformation</a></li>
+                        <li><a href="class-cacontology-sextortiondisappearingmessagefeature.html" title="'Disappearing Message Feature' - Platform feature where messages automatically delete after viewing.">cacontology-sextortion:DisappearingMessageFeature</a></li>
+                        <li><a href="class-cacontology-sextortionextortiondemand.html" title="'Extortion Demand' - Specific demand made by sextortion offender using threat leverage.">cacontology-sextortion:ExtortionDemand</a></li>
+                        <li><a href="class-cacontology-sextortionimagesharingfeature.html" title="'Image Sharing Feature' - Platform feature enabling image sharing in private conversations.">cacontology-sextortion:ImageSharingFeature</a></li>
+                        <li><a href="class-cacontology-sextortionprivatemessagingfeature.html" title="'Private Messaging Feature' - Platform feature enabling private direct communication.">cacontology-sextortion:PrivateMessagingFeature</a></li>
+                        <li><a href="class-cacontology-sextortionvictimresponse.html" title="'Victim Response' - Pattern of victim response to sextortion attempts.">cacontology-sextortion:VictimResponse</a></li>
+                        <li><a href="class-cacontology-synthesisreportartifact.html" title="'Report Artifact' - A concrete artifact that realizes a Report (e.g., a PDF file). Use this when you want a report-as-file node that..">cacontology-synthesis:ReportArtifact</a></li>
+                        <li><a href="class-cacontology-tacticaltacticalequipment.html" title="'Tactical Equipment' - Specialized equipment used in tactical operations.">cacontology-tactical:TacticalEquipment</a></li>
+                        <li><a href="class-cacontology-taskforcecoordinationmechanism.html" title="'Coordination Mechanism' - Formal mechanism for coordinating task force activities.">cacontology-taskforce:CoordinationMechanism</a></li>
+                        <li><a href="class-cacontology-taskforceicactaskforce.html" title="'CAC Task Force' - Internet Crimes Against Children task force unit specializing in child exploitation investigations.">cacontology-taskforce:ICACtaskForce</a></li>
+                        <li><a href="class-cacontology-taskforceresourcesharing.html" title="'Resource Sharing' - Sharing of resources, personnel, or expertise between task forces.">cacontology-taskforce:ResourceSharing</a></li>
+                        <li><a href="class-cacontology-taskforcespecializedunit.html" title="'Specialized Unit' - Specialized unit within CAC task force focused on specific aspects of investigations.">cacontology-taskforce:SpecializedUnit</a></li>
+                        <li><a href="class-cacontology-us-ncmeccybertipanalysis.html" title="'CyberTip Analysis' - Analytical processing and assessment of NCMEC CyberTip reports by law enforcement.">cacontology-us-ncmec:CyberTipAnalysis</a></li>
+                        <li><a href="class-cacontology-us-ncmeccybertipextractedidentifierset.html" title="'CyberTip Extracted Identifier Set' - An information artifact representing the set of identifiers extracted from a CyberTipline report, used to support triage, enrichment, and routing.">cacontology-us-ncmec:CybertipExtractedIdentifierSet</a></li>
+                        <li><a href="class-cacontology-us-ncmecinvestigationtrigger.html" title="'Investigation Trigger' - Event or information that triggers law enforcement investigation based on NCMEC tip.">cacontology-us-ncmec:InvestigationTrigger</a></li>
+                        <li><a href="class-cacontology-us-ncmecncmeccybertipreport.html" title="'NCMEC Cybertip Report' - A report submitted to NCMEC&#39;s CyberTipline. This class represents the root structure of a NCMEC report as defined in the..">cacontology-us-ncmec:NCMECCybertipReport</a></li>
+                        <li><a href="class-cacontology-us-ncmecplatformcooperation.html" title="'Platform Cooperation' - Cooperation from digital platforms in providing information for NCMEC tips.">cacontology-us-ncmec:PlatformCooperation</a></li>
+                        <li><a href="class-cacontology-us-ncmectipprocessing.html" title="'Tip Processing' - Processing workflow for NCMEC tips from receipt to investigation referral.">cacontology-us-ncmec:TipProcessing</a></li>
+                        <li><a href="class-cacontology-impactlongtermeffect.html" title="'Long Term Effect' - Long-term consequences of victimization on the child&#39;s life.">cacontology-impact:LongTermEffect</a></li>
+                        <li><a href="class-cacontology-impactpsychologicalharm.html" title="'Psychological Harm' - Mental or emotional harm experienced by child victims.">cacontology-impact:PsychologicalHarm</a></li>
+                        <li><a href="class-cacontology-impactrecoveryprocess.html" title="'Recovery Process' - Process of healing and recovery from victimization.">cacontology-impact:RecoveryProcess</a></li>
+                        <li><a href="class-cacontology-impactresiliencefactors.html" title="'Resilience Factors' - Protective factors that promote victim resilience and recovery.">cacontology-impact:ResilienceFactors</a></li>
+                        <li><a href="class-cacontology-impacttraumaindicator.html" title="'Trauma Indicator' - Observable signs or symptoms indicating psychological trauma.">cacontology-impact:TraumaIndicator</a></li>
+                        <li><a href="class-cacontology-impactvictimimpactassessment.html" title="'Victim Impact Assessment' - Comprehensive assessment of the impact of criminal activity on child victims.">cacontology-impact:VictimImpactAssessment</a></li>
+                    </ul>
+                </li>
+              </ul>
+            </li>
+        </ul>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">URI</h3>
+          </div>
+          <div class="panel-body">
+            <code>https://ontology.unifiedcyberontology.org/uco/observable/ObservableObject</code>
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Label</h3>
+          </div>
+          <div class="panel-body">
+            ObservableObject
+          </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Usage</h3>
+            </div>
+            <div class="panel-body" style="overflow: auto;">
+              <p>Instances of uco-observable:ObservableObject can have the following properties:</p>
+              <noscript><p><i>The list of properties needs JavaScript.</i></p></noscript>
+            </div>
+            <table class="table table-bordered" style="overflow: auto;" id="usage-table" data-groups="2293 0">
+              <tr class="table-classproperties">
+                <th>PROPERTY</th><th>TYPE</th><th>DESCRIPTION</th><th>RANGE</th>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <script src="usage.js"></script>
+      <script src="static/custom/js/usage.js"></script>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Implementation</h3>
+          </div>
+          <div class="panel-body implementation-panel">
+              <div class="highlight"><pre><span></span><span class="k">@prefix</span><span class="w"> </span><span class="nn">cac-core:</span><span class="w"> </span><span class="nv">&lt;https://cacontology.projectvic.org/core#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">cacontology:</span><span class="w"> </span><span class="nv">&lt;https://cacontology.projectvic.org#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">cacontology-gufo:</span><span class="w"> </span><span class="nv">&lt;https://cacontology.projectvic.org/gufo#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">gufo:</span><span class="w"> </span><span class="nv">&lt;http://purl.org/nemo/gufo#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">owl:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/2002/07/owl#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">rdfs:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/2000/01/rdf-schema#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">skos:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/2004/02/skos/core#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">uco-role:</span><span class="w"> </span><span class="nv">&lt;https://ontology.unifiedcyberontology.org/uco/role/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="nn">cacontology</span><span class="p">:</span><span class="nt">VictimRole</span> <span class="kt">a</span> <span class="nn">gufo</span><span class="p">:</span><span class="nt">Role</span><span class="p">,</span>
+        <span class="nn">owl</span><span class="p">:</span><span class="nt">Class</span> <span class="p">;</span>
+    <span class="nn">rdfs</span><span class="p">:</span><span class="nt">label</span> <span class="s">"Victim Role"</span><span class="o">@</span><span class="ge">en</span> <span class="p">;</span>
+    <span class="nn">rdfs</span><span class="p">:</span><span class="nt">comment</span> <span class="s">"Role of a person who is a victim of child sexual abuse or exploitation. Modeled as anti-rigid gUFO Role. When the victim's age is known at the time of a specific event or phase, it SHOULD be captured via one or more cacontology-temporal:AgeAtTimeSituation instances linked to the underlying person."</span><span class="o">@</span><span class="ge">en</span> <span class="p">;</span>
+    <span class="nn">rdfs</span><span class="p">:</span><span class="nt">subClassOf</span> <span class="nn">cac-core</span><span class="p">:</span><span class="nt">Role</span><span class="p">,</span>
+        <span class="nn">uco-role</span><span class="p">:</span><span class="nt">VictimRole</span> <span class="p">;</span>
+    <span class="nn">skos</span><span class="p">:</span><span class="nt">exactMatch</span> <span class="nn">cacontology-gufo</span><span class="p">:</span><span class="nt">VictimRole</span> <span class="p">.</span>
+</pre></div>
+          </div>
+        </div>
+      </div>
+    </div>
+	</div><!-- /#page-content-wrapper -->
+  <footer class="footer">
+    <div class="container">
+      <p class="text-muted">Documentation automatically generated on Sat, 24 Oct 2026 02:18:23 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.7)</p>
+    </div>
+  </footer>
+</div><!-- /#wrapper -->
+<!-- Bootstrap core JavaScript
+================================================== -->
+<script src="static/libs/jquery/1_12_4/jquery.min.js"></script>
+<script src="static/libs/bootstrap-3_3_7-dist/js/bootstrap.min.js" defer></script>
+<script src="static/libs/bootstrap-3_3_7-dist/js/ie10-viewport-bug-workaround.js" defer></script>
+<script src="static/libs/chartjs-2_4_0/chart.bundle.js"></script>
+  <script src="static/shared/common.js" defer></script>
+</body>
+</html>
