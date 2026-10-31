@@ -1,0 +1,92 @@
+# CAC Ontology Documentation (Project VIC International)
+# Machine-readable entrypoint for AI agents and web crawlers
+Ontology Version: 3.1.0
+
+Base URL: https://cacontology.projectvic.org/
+
+## What is the CAC Ontology?
+The Crimes Against Children (CAC) Ontology Family is a community-developed evolving
+standard that provides a structured (ontology-based) specification for representing
+information commonly analyzed and exchanged by people and systems during investigations
+involving digital evidence related to crimes against children.
+
+The power of CAC Ontology is that it provides a common language to support automated
+normalization, combination and validation of varied information sources to facilitate
+analysis and exploration of investigative questions (who, what, when, timeline, where, how, and why).
+In addition to representing tool results, CAC Ontology ensures that analysis results
+can be traced back to their source(s), keeping track of when, where and who used which
+tools to perform investigative actions on data sources.
+
+CAC Ontology extends the Unified Cyber Ontology (UCO), the Cyber-investigation Analysis
+Standard Expression (CASE) Ontology, and the Unified Foundational Ontology (gUFO).
+This powerful combination provides specialized modules for modeling child exploitation
+investigations, operations, legal processes, reporting, offender tradecraft, victim and
+survivor related information, and digital forensics activities with high semantic precision.
+
+## Architecture (v3.0.0+)
+The ontology family uses a three-layer architecture:
+
+1. Semantic Spine (cac-core: namespace, https://cacontology.projectvic.org/core#):
+   A stable, top-level class hierarchy organized by ontological kind (Entity,
+   EnduringEntity, Event, Situation, Role, Phase). All domain modules anchor to
+   the spine rather than directly to external ontologies.
+
+2. Bridge Modules: Alignment layers that mediate between the spine and external
+   foundational ontologies:
+   - bridge/gufo - alignment to gUFO (Unified Foundational Ontology)
+   - bridge/case - alignment to CASE (Cyber-investigation Analysis Standard Expression)
+   - bridge/uco  - alignment to UCO (Unified Cyber Ontology)
+
+3. Domain Modules (35+): Specialized modules organized into six areas:
+   - Core Framework: core, hotlines, us-ncmec
+   - International: international, training, prevention, legal-harmonization
+   - Criminal Activities: production, custodial, grooming, sextortion, ai-csam, etc.
+   - Investigation: undercover, physical-evidence, tactical, multi-jurisdiction, etc.
+   - Technical: forensics, detection, platforms, street-recruitment, etc.
+   - Victim/Legal: victim-impact, taskforce, legal-outcomes, sex-offender-registry, etc.
+
+Each domain module has a corresponding SHACL shapes module for validation.
+
+## How to find entity documentation
+Entity pages follow predictable URL patterns:
+
+- Classes: https://cacontology.projectvic.org/class-<slug>.html
+- Properties: https://cacontology.projectvic.org/prop-<slug>.html
+- Shapes: https://cacontology.projectvic.org/shape-<slug>.html
+- Concepts: https://cacontology.projectvic.org/concept-<slug>.html
+
+The <slug> is the lowercase concatenation of the namespace prefix and local name.
+Example: The property `forensics#priorityClassification` has the URL:
+  https://cacontology.projectvic.org/prop-cacontology-forensicspriorityclassification.html
+
+## Key navigation pages (recommended starting points)
+- Entities A-Z: https://cacontology.projectvic.org/entities-az.html
+- Classes tree: https://cacontology.projectvic.org/entities-tree-classes.html
+- Properties tree: https://cacontology.projectvic.org/entities-tree-properties.html
+- Shapes tree: https://cacontology.projectvic.org/entities-tree-shapes.html
+- Concepts tree: https://cacontology.projectvic.org/entities-tree-concepts.html
+- Statistics: https://cacontology.projectvic.org/statistics.html
+
+## Machine-friendly artifacts (recommended for bulk lookup)
+- Sitemap: https://cacontology.projectvic.org/sitemap.xml
+- Entity index (JSONL): https://cacontology.projectvic.org/entities.jsonl
+- Merged ontology (Turtle): https://cacontology.projectvic.org/cacontology.ttl
+- Merged ontology (Turtle, gzipped): https://cacontology.projectvic.org/cacontology.ttl.gz
+
+## Entity index format (entities.jsonl)
+Each line is a JSON object with:
+- iri: Full IRI of the entity
+- type: Class, Property, Concept, or Shape
+- label: Human-readable label
+- comment: Description/definition
+- doc_url: Direct URL to the documentation page
+
+## Namespace structure
+- Base namespace: https://cacontology.projectvic.org# (prefix: cacontology:)
+- Spine namespace: https://cacontology.projectvic.org/core# (prefix: cac-core:)
+- Module namespaces: https://cacontology.projectvic.org/{module-name}#
+
+## Notes
+- Canonical ontology IRIs use hash fragments (e.g., .../forensics#priorityClassification).
+- For human-readable docs, use the HTML pages above.
+- The sitemap lists all available HTML documentation pages.

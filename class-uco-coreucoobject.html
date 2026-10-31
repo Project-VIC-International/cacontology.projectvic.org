@@ -1,0 +1,403 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="static/custom/favicon.ico">
+		<title>Ontospy > RDF knowledge graph (97 ontologies)</title>
+    <link href="static/libs/bootswatch3_2/simplex/bootstrap.min.css" rel="stylesheet">
+    <link href="static/custom/css/simple-sidebar.css" rel="stylesheet">
+    <link href="static/custom/css/familytree.css" rel="stylesheet">
+    <link href="static/custom/css/tabletree.css" rel="stylesheet">
+    <link href="static/libs/bootstrap-3_3_7-dist/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+    <link href="static/custom/css/sticky-footer-navbar.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+<link rel="stylesheet" href="static/shared/common.css">
+  </head>
+  <body>
+                <div style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; padding: 8px 20px; font-size: 14px; color: #6c757d; text-align: right;">
+                    Ontology Version: <strong>3.1.0</strong>
+                </div>
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" id="menu-toggle" title="Toggle sidebar">
+        <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+      </a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li ><a href="index.html"><code style="font-size: 115%;">RDF knowledge graph (97 ontologies)</code></a></li>
+        <li  ><a href="entities-az.html">Entities A-Z</a></li>
+        <li ><a href="entities-tree-classes.html">Classes</a></li>
+        <li ><a href="entities-tree-properties.html">Properties</a></li>
+        <li ><a href="entities-tree-concepts.html">SKOS</a></li>
+        <li ><a href="entities-tree-shapes.html">Shapes</a></li>
+        <li  ><a href="statistics.html">Statistics</a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+<div id="wrapper" class="toggled">
+<div id="sidebar-wrapper">
+    <ul class="sidebar-nav" id="sidebar-list" data-thispage="uco-core:UcoObject">
+        <li>
+          <input style="margin-top: 30px;  margin-bottom: 20px;" type="text" id="search-input-sidebar" name="" value="" placeholder="Type to search">
+        </li>
+          <li class="-second-level sidebar-section" id="sd_classes" data-section="classes"><a href="entities-tree-classes.html">Classes (2209)</a>
+          </li>
+          <li class="-second-level sidebar-section" id="sd_properties" data-section="properties"><a href="entities-tree-properties.html">Properties (2527)</a>
+          </li>
+          <li class="-second-level sidebar-section" id="sd_concepts" data-section="concepts"><a href="entities-tree-concepts.html">Concepts (21)</a>
+          </li>
+        <li style="height: 140px;"></li>
+    </ul>
+</div>
+<script src="sidebar.js"></script>
+<script type="text/javascript">
+  // build the entries of each section from SIDEBAR (sidebar.js): [id, title, page, qname],
+  // the qname left out when it is the title; the entry of this page is highlighted
+  (function() {
+    var data = window.SIDEBAR;
+    var list = document.getElementById("sidebar-list");
+    if (!data || !list) return;
+    var thispage = list.getAttribute("data-thispage");
+    var escape = function(s) {
+      return String(s).replace(/[&<>"']/g, function(c) {
+        return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c];
+      });
+    };
+    list.querySelectorAll("li.sidebar-section").forEach(function(header) {
+      var items = data[header.getAttribute("data-section")] || [];
+      var html = items.map(function(e) {
+        var active = (e[3] || e[1]) === thispage;
+        return '<li class="second-level" style="line-height: 20px;" id="sd_' + e[0] + '">' +
+          '<a ' + (active ? 'class="active" ' : '') + 'href="' + e[2] + '.html">' + escape(e[1]) + '</a></li>';
+      }).join("");
+      header.insertAdjacentHTML("afterend", html);
+    });
+    // scroll the sidebar to the entry of this page, or to the section of a tree page
+    var active = list.querySelector("li.second-level a.active") || list.querySelector("li.sidebar-section a.active");
+    var wrapper = document.getElementById("sidebar-wrapper");
+    if (active && wrapper) {
+      wrapper.scrollTop = active.parentNode.offsetTop - 100;
+    }
+  })();
+</script>
+    <div class="container" id="page-content-wrapper">
+  <ol class="breadcrumb">
+    <li>
+      <a href="index.html">Home</a>
+    </li>
+    <li>
+          <a href="entities-az.html">Entities</a>
+    </li>
+    <li>
+          <a href="entities-tree-classes.html">Classes</a>
+    </li>
+      <li class="active">
+            uco-core:UcoObject
+        </li>
+  </ol>
+    <h1>
+      uco-core:UcoObject
+    </h1>
+    <hr>
+    <div class="tree-container">
+      <div class="tree">
+        <ul>
+            <li><a href="entities-tree-classes.html">owl:Thing</a>
+              <ul>
+                <li><a style="font-weight: bold;" title="'UcoObject'">uco-core:UcoObject</a>
+                    <ul>
+                        <li><a href="class-cacontology-strangervictimtargetingpattern.html" title="'Victim Targeting Pattern' - Patterns of victim selection and targeting in stranger abduction cases.">cacontology-stranger:VictimTargetingPattern</a></li>
+                        <li><a href="class-cacontology-analystexposuremitigationmeasure.html" title="'Exposure Mitigation Measure' - A measure, control, or workflow technique used to reduce human exposure to traumatic content while enabling effective review and classification..">cacontology-analyst:ExposureMitigationMeasure</a></li>
+                        <li><a href="class-cacontology-casecaseassignment.html" title="'Case Assignment' - Assignment of personnel and resources to specific cases with defined roles and responsibilities. Enhanced as gUFO Event linking to gUFO..">cacontology-case:CaseAssignment</a></li>
+                        <li><a href="class-cacontology-casecasedocumentation.html" title="'Case Documentation' - Comprehensive documentation management for case files, reports, evidence logs, and legal documents. Enhanced as gUFO Object for document management.">cacontology-case:CaseDocumentation</a></li>
+                        <li><a href="class-cacontology-casecasemanagement.html" title="'Case Management' - Comprehensive management framework for CAC cases including status tracking, priority assignment, and resource allocation. Enhanced as gUFO Object for comprehensive..">cacontology-case:CaseManagement</a></li>
+                        <li><a href="class-cacontology-casecasemetrics.html" title="'Case Metrics' - Performance metrics and analytics for case management including duration, resolution rates, and resource utilization. Enhanced as gUFO Object for metric..">cacontology-case:CaseMetrics</a></li>
+                        <li><a href="class-cacontology-casecasetracking.html" title="'Case Tracking' - Systematic tracking of case progress, updates, and status changes across multiple systems and jurisdictions. Enhanced as gUFO Object for systematic..">cacontology-case:CaseTracking</a></li>
+                        <li><a href="class-cac-coreenduringentity.html" title="'Enduring Entity' - A thing that persists through time while potentially changing state. This is the CAC-facing root for all object-like entities including..">cac-core:EnduringEntity</a></li>
+                        <li><a href="class-cacontology-educationalclassroomexploitationcontext.html" title="'Classroom Exploitation Context' - Specific classroom situations and contexts where exploitation occurs. Enhanced as gUFO Object for context modeling.">cacontology-educational:ClassroomExploitationContext</a></li>
+                        <li><a href="class-cacontology-enterprisesalternateaccountsystem.html" title="'Alternate Account System' - System of alternate accounts (alts) used to evade platform restrictions and maintain operations.">cacontology-enterprises:AlternateAccountSystem</a></li>
+                        <li><a href="class-cacontology-enterprisescontentcompilationsystem.html" title="'Content Compilation System' - System for compiling, editing, and organizing exploitative content within criminal enterprise.">cacontology-enterprises:ContentCompilationSystem</a></li>
+                        <li><a href="class-cacontology-enterprisescontentcurrencysystem.html" title="'Content Currency System' - System using exploitative content as valuable currency within criminal enterprise for advancement and access.">cacontology-enterprises:ContentCurrencySystem</a></li>
+                        <li><a href="class-cacontology-enterprisesenterprisehierarchy.html" title="'Enterprise Hierarchy' - Organizational hierarchy within child exploitation enterprise defining leadership and member roles.">cacontology-enterprises:EnterpriseHierarchy</a></li>
+                        <li><a href="class-cacontology-groomingvictimvulnerability.html" title="'Victim Vulnerability' - Characteristics or circumstances that make a child more susceptible to grooming.">cacontology-grooming:VictimVulnerability</a></li>
+                        <li><a href="class-cacontology-internationalcrossbordereffectiveness.html" title="'Cross-Border Effectiveness' - Effectiveness measurement for cross-border operations.">cacontology-international:CrossBorderEffectiveness</a></li>
+                        <li><a href="class-cacontology-internationalcrossreferralprotocol.html" title="'Cross-Referral Protocol' - Protocol for referring reports between national hotlines.">cacontology-international:CrossReferralProtocol</a></li>
+                        <li><a href="class-cacontology-internationaldataexchangeprotocol.html" title="'Data Exchange Protocol' - Technical protocol for secure data exchange between international partners.">cacontology-international:DataExchangeProtocol</a></li>
+                        <li><a href="class-cacontology-internationalextraditionagreement.html" title="'Extradition Agreement' - Agreement for extraditing suspects between countries.">cacontology-international:ExtraditionAgreement</a></li>
+                        <li><a href="class-cacontology-internationalglobalcasetracking.html" title="'Global Case Tracking' - System for tracking cases across multiple jurisdictions.">cacontology-international:GlobalCaseTracking</a></li>
+                        <li><a href="class-cacontology-internationalglobalhotlinenetwork.html" title="'Global Hotline Network' - Network of interconnected national hotlines for child protection reporting.">cacontology-international:GlobalHotlineNetwork</a></li>
+                        <li><a href="class-cacontology-internationalglobalmissingchildrencenter.html" title="'Global Missing Children Center' - International coordination center for missing children cases across borders.">cacontology-international:GlobalMissingChildrenCenter</a></li>
+                        <li><a href="class-cacontology-internationalglobalreach.html" title="'Global Reach' - Measurement of international coverage and impact.">cacontology-international:GlobalReach</a></li>
+                        <li><a href="class-cacontology-internationalinformationsharingagreement.html" title="'Information Sharing Agreement' - Formal agreement governing information sharing between countries.">cacontology-international:InformationSharingAgreement</a></li>
+                        <li><a href="class-cacontology-internationalinternationaldatabase.html" title="'International Database' - Shared database accessible by multiple countries for child protection.">cacontology-international:InternationalDatabase</a></li>
+                        <li><a href="class-cacontology-internationalinternationalimpact.html" title="'International Impact' - Assessment of international program effectiveness.">cacontology-international:InternationalImpact</a></li>
+                        <li><a href="class-cacontology-internationalinternationalpartnership.html" title="'International Partnership' - A formal partnership between countries or organizations for child protection cooperation.">cacontology-international:InternationalPartnership</a></li>
+                        <li><a href="class-cacontology-internationalinternationaltaskforce.html" title="'International Task Force' - Multi-national task force for coordinating child protection investigations.">cacontology-international:InternationalTaskForce</a></li>
+                        <li><a href="class-cacontology-internationalinternationalwarrant.html" title="'International Warrant' - Warrant recognized across multiple jurisdictions.">cacontology-international:InternationalWarrant</a></li>
+                        <li><a href="class-cacontology-internationaljurisdictionalcoordination.html" title="'Jurisdictional Coordination' - Coordination mechanism for resolving jurisdictional conflicts.">cacontology-international:JurisdictionalCoordination</a></li>
+                        <li><a href="class-cacontology-internationalmultilingualsupport.html" title="'Multilingual Support' - Support for multiple languages in international coordination.">cacontology-international:MultilingualSupport</a></li>
+                        <li><a href="class-cacontology-internationalmutuallegalassistance.html" title="'Mutual Legal Assistance' - Formal legal assistance between countries for investigations and prosecutions.">cacontology-international:MutualLegalAssistance</a></li>
+                        <li><a href="class-cacontology-internationalsecurechannel.html" title="'Secure Communication Channel' - Secure communication mechanism for international coordination.">cacontology-international:SecureChannel</a></li>
+                        <li><a href="class-cacontology-coordcommunicationprotocol.html" title="'Communication Protocol' - Formal protocols governing communication between agencies including channels, frequencies, and procedures.">cacontology-coord:CommunicationProtocol</a></li>
+                        <li><a href="class-cacontology-coordcoordinationagreement.html" title="'Coordination Agreement' - Formal agreements governing coordination between agencies including MOUs, MOAs, and operational agreements.">cacontology-coord:CoordinationAgreement</a></li>
+                        <li><a href="class-cacontology-coordcoordinationmetrics.html" title="'Coordination Metrics' - Performance metrics for measuring effectiveness and efficiency of inter-agency coordination.">cacontology-coord:CoordinationMetrics</a></li>
+                        <li><a href="class-cacontology-legalageverificationlaw.html" title="'Age Verification Law' - Laws requiring age verification for online services.">cacontology-legal:AgeVerificationLaw</a></li>
+                        <li><a href="class-cacontology-legalbestpractice.html" title="'Legal Best Practice' - Best practice in child protection legislation.">cacontology-legal:BestPractice</a></li>
+                        <li><a href="class-cacontology-legalcsamcriminalization.html" title="'CSAM Criminalization' - Legislation criminalizing child sexual abuse material.">cacontology-legal:CSAMCriminalization</a></li>
+                        <li><a href="class-cacontology-legalcsammodellaw.html" title="'CSAM Model Law' - Model legislation for Child Sexual Abuse Material regulations.">cacontology-legal:CSAMModelLaw</a></li>
+                        <li><a href="class-cacontology-legalchildexploitationlaw.html" title="'Child Exploitation Law' - Laws addressing child exploitation.">cacontology-legal:ChildExploitationLaw</a></li>
+                        <li><a href="class-cacontology-legalchildtraffickinglaw.html" title="'Child Trafficking Law' - Legislation addressing child trafficking crimes.">cacontology-legal:ChildTraffickingLaw</a></li>
+                        <li><a href="class-cacontology-legalcompliancebenchmark.html" title="'Compliance Benchmark' - Benchmark for measuring legal compliance.">cacontology-legal:ComplianceBenchmark</a></li>
+                        <li><a href="class-cacontology-legalcompliancedocumentationartifact.html" title="'Compliance Documentation Artifact' - Documentation artifact (record/report/audit trail element) used to prove appropriate action to regulators and support claims of good-faith compliance.">cacontology-legal:ComplianceDocumentationArtifact</a></li>
+                        <li><a href="class-cacontology-legalcomplianceintelligenceframework.html" title="'Compliance Intelligence Framework' - A verified compliance intelligence framework used to document good-faith content moderation and reporting efforts (beyond simple detection) and support risk-stratified..">cacontology-legal:ComplianceIntelligenceFramework</a></li>
+                        <li><a href="class-cacontology-legalcompliancemetrics.html" title="'Compliance Metrics' - Metrics for measuring legal compliance.">cacontology-legal:ComplianceMetrics</a></li>
+                        <li><a href="class-cacontology-legaldataprotectionforminorslaw.html" title="'Data Protection for Minors Law' - Laws protecting children&#39;s personal data.">cacontology-legal:DataProtectionForMinorsLaw</a></li>
+                        <li><a href="class-cacontology-legalextraditionagreement.html" title="'Extradition Agreement' - Agreement enabling extradition for child protection crimes.">cacontology-legal:ExtraditionAgreement</a></li>
+                        <li><a href="class-cacontology-legalgloballegalreview.html" title="'Global Legal Review' - Comprehensive review of child protection legislation across countries.">cacontology-legal:GlobalLegalReview</a></li>
+                        <li><a href="class-cacontology-legalharmonizationprogress.html" title="'Harmonization Progress' - Progress measurement for policy harmonization.">cacontology-legal:HarmonizationProgress</a></li>
+                        <li><a href="class-cacontology-legalinternationalstandard.html" title="'International Standard' - International standard for child protection legislation.">cacontology-legal:InternationalStandard</a></li>
+                        <li><a href="class-cacontology-legaljurisdictionalcoordination.html" title="'Jurisdictional Coordination' - Framework for coordinating across legal jurisdictions.">cacontology-legal:JurisdictionalCoordination</a></li>
+                        <li><a href="class-cacontology-legaljurisdictionalvariation.html" title="'Jurisdictional Variation' - Variation in legal approaches across jurisdictions.">cacontology-legal:JurisdictionalVariation</a></li>
+                        <li><a href="class-cacontology-legallegalcompliance.html" title="'Legal Compliance' - Situation of compliance with international standards.">cacontology-legal:LegalCompliance</a></li>
+                        <li><a href="class-cacontology-legallegalcoverageassessment.html" title="'Legal Coverage Assessment' - Assessment of legal coverage for child protection.">cacontology-legal:LegalCoverageAssessment</a></li>
+                        <li><a href="class-cacontology-legallegaleffectiveness.html" title="'Legal Effectiveness' - Assessment of legal framework effectiveness.">cacontology-legal:LegalEffectiveness</a></li>
+                        <li><a href="class-cacontology-legallegalframeworkgap.html" title="'Legal Framework Gap' - Identified gap in legal framework coverage.">cacontology-legal:LegalFrameworkGap</a></li>
+                        <li><a href="class-cacontology-legallegalsystemcompatibility.html" title="'Legal System Compatibility' - Compatibility situation between different legal systems.">cacontology-legal:LegalSystemCompatibility</a></li>
+                        <li><a href="class-cacontology-legallegislativeassessment.html" title="'Legislative Assessment' - Assessment of existing child protection legislation.">cacontology-legal:LegislativeAssessment</a></li>
+                        <li><a href="class-cacontology-legalmandatoryreportinglaw.html" title="'Mandatory Reporting Law' - Legislation requiring mandatory reporting of child abuse.">cacontology-legal:MandatoryReportingLaw</a></li>
+                        <li><a href="class-cacontology-legalminimumstandard.html" title="'Minimum Standard' - Minimum standard for child protection laws.">cacontology-legal:MinimumStandard</a></li>
+                        <li><a href="class-cacontology-legalmutuallegalassistance.html" title="'Mutual Legal Assistance' - Framework for mutual legal assistance between countries.">cacontology-legal:MutualLegalAssistance</a></li>
+                        <li><a href="class-cacontology-legalnationallegislation.html" title="'National Legislation' - National child protection legislation.">cacontology-legal:NationalLegislation</a></li>
+                        <li><a href="class-cacontology-legalonlinegroominglaw.html" title="'Online Grooming Law' - Legislation addressing online grooming behaviors.">cacontology-legal:OnlineGroomingLaw</a></li>
+                        <li><a href="class-cacontology-legalonlinesafetylaw.html" title="'Online Safety Law' - General laws addressing online child safety.">cacontology-legal:OnlineSafetyLaw</a></li>
+                        <li><a href="class-cacontology-legalplatformaccountabilitylaw.html" title="'Platform Accountability Law' - Laws holding online platforms accountable for child safety.">cacontology-legal:PlatformAccountabilityLaw</a></li>
+                        <li><a href="class-cacontology-legalregionalframework.html" title="'Regional Framework' - Regional legal framework for child protection.">cacontology-legal:RegionalFramework</a></li>
+                        <li><a href="class-cacontology-legalsafeharbor.html" title="'Safe Harbor' - A statutory or regulatory safe harbor provision intended to distinguish good-faith compliance efforts from negligence (e.g., incentives for verified compliance..">cacontology-legal:SafeHarbor</a></li>
+                        <li><a href="class-cacontology-legalsextortionlaw.html" title="'Sextortion Law' - Laws addressing sextortion of children.">cacontology-legal:SextortionLaw</a></li>
+                        <li><a href="class-cacontology-legaltreatyframework.html" title="'Treaty Framework' - International treaty framework for child protection.">cacontology-legal:TreatyFramework</a></li>
+                        <li><a href="class-cacontology-legalvictimprotectionlaw.html" title="'Victim Protection Law' - Legislation protecting child victims.">cacontology-legal:VictimProtectionLaw</a></li>
+                        <li><a href="class-cacontology-multicrossstateevidence.html" title="'Cross-State Evidence' - Evidence collected across multiple states in trafficking investigation.">cacontology-multi:CrossStateEvidence</a></li>
+                        <li><a href="class-cacontology-multifederaljurisdictiontrigger.html" title="'Federal Jurisdiction Trigger' - Interstate activity that triggers federal jurisdiction.">cacontology-multi:FederalJurisdictionTrigger</a></li>
+                        <li><a href="class-cacontology-multiinterstatetraffickingnetwork.html" title="'Interstate Trafficking Network' - Criminal network operating across state boundaries for trafficking.">cacontology-multi:InterstateTraffickingNetwork</a></li>
+                        <li><a href="class-cacontology-multijurisdiction.html" title="'Jurisdiction' - Legal authority and geographic area where an agency has enforcement power.">cacontology-multi:Jurisdiction</a></li>
+                        <li><a href="class-cacontology-multioperationmetricstracking.html" title="'Operation Metrics Tracking' - Comprehensive tracking of operation outcomes and effectiveness.">cacontology-multi:OperationMetricsTracking</a></li>
+                        <li><a href="class-cacontology-multiregistrationcomplianceviolation.html" title="'Registration Compliance Violation' - Violation of sex offender registration requirements.">cacontology-multi:RegistrationComplianceViolation</a></li>
+                        <li><a href="class-cacontology-partnershipsinformationsharingframework.html" title="'Information Sharing Framework' - Framework governing how information is shared between public and private partners while protecting privacy and investigation integrity. Modeled as gUFO..">cacontology-partnerships:InformationSharingFramework</a></li>
+                        <li><a href="class-cacontology-partnershipspublicprivatepartnership.html" title="'Public-Private Partnership' - Formal partnership between government/law enforcement agencies and private sector organizations for child protection initiatives. Modeled as gUFO Organization.">cacontology-partnerships:PublicPrivatePartnership</a></li>
+                        <li><a href="class-cacontology-platformsanonymityprotectionlevel.html" title="'Anonymity Protection Level' - Level of anonymity protection provided by platform features and policies.">cacontology-platforms:AnonymityProtectionLevel</a></li>
+                        <li><a href="class-cacontology-platformsanonymouscontactopportunity.html" title="'Anonymous Contact Opportunity' - Opportunities provided by platform for anonymous users to initiate contact with other users.">cacontology-platforms:AnonymousContactOpportunity</a></li>
+                        <li><a href="class-cacontology-platformscontentmoderationcapability.html" title="'Content Moderation Capability' - The ability and methods a platform uses to detect, review, and remove inappropriate content. Modeled as gUFO Object.">cacontology-platforms:ContentModerationCapability</a></li>
+                        <li><a href="class-cacontology-platformscontentmoderationqueue.html" title="'Content Moderation Queue' - A queue/backlog of content items awaiting moderation review and operational handling at scale (e.g., large volumes of flagged CSAM candidates).">cacontology-platforms:ContentModerationQueue</a></li>
+                        <li><a href="class-cacontology-platformsdataretentionpolicy.html" title="'Data Retention Policy' - A platform&#39;s policy for how long they retain user data and content. Modeled as gUFO Object.">cacontology-platforms:DataRetentionPolicy</a></li>
+                        <li><a href="class-cacontology-platformsdevicesocialmediacorrelation.html" title="'Device Social Media Correlation' - Correlation between evidence found on devices and social media accounts.">cacontology-platforms:DeviceSocialMediaCorrelation</a></li>
+                        <li><a href="class-cacontology-platformsidentitydisclosurepolicy.html" title="'Identity Disclosure Policy' - Platform policy regarding when and how user identities may be disclosed to other users or authorities.">cacontology-platforms:IdentityDisclosurePolicy</a></li>
+                        <li><a href="class-cacontology-platformslegalcompliancecapability.html" title="'Legal Compliance Capability' - A platform&#39;s ability to respond to legal requests and cooperate with law enforcement. Modeled as gUFO Object.">cacontology-platforms:LegalComplianceCapability</a></li>
+                        <li><a href="class-cacontology-platformsminimalverificationrequirement.html" title="'Minimal Verification Requirement' - Verification requirements that are easily bypassed or minimal (email only, no identity check).">cacontology-platforms:MinimalVerificationRequirement</a></li>
+                        <li><a href="class-cacontology-platformsmoderationthroughputmetrics.html" title="'Moderation Throughput Metrics' - Operational metrics describing moderation throughput and latency (e.g., queue size, review latency, flagged volume).">cacontology-platforms:ModerationThroughputMetrics</a></li>
+                        <li><a href="class-cacontology-platformsplatformaffordance.html" title="'Platform Affordance' - A platform capability that offenders may misuse to advance an offense trajectory (anonymity, ephemerality, unmonitored communication, etc.).">cacontology-platforms:PlatformAffordance</a></li>
+                        <li><a href="class-cacontology-platformsuserriskclassification.html" title="'User Risk Classification' - Automated classification of user risk levels based on platform activity patterns, content sharing, and behavioral indicators. Modeled as gUFO Object.">cacontology-platforms:UserRiskClassification</a></li>
+                        <li><a href="class-cacontology-platformsuserscaleclassification.html" title="'User Scale Classification' - Classification system for platform size based on user base: small (&lt;1K), medium (1K-100K), large (100K-1M), massive (1M+). Modeled as gUFO..">cacontology-platforms:UserScaleClassification</a></li>
+                        <li><a href="class-cacontology-platformsuserverificationsystem.html" title="'User Verification System' - Systems used by platforms to verify user identity and age. Modeled as gUFO Object.">cacontology-platforms:UserVerificationSystem</a></li>
+                        <li><a href="class-cacontology-preventionarchivepublicationsystem.html" title="'Archive Publication System' - Knowledge repository system providing access to archived educational publications and historical safety information.">cacontology-prevention:ArchivePublicationSystem</a></li>
+                        <li><a href="class-cacontology-preventioncommunityemaillist.html" title="'Community Email List' - Organized email communication system for ongoing safety updates to parents and community members.">cacontology-prevention:CommunityEmailList</a></li>
+                        <li><a href="class-cacontology-preventioncoursecompletiontracking.html" title="'Course Completion Tracking' - System for tracking participant progress and completion rates in interactive safety courses.">cacontology-prevention:CourseCompletionTracking</a></li>
+                        <li><a href="class-cacontology-preventioneducationplatformintegration.html" title="'Education Platform Integration' - Integration capabilities between different educational delivery platforms and content management systems.">cacontology-prevention:EducationPlatformIntegration</a></li>
+                        <li><a href="class-cacontology-preventioneducationportal.html" title="'Education Portal' - Online portal providing educational resources for child protection. Modeled as gUFO Object.">cacontology-prevention:EducationPortal</a></li>
+                        <li><a href="class-cacontology-preventioneducationalresource.html" title="'Educational Resource' - Resource designed for educational purposes in child protection.">cacontology-prevention:EducationalResource</a></li>
+                        <li><a href="class-cacontology-preventionfaqknowledgebase.html" title="'FAQ Knowledge Base' - Structured question and answer system for Internet Crimes Against Children frequently asked questions.">cacontology-prevention:FAQKnowledgeBase</a></li>
+                        <li><a href="class-cacontology-preventionpreventioncurriculum.html" title="'Prevention Curriculum' - Structured curriculum for prevention education.">cacontology-prevention:PreventionCurriculum</a></li>
+                        <li><a href="class-cacontology-preventionpreventionmetrics.html" title="'Prevention Metrics' - Metrics for measuring prevention program effectiveness.">cacontology-prevention:PreventionMetrics</a></li>
+                        <li><a href="class-cacontology-preventionqrcodeintegration.html" title="'QR Code Integration' - QR code system for discreet access to prevention information.">cacontology-prevention:QRCodeIntegration</a></li>
+                        <li><a href="class-cacontology-preventionriskassessmenttool.html" title="'Risk Assessment Tool' - Tool for assessing risks to child safety.">cacontology-prevention:RiskAssessmentTool</a></li>
+                        <li><a href="class-cacontology-preventionsafetyprotocol.html" title="'Safety Protocol' - Protocol designed to ensure child safety in various settings.">cacontology-prevention:SafetyProtocol</a></li>
+                        <li><a href="class-cacontology-preventionschoolallegationprotocol.html" title="'School Allegation Protocol' - Protocol for managing allegations of abuse in school settings. Modeled as gUFO Object.">cacontology-prevention:SchoolAllegationProtocol</a></li>
+                        <li><a href="class-cacontology-preventionschoolpolicy.html" title="'School Policy' - Policy governing child protection in schools.">cacontology-prevention:SchoolPolicy</a></li>
+                        <li><a href="class-cacontology-preventionsextortionwarningsign.html" title="'Sextortion Warning Sign' - Identifiable warning signs of sextortion activities.">cacontology-prevention:SextortionWarningSign</a></li>
+                        <li><a href="class-cacontology-recantationrecantationriskfactor.html" title="'Recantation Risk Factor' - A factor correlated with increased likelihood of post-disclosure denial or recantation.">cacontology-recantation:RecantationRiskFactor</a></li>
+                        <li><a href="class-cacontology-recantationvictimstatement.html" title="'Victim Statement' - A statement or account by a child victim concerning abuse, disclosure, denial, or recantation. Modeled as a gUFO Object to..">cacontology-recantation:VictimStatement</a></li>
+                        <li><a href="class-cacontology-recruitmentpeerrecruitmentnetwork.html" title="'Peer Recruitment Network' - Network of traffickers utilizing existing victims to recruit new victims through peer relationships and social connections.">cacontology-recruitment:PeerRecruitmentNetwork</a></li>
+                        <li><a href="class-cacontology-recruitmentrecruitmenttiming.html" title="'Recruitment Timing' - Temporal patterns and timing of recruitment activities within educational environments.">cacontology-recruitment:RecruitmentTiming</a></li>
+                        <li><a href="class-cacontology-recruitmentschoolvulnerabilityfactor.html" title="'School Vulnerability Factor' - Factors within educational environment that increase vulnerability to recruitment.">cacontology-recruitment:SchoolVulnerabilityFactor</a></li>
+                        <li><a href="class-cacontology-registryaddresshistory.html" title="'Address History' - Historical record of registered addresses.">cacontology-registry:AddressHistory</a></li>
+                        <li><a href="class-cacontology-registryageawareexploitation.html" title="'Age Aware Exploitation' - Exploitation where offender explicitly acknowledges victim&#39;s minor status but continues criminal activity.">cacontology-registry:AgeAwareExploitation</a></li>
+                        <li><a href="class-cacontology-registrybidirectionalcontentexchange.html" title="'Bidirectional Content Exchange' - Exchange where offender both sends explicit content to victim and solicits/receives explicit content from victim.">cacontology-registry:BidirectionalContentExchange</a></li>
+                        <li><a href="class-cacontology-registrycompliancehistory.html" title="'Compliance History' - History of compliance with registration requirements.">cacontology-registry:ComplianceHistory</a></li>
+                        <li><a href="class-cacontology-registrycomplianceviolation.html" title="'Compliance Violation' - Violation of sex offender registration requirements.">cacontology-registry:ComplianceViolation</a></li>
+                        <li><a href="class-cacontology-registryconvictingoffense.html" title="'Convicting Offense' - Criminal offense that resulted in sex offender registration requirement.">cacontology-registry:ConvictingOffense</a></li>
+                        <li><a href="class-cacontology-registrycrossstatedigitalinvestigation.html" title="'Cross State Digital Investigation' - Investigation involving registered sex offender targeting victims across state boundaries using digital platforms.">cacontology-registry:CrossStateDigitalInvestigation</a></li>
+                        <li><a href="class-cacontology-registrycrossstaterecidivism.html" title="'Cross State Recidivism' - Pattern of recidivism involving offenses across state boundaries.">cacontology-registry:CrossStateRecidivism</a></li>
+                        <li><a href="class-cacontology-registrydigitalrecidivismpattern.html" title="'Digital Recidivism Pattern' - Pattern of repeat sexual offenses using digital communication platforms.">cacontology-registry:DigitalRecidivismPattern</a></li>
+                        <li><a href="class-cacontology-registryeducationinformation.html" title="'Education Information' - Educational enrollment information for registered sex offender.">cacontology-registry:EducationInformation</a></li>
+                        <li><a href="class-cacontology-registryemploymentinformation.html" title="'Employment Information' - Current employment information for registered sex offender.">cacontology-registry:EmploymentInformation</a></li>
+                        <li><a href="class-cacontology-registryhighvolumedigitalexploitation.html" title="'High Volume Digital Exploitation' - Digital exploitation involving thousands of messages or communications over extended period.">cacontology-registry:HighVolumeDigitalExploitation</a></li>
+                        <li><a href="class-cacontology-registryidentifyingmark.html" title="'Identifying Mark' - Distinctive physical mark (scar, tattoo, birthmark) for identification.">cacontology-registry:IdentifyingMark</a></li>
+                        <li><a href="class-cacontology-registryinternetinformation.html" title="'Internet Information' - Internet-related information for registered sex offender.">cacontology-registry:InternetInformation</a></li>
+                        <li><a href="class-cacontology-registrynotificationtier.html" title="'Notification Tier' - Classification tier determining level of community notification required.">cacontology-registry:NotificationTier</a></li>
+                        <li><a href="class-cacontology-registryoffenderprofile.html" title="'Offender Profile' - Comprehensive profile of registered sex offender including all required information.">cacontology-registry:OffenderProfile</a></li>
+                        <li><a href="class-cacontology-registryoffenseclassification.html" title="'Offense Classification' - Classification of sexual offense (felony/misdemeanor, degree, special categories).">cacontology-registry:OffenseClassification</a></li>
+                        <li><a href="class-cacontology-registrypersonalidentifiers.html" title="'Personal Identifiers' - Collection of identifiers for registered sex offender (SSN, DOB, aliases, etc.).">cacontology-registry:PersonalIdentifiers</a></li>
+                        <li><a href="class-cacontology-registryphysicaldescription.html" title="'Physical Description' - Physical description of registered sex offender (height, weight, scars, tattoos).">cacontology-registry:PhysicalDescription</a></li>
+                        <li><a href="class-cacontology-registryregistrationalert.html" title="'Registration Alert' - Alert generated by registry system (non-compliance, address change, etc.).">cacontology-registry:RegistrationAlert</a></li>
+                        <li><a href="class-cacontology-registryregistrationrecord.html" title="'Registration Record' - Official record of sex offender registration including all required data elements.">cacontology-registry:RegistrationRecord</a></li>
+                        <li><a href="class-cacontology-registryregistrationrequirement.html" title="'Registration Requirement' - Specific requirement for sex offender registration (location, frequency, restrictions).">cacontology-registry:RegistrationRequirement</a></li>
+                        <li><a href="class-cacontology-registryregistrationrestriction.html" title="'Registration Restriction' - Restriction placed on registered sex offender.">cacontology-registry:RegistrationRestriction</a></li>
+                        <li><a href="class-cacontology-registryregistrationstatus.html" title="'Registration Status' - Current status of sex offender registration (active, inactive, non-compliant, etc.).">cacontology-registry:RegistrationStatus</a></li>
+                        <li><a href="class-cacontology-registryregistrysystem.html" title="'Registry System' - Information system used to manage sex offender registry.">cacontology-registry:RegistrySystem</a></li>
+                        <li><a href="class-cacontology-registrysexoffenderregistry.html" title="'Sex Offender Registry' - Registry system maintaining information about registered sex offenders.">cacontology-registry:SexOffenderRegistry</a></li>
+                        <li><a href="class-cacontology-registryvictiminformation.html" title="'Victim Information' - Information about victims relevant to registration (age, relationship, count).">cacontology-registry:VictimInformation</a></li>
+                        <li><a href="class-cacontology-specializedk9detectionprogram.html" title="'K9 Detection Program' - Program utilizing trained detection dogs for CAC investigations. Modeled as gUFO Organization.">cacontology-specialized:K9DetectionProgram</a></li>
+                        <li><a href="class-cacontology-specializedk9trainingprogram.html" title="'K9 Training Program' - Training program for K9 units and handlers. Modeled as gUFO Organization.">cacontology-specialized:K9TrainingProgram</a></li>
+                        <li><a href="class-cacontology-specializedofficerwellnessprogram.html" title="'Officer Wellness Program' - Program providing mental health and wellness support to CAC officers. Modeled as gUFO Organization.">cacontology-specialized:OfficerWellnessProgram</a></li>
+                        <li><a href="class-cacontology-specializedoperationmetrics.html" title="'Operation Metrics' - Metrics and performance data for specialized operations. Modeled as gUFO Object.">cacontology-specialized:OperationMetrics</a></li>
+                        <li><a href="class-cacontology-streetvulnerabilityindicator.html" title="'Vulnerability Indicator' - Observable characteristic or behavior indicating potential trafficking vulnerability.">cacontology-street:VulnerabilityIndicator</a></li>
+                        <li><a href="class-cacontology-synthesisclaim.html" title="'Claim' - A first-class, queryable claim extracted from a report (finding, recommendation, distribution, gap, or scope constraint).">cacontology-synthesis:Claim</a></li>
+                        <li><a href="class-cacontology-synthesisinterventionlocus.html" title="'Intervention Locus' - A locus within the TF-CSEA ecosystem/offending chain that an intervention targets (e.g., grooming, payment systems).">cacontology-synthesis:InterventionLocus</a></li>
+                        <li><a href="class-cacontology-synthesisinterventionobjective.html" title="'Intervention Objective' - An objective an intervention serves (e.g., CSAM detection, improve policing effectiveness).">cacontology-synthesis:InterventionObjective</a></li>
+                        <li><a href="class-cacontology-synthesisinterventionoperation.html" title="'Intervention Operation' - A domain of operation for an intervention (e.g., online, hybrid).">cacontology-synthesis:InterventionOperation</a></li>
+                        <li><a href="class-cacontology-synthesisinterventiontype.html" title="'Intervention Type' - A category of TF-CSEA intervention (e.g., technological tools and protocols).">cacontology-synthesis:InterventionType</a></li>
+                        <li><a href="class-cacontology-synthesisoffendingchain.html" title="'Offending Chain' - A conceptual chain of activities in TF-CSEA used to locate interventions.">cacontology-synthesis:OffendingChain</a></li>
+                        <li><a href="class-cacontology-synthesisoffendingchainstage.html" title="'Offending Chain Stage' - A stage within an offending chain.">cacontology-synthesis:OffendingChainStage</a></li>
+                        <li><a href="class-cacontology-synthesisreport.html" title="'Report' - A report or publication treated as a collected source document (an intellectual work), distinct from the concrete artifact(s) that realize..">cacontology-synthesis:Report</a></li>
+                        <li><a href="class-cacontology-synthesisreportfigure.html" title="'Report Figure' - A figure within a report (e.g., PRISMA diagram, distribution charts).">cacontology-synthesis:ReportFigure</a></li>
+                        <li><a href="class-cacontology-synthesisreportsection.html" title="'Report Section' - A logical section of a report (e.g., Synopsis, Methods, Findings).">cacontology-synthesis:ReportSection</a></li>
+                        <li><a href="class-cacontology-synthesistextevidencepointer.html" title="'Text Evidence Pointer' - A resolvable pointer to a location in a text artifact (e.g., normalized.txt lines), optionally with quote and quote hash.">cacontology-synthesis:TextEvidencePointer</a></li>
+                        <li><a href="class-cacontology-tacticalcorrectionalfacility.html" title="'Correctional Facility' - Physical correctional facility where suspects are booked and held. Examples include county jails and correctional centers. Extends uco-core:UcoObject as physical..">cacontology-tactical:CorrectionalFacility</a></li>
+                        <li><a href="class-cacontology-tacticalimmigrationhold.html" title="'Immigration Hold' - Immigration detainer placed on suspect due to immigration status. Links booking to immigration enforcement coordination.">cacontology-tactical:ImmigrationHold</a></li>
+                        <li><a href="class-cacontology-tacticallocationintelligence.html" title="'Location Intelligence' - Information about the physical location of tactical operation.">cacontology-tactical:LocationIntelligence</a></li>
+                        <li><a href="class-cacontology-tacticalsuspectprofile.html" title="'Suspect Profile' - Assessment of suspect behavior, capabilities, and threat level.">cacontology-tactical:SuspectProfile</a></li>
+                        <li><a href="class-cacontology-tacticalthreatassessment.html" title="'Threat Assessment' - Evaluation of potential threats and risks in tactical situation.">cacontology-tactical:ThreatAssessment</a></li>
+                        <li><a href="class-cacontology-taskforcegovernorsofficecrimepreventionfunding.html" title="'Governor&#39;s Office Crime Prevention Funding' - State-level funding provided by Governor&#39;s Office for Crime Prevention and Policy for CAC task force operations.">cacontology-taskforce:GovernorsOfficeCrimePreventionFunding</a></li>
+                        <li><a href="class-cacontology-taskforcenationalicactaskforcedirectory.html" title="'National CAC Task Force Directory' - Comprehensive directory of all 61 CAC task forces across the United States, territories, and military branches.">cacontology-taskforce:NationalICACtaskForceDirectory</a></li>
+                        <li><a href="class-cacontology-taskforcestatelocalfundingcombination.html" title="'State Local Funding Combination' - Combined funding from state Governor&#39;s Office and federal DOJ grants for task force operations.">cacontology-taskforce:StateLocalFundingCombination</a></li>
+                        <li><a href="class-cacontology-taskforcetaskforcecontactinformation.html" title="'Task Force Contact Information' - Contact information for CAC task force including phone, email, and website.">cacontology-taskforce:TaskForceContactInformation</a></li>
+                        <li><a href="class-cacontology-taskforcetaskforcemetrics.html" title="'Task Force Metrics' - Performance metrics and statistics for CAC task force operations.">cacontology-taskforce:TaskForceMetrics</a></li>
+                        <li><a href="class-cacontology-traffickingtraffickinghierarchy.html" title="'Trafficking Hierarchy' - Organizational structure within trafficking enterprise defining roles and authority levels.">cacontology-trafficking:TraffickingHierarchy</a></li>
+                        <li><a href="class-cacontology-traffickingvictimvulnerabilityprofile.html" title="'Victim Vulnerability Profile' - Profile of factors that make individuals vulnerable to trafficking recruitment. Modeled as gUFO Object.">cacontology-trafficking:VictimVulnerabilityProfile</a></li>
+                        <li><a href="class-cacontology-trainingcapacitybuildingprogram.html" title="'Capacity Building Program' - Structured program for building organizational and individual capacity. Modeled as gUFO Organization.">cacontology-training:CapacityBuildingProgram</a></li>
+                        <li><a href="class-cacontology-trainingcompetencyassessment.html" title="'Competency Assessment' - Assessment of professional competencies acquired through training. Modeled as gUFO Object.">cacontology-training:CompetencyAssessment</a></li>
+                        <li><a href="class-cacontology-trainingprofessionalcertification.html" title="'Professional Certification' - Formal certification for child protection professionals. Modeled as gUFO Object.">cacontology-training:ProfessionalCertification</a></li>
+                        <li><a href="class-cacontology-trainingprofessionaldevelopment.html" title="'Professional Development' - Career development for child protection professionals. Modeled as gUFO Object.">cacontology-training:ProfessionalDevelopment</a></li>
+                        <li><a href="class-cacontology-trainingskillsvalidation.html" title="'Skills Validation' - Validation of skills acquired through training programs. Modeled as gUFO Object.">cacontology-training:SkillsValidation</a></li>
+                        <li><a href="class-cacontology-trainingtrainingcertificate.html" title="'Training Certificate' - Certificate awarded upon successful completion of training. Modeled as gUFO Object.">cacontology-training:TrainingCertificate</a></li>
+                        <li><a href="class-cacontology-trainingtrainingcurriculum.html" title="'Training Curriculum' - Structured curriculum for child protection training. Modeled as gUFO Object.">cacontology-training:TrainingCurriculum</a></li>
+                        <li><a href="class-cacontology-trainingtrainingmetrics.html" title="'Training Metrics' - Metrics measuring training effectiveness and reach. Modeled as gUFO Object.">cacontology-training:TrainingMetrics</a></li>
+                        <li><a href="class-cacontology-trainingtrainingmodule.html" title="'Training Module' - Individual training module covering specific topics. Modeled as gUFO Object.">cacontology-training:TrainingModule</a></li>
+                        <li><a href="class-cacontology-usa-federalchildsupportexploitationlink.html" title="'Child Support Exploitation Link' - Connection between child support violations and child exploitation crimes. Modeled as gUFO Situation.">cacontology-usa-federal:ChildSupportExploitationLink</a></li>
+                        <li><a href="class-cacontology-usa-federalfederalchildexploitationlaw.html" title="'Federal Child Exploitation Law' - U.S. federal law related to child exploitation as enforced by CEOS. Modeled as gUFO Object providing legal framework.">cacontology-usa-federal:FederalChildExploitationLaw</a></li>
+                        <li><a href="class-cacontology-usa-federalfederalobscenitylaw.html" title="'Federal Obscenity Law' - U.S. federal law related to obscenity distribution and enforcement as managed by CEOS. Modeled as gUFO Object providing legal framework.">cacontology-usa-federal:FederalObscenityLaw</a></li>
+                        <li><a href="class-cacontology-impacthelpseekingbarrier.html" title="'Help Seeking Barrier' - Factor that prevents or impedes victim from seeking help (fear, control, isolation, trauma bonding).">cacontology-impact:HelpSeekingBarrier</a></li>
+                        <li><a href="class-cacontology-impacthelpseekingfacilitator.html" title="'Help Seeking Facilitator' - Factor that enables or encourages victim to seek help (opportunity, trust, desperation, external support).">cacontology-impact:HelpSeekingFacilitator</a></li>
+                        <li><a href="class-cacontology-impactprotectiveaffirmingsupport.html" title="'Protective Affirming Support' - A protective factor representing access to affirming adults, services, shelters, school personnel, advocates, or community resources that mitigate vulnerability.">cacontology-impact:ProtectiveAffirmingSupport</a></li>
+                        <li><a href="class-cacontology-impactvulnerabilitycontext.html" title="'Vulnerability Context' - A contextual circumstance that may increase a minor&#39;s risk of exploitation or trafficking (e.g., family rejection, housing instability, coercive dependency,..">cacontology-impact:VulnerabilityContext</a></li>
+                    </ul>
+                </li>
+              </ul>
+            </li>
+        </ul>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">URI</h3>
+          </div>
+          <div class="panel-body">
+            <code>https://ontology.unifiedcyberontology.org/uco/core/UcoObject</code>
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Label</h3>
+          </div>
+          <div class="panel-body">
+            UcoObject
+          </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Usage</h3>
+            </div>
+            <div class="panel-body" style="overflow: auto;">
+              <p>Instances of uco-core:UcoObject can have the following properties:</p>
+              <noscript><p><i>The list of properties needs JavaScript.</i></p></noscript>
+            </div>
+            <table class="table table-bordered" style="overflow: auto;" id="usage-table" data-groups="2276 0">
+              <tr class="table-classproperties">
+                <th>PROPERTY</th><th>TYPE</th><th>DESCRIPTION</th><th>RANGE</th>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <script src="usage.js"></script>
+      <script src="static/custom/js/usage.js"></script>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Implementation</h3>
+          </div>
+          <div class="panel-body implementation-panel">
+              <div class="highlight"><pre><span></span><span class="k">@prefix</span><span class="w"> </span><span class="nn">cac-core:</span><span class="w"> </span><span class="nv">&lt;https://cacontology.projectvic.org/core#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">cacontology:</span><span class="w"> </span><span class="nv">&lt;https://cacontology.projectvic.org#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">cacontology-gufo:</span><span class="w"> </span><span class="nv">&lt;https://cacontology.projectvic.org/gufo#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">gufo:</span><span class="w"> </span><span class="nv">&lt;http://purl.org/nemo/gufo#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">owl:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/2002/07/owl#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">rdfs:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/2000/01/rdf-schema#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">skos:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/2004/02/skos/core#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">uco-role:</span><span class="w"> </span><span class="nv">&lt;https://ontology.unifiedcyberontology.org/uco/role/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="nn">cacontology</span><span class="p">:</span><span class="nt">VictimRole</span> <span class="kt">a</span> <span class="nn">gufo</span><span class="p">:</span><span class="nt">Role</span><span class="p">,</span>
+        <span class="nn">owl</span><span class="p">:</span><span class="nt">Class</span> <span class="p">;</span>
+    <span class="nn">rdfs</span><span class="p">:</span><span class="nt">label</span> <span class="s">"Victim Role"</span><span class="o">@</span><span class="ge">en</span> <span class="p">;</span>
+    <span class="nn">rdfs</span><span class="p">:</span><span class="nt">comment</span> <span class="s">"Role of a person who is a victim of child sexual abuse or exploitation. Modeled as anti-rigid gUFO Role. When the victim's age is known at the time of a specific event or phase, it SHOULD be captured via one or more cacontology-temporal:AgeAtTimeSituation instances linked to the underlying person."</span><span class="o">@</span><span class="ge">en</span> <span class="p">;</span>
+    <span class="nn">rdfs</span><span class="p">:</span><span class="nt">subClassOf</span> <span class="nn">cac-core</span><span class="p">:</span><span class="nt">Role</span><span class="p">,</span>
+        <span class="nn">uco-role</span><span class="p">:</span><span class="nt">VictimRole</span> <span class="p">;</span>
+    <span class="nn">skos</span><span class="p">:</span><span class="nt">exactMatch</span> <span class="nn">cacontology-gufo</span><span class="p">:</span><span class="nt">VictimRole</span> <span class="p">.</span>
+</pre></div>
+          </div>
+        </div>
+      </div>
+    </div>
+	</div><!-- /#page-content-wrapper -->
+  <footer class="footer">
+    <div class="container">
+      <p class="text-muted">Documentation automatically generated on Sat, 31 Oct 2026 02:12:12 with <a href="http://lambdamusic.github.io/Ontospy/">Ontospy</a> (v2.7)</p>
+    </div>
+  </footer>
+</div><!-- /#wrapper -->
+<!-- Bootstrap core JavaScript
+================================================== -->
+<script src="static/libs/jquery/1_12_4/jquery.min.js"></script>
+<script src="static/libs/bootstrap-3_3_7-dist/js/bootstrap.min.js" defer></script>
+<script src="static/libs/bootstrap-3_3_7-dist/js/ie10-viewport-bug-workaround.js" defer></script>
+<script src="static/libs/chartjs-2_4_0/chart.bundle.js"></script>
+  <script src="static/shared/common.js" defer></script>
+</body>
+</html>
