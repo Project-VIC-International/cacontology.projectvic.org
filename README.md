@@ -137,11 +137,11 @@ To configure the custom domain:
 | Package | Purpose | Version Constraint |
 |---------|---------|-------------------|
 | **ontospy** | Ontology documentation generator | >=2.1.1 |
-| **ontodocs** | Documentation templates | >=1.2.0 |
+| **ontodocs** | Documentation templates | >=1.2.2 |
 | **Django** | Template engine (for ontodocs) | >=3.2, <7.0 |
 | **rdflib** | RDF processing library | >=7.0.0 |
 | **robotframework** | Ontology processing | >=7.0.0 |
-| **requests** | HTTP utilities | >=2.31.0 |
+| **requests** | HTTP utilities | >=2.33.1 |
 
 > **Note**: Django is constrained to <7.0 for compatibility with ontodocs template tags.
 
@@ -177,3 +177,4 @@ If you find broken links or IRIs that don't resolve:
 ## License
 
 This documentation automation is part of the CAC Ontology project. See the main [CAC-Ontology repository](https://github.com/Project-VIC-International/CAC-Ontology) for license information.
+
