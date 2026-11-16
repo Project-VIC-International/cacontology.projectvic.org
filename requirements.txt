@@ -9,7 +9,7 @@ Django>=3.2,<7.0
 rdflib>=7.0.0
 
 # Ontology Processing (optional, for advanced workflows)
-robotframework>=7.0.0
+robotframework>=7.5.1
 
 # HTTP utilities
 requests>=2.33.1
