@@ -1,5 +1,5 @@
 # Ontology Documentation Generation
-ontospy>=2.1.1
+ontospy>=2.7
 ontodocs>=1.2.2
 
 # Keep Django < 7.0 for compatibility with ontodocs templates
