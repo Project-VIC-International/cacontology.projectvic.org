@@ -1,0 +1,7 @@
+# CAC Ontology Documentation
+# https://cacontology.projectvic.org
+
+User-agent: *
+Allow: /
+
+Sitemap: https://cacontology.projectvic.org/sitemap.xml
